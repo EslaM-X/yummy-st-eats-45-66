@@ -8,7 +8,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RestaurantsPage from "./pages/RestaurantsPage";
 import ProductsPage from "./pages/ProductsPage";
-import WalletPage from "./pages/WalletPage"; // Import wallet page
+import WalletPage from "./pages/WalletPage";
+import CartPage from "./pages/CartPage"; // New cart page
 
 // Create theme provider for dark mode
 import { ThemeProvider } from "@/components/theme-provider";
@@ -26,7 +27,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/restaurants" element={<RestaurantsPage />} />
             <Route path="/products" element={<ProductsPage />} />
-            <Route path="/wallet" element={<WalletPage />} /> {/* Add wallet route */}
+            <Route path="/wallet" element={<WalletPage />} />
+            <Route path="/cart" element={<CartPage />} /> {/* New cart route */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

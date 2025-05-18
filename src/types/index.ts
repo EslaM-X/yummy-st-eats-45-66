@@ -8,5 +8,5 @@ export interface Restaurant {
   imageUrl: string;
   isNew?: boolean;
   discount?: string;
+  description?: string;
 }
-
