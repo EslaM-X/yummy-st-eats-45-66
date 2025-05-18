@@ -2,7 +2,7 @@
 import { Button } from './ui/button';
 import { CreditCard } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 interface PaymentButtonProps {
   amount: number;

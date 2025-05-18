@@ -3,7 +3,7 @@ import React from 'react';
 import { Restaurant } from '@/types';
 import { useNavigate } from 'react-router-dom';
 import { Star, Clock, ArrowRight, MapPin, Coffee } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) => {
   const navigate = useNavigate();
