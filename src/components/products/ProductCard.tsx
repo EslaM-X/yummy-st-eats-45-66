@@ -2,7 +2,7 @@
 import React from 'react';
 import { ShoppingCart, Star, Heart, Award, Tag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { Product } from '@/types';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
