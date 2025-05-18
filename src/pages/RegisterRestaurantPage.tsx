@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -19,7 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { Utensils, MapPin, Plus, Restaurant } from 'lucide-react';
+import { Utensils, MapPin, Plus, Store } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const RegisterRestaurantPage: React.FC = () => {
@@ -94,7 +93,7 @@ const RegisterRestaurantPage: React.FC = () => {
                 }`}
                 onClick={() => setSelectedType('restaurant')}
               >
-                <Restaurant className="h-16 w-16 mb-4 text-yellow-600 dark:text-yellow-500" />
+                <Store className="h-16 w-16 mb-4 text-yellow-600 dark:text-yellow-500" />
                 <h3 className="text-xl font-semibold">{t('restaurant')}</h3>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">{t('restaurantDesc')}</p>
               </motion.div>
@@ -155,7 +154,7 @@ const RegisterRestaurantPage: React.FC = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center">
-                            <Restaurant className="w-4 h-4 mr-2" />
+                            <Store className="w-4 h-4 mr-2" />
                             {t('restaurantName')}
                           </FormLabel>
                           <FormControl>
