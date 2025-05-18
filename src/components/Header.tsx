@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Moon, Wallet, Menu, X } from "lucide-react"; // Import additional icons
+import { ShoppingCart, Moon, Wallet, Menu, X } from "lucide-react";
 import { useTheme } from '@/components/theme-provider';
 import {
   NavigationMenu,
@@ -33,6 +33,10 @@ const Header: React.FC = () => {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   return (
@@ -91,7 +95,7 @@ const Header: React.FC = () => {
               variant="ghost" 
               size="icon" 
               className="relative text-gray-600 dark:text-gray-300 hover:text-yellow-700 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20" 
-              onClick={() => theme === 'dark' ? setTheme('light') : setTheme('dark')}
+              onClick={toggleTheme}
               aria-label="تبديل الوضع المظلم"
             >
               <Moon className="h-5 w-5" />
@@ -101,7 +105,10 @@ const Header: React.FC = () => {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="relative text-gray-600 dark:text-gray-300 hover:text-yellow-700 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20" 
+                className={cn(
+                  "relative text-gray-600 dark:text-gray-300 hover:text-yellow-700 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20",
+                  isActive('/wallet') && "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-500"
+                )}
                 aria-label="المحفظة"
               >
                 <Wallet className="h-5 w-5" />
