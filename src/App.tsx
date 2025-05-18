@@ -25,29 +25,27 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="st-eats-theme">
-        <LanguageProvider>
-          <BrowserRouter>
-            <TooltipProvider>
-              <Toaster />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/restaurants" element={<RestaurantsPage />} />
-                <Route path="/products" element={<ProductsPage />} />
-                <Route path="/wallet" element={<WalletPage />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/rewards" element={<RewardsPage />} />
-                <Route path="/add-food" element={<AddFoodPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </TooltipProvider>
-          </BrowserRouter>
-        </LanguageProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider defaultTheme="light" storageKey="st-eats-theme">
+      <LanguageProvider>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Toaster />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/restaurants" element={<RestaurantsPage />} />
+              <Route path="/products" element={<ProductsPage />} />
+              <Route path="/wallet" element={<WalletPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/rewards" element={<RewardsPage />} />
+              <Route path="/add-food" element={<AddFoodPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </TooltipProvider>
+        </BrowserRouter>
+      </LanguageProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
 );
 
 export default App;
