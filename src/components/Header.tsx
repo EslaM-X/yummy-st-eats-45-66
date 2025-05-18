@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Coins } from 'lucide-react'; // Using an available icon
 
@@ -14,7 +13,7 @@ const Header: React.FC = () => {
               className="h-10 w-10 mr-3"
             />
             <h1 className="text-3xl font-bold text-yellow-500">
-              ST <span className="text-teal-500">Eats</span>
+              ST<span className="text-teal-500 ml-1">🍕 Eat</span>
             </h1>
           </div>
           <nav className="flex space-x-4">

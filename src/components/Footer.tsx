@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const Footer: React.FC = () => {
@@ -12,7 +11,7 @@ const Footer: React.FC = () => {
             className="h-12 w-12 mx-auto mb-2"
           />
           <h2 className="text-2xl font-bold text-yellow-400">
-            ST <span className="text-teal-400">Eats</span>
+            ST<span className="text-teal-400 ml-1">🍕 Eat</span>
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
