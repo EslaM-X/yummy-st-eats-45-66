@@ -1,9 +1,17 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Restaurant } from '@/types';
 import RestaurantCard from './RestaurantCard';
-import { Search } from 'lucide-react';
+import { Search, Sliders, ChevronDown, X } from 'lucide-react';
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription 
+} from "@/components/ui/card";
 
 const mockRestaurants: Restaurant[] = [
   {
@@ -60,67 +68,202 @@ const mockRestaurants: Restaurant[] = [
 const RestaurantList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [cuisineFilter, setCuisineFilter] = useState<string>('');
+  const [minRating, setMinRating] = useState<number>(0);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showNewOnly, setShowNewOnly] = useState(false);
+  const [showDiscountOnly, setShowDiscountOnly] = useState(false);
+  const [sortBy, setSortBy] = useState('recommended');
+  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(mockRestaurants);
   
   // Get unique cuisines for filter
   const allCuisines = mockRestaurants
     .flatMap(restaurant => restaurant.cuisine.split(', '))
     .filter((cuisine, index, self) => self.indexOf(cuisine) === index);
   
-  // Filter restaurants based on search term and cuisine filter
-  const filteredRestaurants = mockRestaurants.filter(restaurant => {
-    const matchesSearch = restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          restaurant.cuisine.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCuisine = cuisineFilter === '' || restaurant.cuisine.includes(cuisineFilter);
-    return matchesSearch && matchesCuisine;
-  });
+  // Apply filters when any filter changes
+  useEffect(() => {
+    let filtered = mockRestaurants.filter(restaurant => {
+      const matchesSearch = restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            restaurant.cuisine.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            (restaurant.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
+      
+      const matchesCuisine = cuisineFilter === '' || restaurant.cuisine.includes(cuisineFilter);
+      const matchesRating = restaurant.rating >= minRating;
+      const matchesNew = !showNewOnly || restaurant.isNew === true;
+      const matchesDiscount = !showDiscountOnly || restaurant.discount !== undefined;
+      
+      return matchesSearch && matchesCuisine && matchesRating && matchesNew && matchesDiscount;
+    });
+    
+    // Sort the restaurants
+    switch (sortBy) {
+      case 'rating':
+        filtered = filtered.sort((a, b) => b.rating - a.rating);
+        break;
+      case 'name':
+        filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'deliveryTime':
+        filtered = filtered.sort((a, b) => {
+          const aTime = parseInt(a.deliveryTime.split('-')[0]);
+          const bTime = parseInt(b.deliveryTime.split('-')[0]);
+          return aTime - bTime;
+        });
+        break;
+      case 'recommended':
+      default:
+        // Keep original order
+        break;
+    }
+    
+    setFilteredRestaurants(filtered);
+  }, [searchTerm, cuisineFilter, minRating, showNewOnly, showDiscountOnly, sortBy]);
+  
+  const resetFilters = () => {
+    setSearchTerm('');
+    setCuisineFilter('');
+    setMinRating(0);
+    setShowNewOnly(false);
+    setShowDiscountOnly(false);
+    setSortBy('recommended');
+  };
 
   return (
-    <section className="py-12 bg-gray-50 dark:bg-gray-800">
+    <section className="py-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-8">
-          اكتشف أفضل المطاعم
-        </h2>
-        
-        {/* Search and filter section */}
-        <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-center">
-          <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <Input 
-              type="text"
-              placeholder="ابحث عن مطعم أو نوع طعام..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border-gray-300 dark:border-gray-600"
-            />
-          </div>
-          
-          <select
-            value={cuisineFilter}
-            onChange={(e) => setCuisineFilter(e.target.value)}
-            className="max-w-xs w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
-          >
-            <option value="">جميع المطابخ</option>
-            {allCuisines.map((cuisine, index) => (
-              <option key={index} value={cuisine}>{cuisine}</option>
-            ))}
-          </select>
-        </div>
+        {/* Search and filter bar */}
+        <Card className="bg-white dark:bg-gray-800 mb-8 shadow-md">
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+              <div className="relative flex-grow">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input 
+                  type="text"
+                  placeholder="ابحث عن مطعم أو نوع طعام..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 w-full"
+                />
+              </div>
+              
+              <Button
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Sliders className="h-4 w-4" />
+                <span>فلترة وترتيب</span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? 'transform rotate-180' : ''}`} />
+              </Button>
+              
+              {(searchTerm || cuisineFilter || minRating > 0 || showNewOnly || showDiscountOnly || sortBy !== 'recommended') && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="text-gray-500"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  إعادة ضبط
+                </Button>
+              )}
+            </div>
+            
+            {showFilters && (
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 border-t pt-4 border-gray-200 dark:border-gray-700">
+                <div>
+                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">المطبخ</h3>
+                  <select
+                    value={cuisineFilter}
+                    onChange={(e) => setCuisineFilter(e.target.value)}
+                    className="w-full p-2 rounded-md bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
+                  >
+                    <option value="">جميع المطابخ</option>
+                    {allCuisines.map((cuisine, index) => (
+                      <option key={index} value={cuisine}>{cuisine}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    التقييم: {minRating > 0 ? `${minRating}+` : 'الكل'}
+                  </h3>
+                  <Slider
+                    value={[minRating]}
+                    min={0}
+                    max={5}
+                    step={0.5}
+                    className="py-4"
+                    onValueChange={(value) => setMinRating(value[0])}
+                  />
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">ترتيب حسب</h3>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full p-2 rounded-md bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
+                  >
+                    <option value="recommended">الأكثر رواجاً</option>
+                    <option value="rating">التقييم: من الأعلى للأقل</option>
+                    <option value="name">أبجدياً: أ-ي</option>
+                    <option value="deliveryTime">وقت التوصيل: الأسرع أولاً</option>
+                  </select>
+                </div>
+                
+                <div className="flex items-center space-x-6 space-x-reverse md:col-span-3">
+                  <label className="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={showNewOnly} 
+                      onChange={(e) => setShowNewOnly(e.target.checked)} 
+                      className="rounded text-yellow-800"
+                    />
+                    <span className="text-gray-700 dark:text-gray-300">المطاعم الجديدة فقط</span>
+                  </label>
+                  
+                  <label className="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={showDiscountOnly} 
+                      onChange={(e) => setShowDiscountOnly(e.target.checked)} 
+                      className="rounded text-yellow-800"
+                    />
+                    <span className="text-gray-700 dark:text-gray-300">العروض والخصومات فقط</span>
+                  </label>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
         
         {/* Restaurants grid */}
         {filteredRestaurants.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 animate-fade-in">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {filteredRestaurants.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
+          <div className="text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+            <div className="inline-block p-3 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
+              <Search className="h-8 w-8 text-gray-400" />
+            </div>
             <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
               لا توجد مطاعم متطابقة مع بحثك
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               يرجى تعديل معايير البحث والمحاولة مرة أخرى
             </p>
+            <Button 
+              onClick={resetFilters} 
+              variant="outline" 
+              className="font-semibold"
+            >
+              عرض كل المطاعم
+            </Button>
           </div>
         )}
       </div>

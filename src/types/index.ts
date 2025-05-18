@@ -9,6 +9,9 @@ export interface Restaurant {
   isNew?: boolean;
   discount?: string;
   description?: string;
+  location?: string;
+  minOrderPrice?: number;
+  topPicks?: Product[];
 }
 
 export interface Product {
