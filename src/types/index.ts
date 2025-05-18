@@ -10,3 +10,13 @@ export interface Restaurant {
   discount?: string;
   description?: string;
 }
+
+export interface Product {
+  id: string;
+  name: string;
+  price: string;
+  restaurant: string;
+  imageUrl: string;
+  description: string;
+  category: string;
+}
