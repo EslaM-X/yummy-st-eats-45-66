@@ -82,11 +82,17 @@ const CartPage: React.FC = () => {
                     {cartItems.map(item => (
                       <div key={item.id} className="flex flex-col sm:flex-row items-center justify-between border-b border-gray-200 dark:border-gray-700 py-4 last:border-0 last:pb-0">
                         <div className="flex flex-col sm:flex-row items-center mb-4 sm:mb-0">
-                          <img 
-                            src={item.imageUrl} 
-                            alt={item.name} 
-                            className="w-24 h-24 object-cover rounded-lg mb-4 sm:mb-0 sm:mr-6"
-                          />
+                          <div className="w-24 h-24 rounded-lg overflow-hidden mb-4 sm:mb-0 sm:mr-6">
+                            <img 
+                              src={item.imageUrl} 
+                              alt={item.name} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?auto=format&fit=crop&w=800&q=80&txt=Food+Image";
+                              }}
+                            />
+                          </div>
                           <div>
                             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{item.name}</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{item.restaurant}</p>

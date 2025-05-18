@@ -1,15 +1,19 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Award, Gift, Star, Clock, ChevronRight, Utensils } from "lucide-react";
+import { Utensils } from "lucide-react";
 import { UserPoints, UserReward, RewardTier } from '@/types';
+import UserPointsCard from '@/components/rewards/UserPointsCard';
+import AvailableRewards from '@/components/rewards/AvailableRewards';
+import PointsHistoryList from '@/components/rewards/PointsHistoryList';
+import TierCard from '@/components/rewards/TierCard';
+import EarnPointsCard from '@/components/rewards/EarnPointsCard';
 
-// بيانات وهمية لنظام المكافآت
+// Mock data
 const mockUserPoints: UserPoints = {
   total: 420,
   history: [
@@ -158,29 +162,6 @@ const RewardsPage: React.FC = () => {
     alert(`تم استبدال المكافأة: ${reward.name}`);
   };
 
-  const renderTierIcon = (iconName: string) => {
-    if (iconName === 'award') {
-      return <Award className="h-6 w-6 text-yellow-500" />;
-    } else {
-      return <Star className="h-6 w-6 text-yellow-500" />;
-    }
-  };
-
-  const getRewardTypeIcon = (type: string) => {
-    switch (type) {
-      case 'discount':
-        return <Gift className="h-5 w-5 text-red-500" />;
-      case 'freeItem':
-        return <Utensils className="h-5 w-5 text-green-500" />;
-      case 'delivery':
-        return <Clock className="h-5 w-5 text-blue-500" />;
-      case 'exclusive':
-        return <Award className="h-5 w-5 text-purple-500" />;
-      default:
-        return <Gift className="h-5 w-5" />;
-    }
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
       <Header />
@@ -199,62 +180,12 @@ const RewardsPage: React.FC = () => {
 
           {/* User Points Summary Card */}
           <div className="mb-10">
-            <Card className="overflow-hidden border-2 border-yellow-200 dark:border-yellow-900">
-              <CardHeader className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 pb-8">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-                  <div>
-                    <CardTitle className="text-2xl mb-2 flex items-center">
-                      {renderTierIcon(userPoints.tier.icon)}
-                      <span className="mr-2">{userPoints.tier.name}</span>
-                    </CardTitle>
-                    <CardDescription>استمتع بمزايا حصرية مع مستواك الحالي</CardDescription>
-                  </div>
-                  <div className="mt-4 md:mt-0">
-                    <div className="text-3xl font-bold text-yellow-700 dark:text-yellow-500 flex items-center">
-                      <Star className="inline-block h-6 w-6 mr-2 fill-yellow-500 text-yellow-500" />
-                      {userPoints.total} نقطة
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-8">
-                {nextTier ? (
-                  <div className="mb-6">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span>{userPoints.tier.name}</span>
-                      <span>{nextTier.name}</span>
-                    </div>
-                    <Progress value={progressPercentage} className="h-2" />
-                    <p className="text-sm text-center mt-2 text-gray-600 dark:text-gray-400">
-                      {pointsToNextTier} نقطة متبقية للوصول إلى {nextTier.name}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="mb-6 text-center">
-                    <p className="text-green-600 dark:text-green-500 font-semibold">
-                      تهانينا! لقد وصلت إلى أعلى مستوى في برنامج المكافآت
-                    </p>
-                    <Progress value={100} className="h-2 mt-2" />
-                  </div>
-                )}
-                
-                <div className="mt-6">
-                  <h4 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">مزايا مستواك الحالي:</h4>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {userPoints.tier.benefits.map((benefit, index) => (
-                      <li key={index} className="flex items-start">
-                        <div className="h-5 w-5 text-yellow-500 mr-2 mt-0.5">
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                        {benefit}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
+            <UserPointsCard 
+              userPoints={userPoints}
+              nextTier={nextTier}
+              progressPercentage={progressPercentage}
+              pointsToNextTier={pointsToNextTier}
+            />
           </div>
 
           {/* Rewards Tabs */}
@@ -265,88 +196,15 @@ const RewardsPage: React.FC = () => {
             </TabsList>
             
             <TabsContent value="available" className="space-y-4 animate-fade-in">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {availableRewards.map(reward => (
-                  <Card key={reward.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                    <div className="h-48 overflow-hidden">
-                      <img 
-                        src={reward.imageUrl} 
-                        alt={reward.name} 
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                      />
-                      <div className="absolute top-3 right-3">
-                        <span className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold shadow-sm flex items-center">
-                          {getRewardTypeIcon(reward.type)}
-                          <span className="mr-1">{reward.points} نقطة</span>
-                        </span>
-                      </div>
-                    </div>
-                    <CardHeader>
-                      <CardTitle>{reward.name}</CardTitle>
-                      <CardDescription className="line-clamp-2">{reward.description}</CardDescription>
-                    </CardHeader>
-                    <CardFooter className="flex justify-between items-center">
-                      <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        ينتهي: {reward.expiryDate}
-                      </div>
-                      <Button 
-                        variant={userPoints.total >= reward.points ? "default" : "outline"}
-                        disabled={userPoints.total < reward.points}
-                        onClick={() => handleRedeemReward(reward)}
-                        className={userPoints.total >= reward.points ? 
-                          "bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800" : 
-                          ""}
-                      >
-                        {userPoints.total >= reward.points ? "استبدال" : "نقاط غير كافية"}
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
+              <AvailableRewards 
+                rewards={availableRewards}
+                userPoints={userPoints.total}
+                onRedeemReward={handleRedeemReward}
+              />
             </TabsContent>
             
             <TabsContent value="history" className="animate-fade-in">
-              <Card>
-                <CardHeader>
-                  <CardTitle>سجل النقاط</CardTitle>
-                  <CardDescription>تاريخ كسب واستبدال النقاط</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {userPoints.history.map((transaction) => (
-                      <div 
-                        key={transaction.id} 
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                      >
-                        <div className="flex items-center">
-                          <div className={`p-2 rounded-full ${
-                            transaction.type === 'earned' ? 
-                              'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' : 
-                              'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
-                          }`}>
-                            {transaction.type === 'earned' ? 
-                              <Star className="h-5 w-5" /> : 
-                              <Gift className="h-5 w-5" />
-                            }
-                          </div>
-                          <div className="mr-4 rtl:ml-4 rtl:mr-0">
-                            <p className="font-medium">{transaction.description}</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{transaction.date}</p>
-                          </div>
-                        </div>
-                        <div className={`font-semibold ${
-                          transaction.type === 'earned' ? 
-                            'text-green-600 dark:text-green-400' : 
-                            'text-amber-600 dark:text-amber-400'
-                        }`}>
-                          {transaction.type === 'earned' ? '+' : ''}{transaction.points} نقطة
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <PointsHistoryList transactions={userPoints.history} />
             </TabsContent>
           </Tabs>
 
@@ -354,46 +212,12 @@ const RewardsPage: React.FC = () => {
           <div className="mb-12">
             <h2 className="text-2xl font-bold mb-6 text-center">مستويات العضوية</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {rewardTiers.map((tier, index) => (
-                <Card 
+              {rewardTiers.map((tier) => (
+                <TierCard 
                   key={tier.id} 
-                  className={`${tier.id === userPoints.tier.id 
-                    ? 'border-2 border-yellow-400 dark:border-yellow-600 shadow-xl' 
-                    : ''}`}
-                >
-                  <CardHeader className={`${tier.id === userPoints.tier.id 
-                    ? 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30' 
-                    : ''}`}>
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="flex items-center">
-                        {renderTierIcon(tier.icon)}
-                        <span className="mr-2">{tier.name}</span>
-                      </CardTitle>
-                      {tier.id === userPoints.tier.id && (
-                        <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
-                          مستواك الحالي
-                        </span>
-                      )}
-                    </div>
-                    <CardDescription className="text-lg font-semibold mt-2">
-                      {tier.pointsRequired} نقطة
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {tier.benefits.map((benefit, idx) => (
-                        <li key={idx} className="flex items-start">
-                          <div className="h-5 w-5 text-yellow-500 mr-2 mt-0.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm">{benefit}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
+                  tier={tier}
+                  isCurrentTier={tier.id === userPoints.tier.id}
+                />
               ))}
             </div>
           </div>
@@ -402,45 +226,29 @@ const RewardsPage: React.FC = () => {
           <div className="mb-12">
             <h2 className="text-2xl font-bold mb-6 text-center">كيف تكسب المزيد من النقاط؟</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Utensils className="h-8 w-8 text-yellow-600 dark:text-yellow-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">اطلب الطعام</h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  اكسب نقاط على كل طلب طعام من أي مطعم (نقطة لكل ST)
-                </p>
-              </div>
+              <EarnPointsCard 
+                icon="utensils"
+                title="اطلب الطعام"
+                description="اكسب نقاط على كل طلب طعام من أي مطعم (نقطة لكل ST)"
+              />
               
-              <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Star className="h-8 w-8 text-yellow-600 dark:text-yellow-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">قيّم المطاعم</h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  اكسب 20 نقطة عند تقييم المطاعم والأطباق مع تعليق
-                </p>
-              </div>
+              <EarnPointsCard 
+                icon="star"
+                title="قيّم المطاعم"
+                description="اكسب 20 نقطة عند تقييم المطاعم والأطباق مع تعليق"
+              />
               
-              <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Gift className="h-8 w-8 text-yellow-600 dark:text-yellow-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">أضف طعامك</h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  اكسب 50 نقطة عند إضافة أطباق منزلية أو وصفات خاصة
-                </p>
-              </div>
+              <EarnPointsCard 
+                icon="gift"
+                title="أضف طعامك"
+                description="اكسب 50 نقطة عند إضافة أطباق منزلية أو وصفات خاصة"
+              />
               
-              <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Award className="h-8 w-8 text-yellow-600 dark:text-yellow-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">مهام خاصة</h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  أكمل المهام الأسبوعية والتحديات الموسمية لكسب نقاط إضافية
-                </p>
-              </div>
+              <EarnPointsCard 
+                icon="award"
+                title="مهام خاصة"
+                description="أكمل المهام الأسبوعية والتحديات الموسمية لكسب نقاط إضافية"
+              />
             </div>
           </div>
 
