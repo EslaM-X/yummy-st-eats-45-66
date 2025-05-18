@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Restaurant } from '@/types';
 import RestaurantCard from './RestaurantCard';
@@ -20,7 +21,7 @@ const mockRestaurants: Restaurant[] = [
     cuisine: 'مأكولات شرقية, مشويات',
     rating: 4.5,
     deliveryTime: '25-35 دقيقة',
-    imageUrl: '/lovable-uploads/photo-1506744038136-46273834b3fb.png', 
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800', 
     isNew: true,
     description: 'تخصص في المأكولات الشرقية التقليدية والمشويات الطازجة مع أفضل التوابل'
   },
@@ -30,7 +31,7 @@ const mockRestaurants: Restaurant[] = [
     cuisine: 'بيتزا, إيطالي',
     rating: 4.2,
     deliveryTime: '30-40 دقيقة',
-    imageUrl: '/lovable-uploads/photo-1618160702438-9b02ab6515c9.png',
+    imageUrl: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=800',
     discount: '15%',
     description: 'بيتزا إيطالية أصلية بعجينة طازجة وخبز في الفرن الحجري'
   },
@@ -40,7 +41,7 @@ const mockRestaurants: Restaurant[] = [
     cuisine: 'ياباني, سوشي',
     rating: 4.8,
     deliveryTime: '35-45 دقيقة',
-    imageUrl: '/lovable-uploads/photo-1472396961693-142e6e269027.png',
+    imageUrl: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800',
     description: 'أطباق سوشي فاخرة محضرة من قبل طهاة يابانيين محترفين'
   },
   {
@@ -49,7 +50,7 @@ const mockRestaurants: Restaurant[] = [
     cuisine: 'أمريكي, برجر',
     rating: 4.3,
     deliveryTime: '20-30 دقيقة',
-    imageUrl: '/lovable-uploads/photo-1469041797191-50ace28483c3.png',
+    imageUrl: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3?auto=format&fit=crop&w=800',
     discount: '10%',
     description: 'برجر لحم بقري فاخر طازج 100% مع صلصات خاصة وخبز محضر يومياً'
   },
@@ -59,7 +60,7 @@ const mockRestaurants: Restaurant[] = [
     cuisine: 'بحري, مأكولات بحرية',
     rating: 4.6,
     deliveryTime: '30-50 دقيقة',
-    imageUrl: '/lovable-uploads/photo-1582562124811-c09040d0a901.png',
+    imageUrl: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=800',
     isNew: true,
     description: 'أطباق بحرية طازجة يومياً مع توابل خاصة وطرق تحضير مميزة'
   },

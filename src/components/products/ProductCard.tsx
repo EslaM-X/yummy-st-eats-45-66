@@ -37,6 +37,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           alt={product.name} 
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = "https://via.placeholder.com/400x300?text=Product+Image";
+          }}
         />
         
         {/* Badge Overlays */}
