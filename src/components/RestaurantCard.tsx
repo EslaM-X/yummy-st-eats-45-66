@@ -3,14 +3,17 @@ import React from 'react';
 import { Restaurant } from '@/types';
 import { useNavigate } from 'react-router-dom';
 import { Star, Clock, ArrowRight, MapPin, Coffee } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/use-toast';
 
 const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) => {
   const navigate = useNavigate();
 
   const handleOrderNowClick = () => {
     navigate(`/products`);
-    toast.success(`تم اختيار ${restaurant.name}`);
+    toast({
+      title: `تم اختيار ${restaurant.name}`,
+      variant: "default",
+    });
   };
 
   // تحديد اللون المناسب للتقييم

@@ -2,7 +2,7 @@
 import { Button } from './ui/button';
 import { CreditCard } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/use-toast';
 
 interface PaymentButtonProps {
   amount: number;
@@ -16,7 +16,10 @@ const PaymentButton = ({ amount, productName, className, variant = "default" }: 
 
   const handlePayment = () => {
     // Demo functionality - In a real app, this would integrate with a payment gateway
-    toast.success(`${t('paymentSuccess')}: ${amount} ST`);
+    toast({
+      title: `${t('paymentSuccess')}: ${amount} ST`,
+      variant: "default",
+    });
     
     // Simulate a payment flow for demo purposes
     // In production, this would redirect to a payment processor

@@ -12,7 +12,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -33,10 +33,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     setTimeout(() => {
       setIsLoading(false);
       if (isSignUp) {
-        toast.success('تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول');
+        toast({
+          title: "تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول",
+          variant: "default",
+        });
         setIsSignUp(false);
       } else {
-        toast.success('تم تسجيل الدخول بنجاح');
+        toast({
+          title: "تم تسجيل الدخول بنجاح",
+          variant: "default",
+        });
         onClose();
       }
     }, 1500);

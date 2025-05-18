@@ -2,7 +2,7 @@
 import React from 'react';
 import { ShoppingCart, Star, Heart, Award, Tag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/use-toast';
 import { Product } from '@/types';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -15,12 +15,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { t } = useLanguage();
   
   const handleAddToCart = () => {
-    toast.success(`${t('added')} ${product.name} ${t('toCart')}`);
+    toast({
+      title: `${t('added')} ${product.name} ${t('toCart')}`,
+      variant: "default",
+    });
   };
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toast.success(`${product.isFavorite ? t('removedFromFavorites') : t('addedToFavorites')} ${product.name} ${product.isFavorite ? t('from') : t('to')} ${t('favorite')}`);
+    toast({
+      title: `${product.isFavorite ? t('removedFromFavorites') : t('addedToFavorites')} ${product.name} ${product.isFavorite ? t('from') : t('to')} ${t('favorite')}`,
+      variant: "default",
+    });
   };
 
   return (
