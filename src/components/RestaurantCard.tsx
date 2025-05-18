@@ -40,7 +40,7 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
         </div>
         <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300">
           اطلب الآن
-        button>
+        </button>
       </div>
     </div>
   );
