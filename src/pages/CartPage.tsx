@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom'; // Add missing Link import
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
@@ -90,7 +90,7 @@ const CartPage: React.FC = () => {
                           <div>
                             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{item.name}</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{item.restaurant}</p>
-                            <p className="font-bold text-yellow-800 dark:text-yellow-500">{item.price} STC</p>
+                            <p className="font-bold text-yellow-800 dark:text-yellow-500">{item.price} ST</p>
                           </div>
                         </div>
                         <div className="flex flex-col sm:flex-row items-center sm:space-x-4 rtl:space-x-reverse">
@@ -131,16 +131,16 @@ const CartPage: React.FC = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-300">المجموع الفرعي:</span>
-                      <span className="text-gray-800 dark:text-white font-medium">{calculateTotal()} STC</span>
+                      <span className="text-gray-800 dark:text-white font-medium">{calculateTotal()} ST</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-300">رسوم التوصيل:</span>
-                      <span className="text-gray-800 dark:text-white font-medium">15 STC</span>
+                      <span className="text-gray-800 dark:text-white font-medium">15 ST</span>
                     </div>
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
                       <div className="flex justify-between">
                         <span className="text-lg font-bold text-gray-800 dark:text-white">المجموع:</span>
-                        <span className="text-lg font-bold text-yellow-800 dark:text-yellow-500">{calculateTotal() + 15} STC</span>
+                        <span className="text-lg font-bold text-yellow-800 dark:text-yellow-500">{calculateTotal() + 15} ST</span>
                       </div>
                     </div>
                     
