@@ -39,16 +39,20 @@ const ProductsPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
       <Header />
       <main className="flex-grow py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4 text-center">
-            أشهى الأطباق والمنتجات
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-center mb-8">
-            اكتشف مجموعة متنوعة من الأطباق الشهية من أفضل المطاعم
-          </p>
+          {/* Hero Section */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4 relative inline-block">
+              <span className="relative z-10">أشهى الأطباق والمنتجات</span>
+              <span className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300/30 dark:bg-yellow-800/30 -z-0 transform -rotate-1"></span>
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              اكتشف مجموعة متنوعة من الأطباق الشهية المحضرة بعناية من أفضل المطاعم في المدينة، مع خيارات توصيل سريعة
+            </p>
+          </div>
 
           {/* Search and filters */}
           <div className="mb-8">

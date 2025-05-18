@@ -1,16 +1,20 @@
 
 import { Product } from '@/types';
 
-// Product data
+// Product data with enhanced information
 const allProducts: Product[] = [
   { 
     id: 'p1', 
     name: 'بيتزا مارغريتا', 
     price: '50 ST', 
+    oldPrice: '65 ST',
     restaurant: 'بيتزا بلس', 
     imageUrl: '/lovable-uploads/photo-1618160702438-9b02ab6515c9.png',
-    description: 'بيتزا إيطالية أصلية مع صلصة الطماطم والجبن الموزاريلا',
-    category: 'بيتزا'
+    description: 'بيتزا إيطالية أصلية مع صلصة الطماطم والجبن الموزاريلا وقاعدة من العجين المخمر',
+    category: 'بيتزا',
+    rating: 4.7,
+    discountPercent: 25,
+    bestseller: true
   },
   { 
     id: 'p2', 
@@ -18,8 +22,10 @@ const allProducts: Product[] = [
     price: '75 ST', 
     restaurant: 'مطعم الأصيل', 
     imageUrl: '/lovable-uploads/photo-1506744038136-46273834b3fb.png',
-    description: 'شاورما دجاج طازجة مع صلصة الثوم والخضروات',
-    category: 'شرقي'
+    description: 'شاورما دجاج طازجة مع صلصة الثوم والخضروات وبطاطس مقلية',
+    category: 'شرقي',
+    rating: 4.5,
+    isFavorite: true
   },
   { 
     id: 'p3', 
@@ -27,17 +33,23 @@ const allProducts: Product[] = [
     price: '120 ST', 
     restaurant: 'سوشي تايم', 
     imageUrl: '/lovable-uploads/photo-1472396961693-142e6e269027.png',
-    description: 'سوشي رول محشو بسمك السلمون الطازج والأفوكادو',
-    category: 'آسيوي'
+    description: 'سوشي رول محشو بسمك السلمون الطازج والأفوكادو مع صلصة سوشي خاصة',
+    category: 'آسيوي',
+    rating: 4.9,
+    isNew: true,
+    bestseller: true
   },
   { 
     id: 'p4', 
     name: 'برجر لحم مشوي', 
     price: '85 ST', 
+    oldPrice: '100 ST',
     restaurant: 'برجر فاكتوري', 
     imageUrl: '/lovable-uploads/photo-1469041797191-50ace28483c3.png',
-    description: 'برجر لحم مشوي مع جبن شيدر وصلصة خاصة',
-    category: 'برجر'
+    description: 'برجر لحم مشوي مع جبن شيدر وصلصة خاصة وخضروات طازجة',
+    category: 'برجر',
+    rating: 4.3,
+    discountPercent: 15
   },
   { 
     id: 'p5', 
@@ -45,35 +57,44 @@ const allProducts: Product[] = [
     price: '45 ST', 
     restaurant: 'مطعم الأصيل', 
     imageUrl: '/lovable-uploads/photo-1582562124811-c09040d0a901.png',
-    description: 'سلطة خضراء طازجة مع دجاج مشوي وصلصة سيزر',
-    category: 'سلطات'
+    description: 'سلطة خضراء طازجة مع دجاج مشوي وصلصة سيزر وقطع من الخبز المحمص',
+    category: 'سلطات',
+    rating: 4.2
   },
   { 
     id: 'p6', 
     name: 'بيتزا خضروات', 
     price: '60 ST', 
     restaurant: 'بيتزا بلس', 
-    imageUrl: '/lovable-uploads/photo-1618160702438-9b02ab6515c9.png',
-    description: 'بيتزا مع تشكيلة من الخضروات الطازجة والجبن',
-    category: 'بيتزا'
+    imageUrl: '/lovable-uploads/photo-1721322800607-8c38375eef04.png',
+    description: 'بيتزا مع تشكيلة من الخضروات الطازجة والجبن والفطر وصلصة طماطم طازجة',
+    category: 'بيتزا',
+    rating: 4.4,
+    isNew: true
   },
   { 
     id: 'p7', 
     name: 'برجر دجاج مقرمش', 
     price: '65 ST', 
     restaurant: 'برجر فاكتوري', 
-    imageUrl: '/lovable-uploads/photo-1469041797191-50ace28483c3.png',
-    description: 'برجر دجاج مقرمش مع جبن وخس وطماطم',
-    category: 'برجر'
+    imageUrl: '/lovable-uploads/photo-1466721591366-2d5fba72006d.png',
+    description: 'برجر دجاج مقرمش مع جبن وخس وطماطم وصلصة خاصة',
+    category: 'برجر',
+    rating: 4.6,
+    bestseller: true,
+    isFavorite: true
   },
   { 
     id: 'p8', 
     name: 'مأكولات بحرية مشكلة', 
     price: '140 ST', 
+    oldPrice: '160 ST',
     restaurant: 'مطعم الطازج', 
-    imageUrl: '/lovable-uploads/photo-1582562124811-c09040d0a901.png',
-    description: 'تشكيلة من المأكولات البحرية المشوية والمقلية',
-    category: 'بحري'
+    imageUrl: '/lovable-uploads/photo-1493962853295-0fd70327578a.png',
+    description: 'تشكيلة من المأكولات البحرية المشوية والمقلية مع صلصة طرطار وليمون',
+    category: 'بحري',
+    rating: 4.8,
+    discountPercent: 12.5
   },
 ];
 
@@ -116,6 +137,14 @@ export const getFilteredProducts = (
           );
         } else if (sortBy === 'name-asc') {
           filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortBy === 'rating-desc') {
+          filtered = [...filtered].sort((a, b) => 
+            (b.rating || 0) - (a.rating || 0)
+          );
+        } else if (sortBy === 'newest') {
+          filtered = [...filtered].sort((a, b) => 
+            (a.isNew ? 1 : 0) - (b.isNew ? 1 : 0)
+          );
         }
       }
       

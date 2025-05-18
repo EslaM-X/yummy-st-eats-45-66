@@ -22,4 +22,10 @@ export interface Product {
   imageUrl: string;
   description: string;
   category: string;
+  rating?: number;
+  bestseller?: boolean;
+  discountPercent?: number;
+  oldPrice?: string;
+  isNew?: boolean;
+  isFavorite?: boolean;
 }
