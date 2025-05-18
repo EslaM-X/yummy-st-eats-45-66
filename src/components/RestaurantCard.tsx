@@ -28,10 +28,14 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
     <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1 animate-fade-in">
       <div className="relative overflow-hidden">
         <img 
-          src={restaurant.imageUrl || "https://via.placeholder.com/400x200.png?text=Restaurant+Image"} 
+          src={restaurant.imageUrl || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800"} 
           alt={restaurant.name} 
           className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80&txt=Restaurant+Image";
+          }}
         />
         {restaurant.isNew && (
           <span className="absolute top-3 right-3 bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">

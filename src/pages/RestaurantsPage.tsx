@@ -23,7 +23,7 @@ const featuredRestaurants: Restaurant[] = [
     cuisine: 'مأكولات شرقية, مشويات',
     rating: 4.8,
     deliveryTime: '20-30 دقيقة',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800',
+    imageUrl: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&fit=crop&w=800',
     isNew: true,
     description: 'تخصص في المأكولات الشرقية التقليدية والمشويات الطازجة'
   },
@@ -33,7 +33,7 @@ const featuredRestaurants: Restaurant[] = [
     cuisine: 'بحري, مأكولات بحرية',
     rating: 4.6,
     deliveryTime: '30-50 دقيقة',
-    imageUrl: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=800',
+    imageUrl: 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=800',
     isNew: true,
     description: 'أطباق بحرية طازجة يومياً مع توابل خاصة'
   },
@@ -43,7 +43,7 @@ const featuredRestaurants: Restaurant[] = [
     cuisine: 'بيتزا, إيطالي',
     rating: 4.2,
     deliveryTime: '30-40 دقيقة',
-    imageUrl: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=800',
+    imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800',
     discount: '15%',
     description: 'بيتزا إيطالية أصلية بعجينة طازجة وخبز في الفرن الحجري'
   },
