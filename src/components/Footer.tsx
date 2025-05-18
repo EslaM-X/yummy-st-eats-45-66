@@ -12,8 +12,8 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="mb-6">
           <img 
-            src="/lovable-uploads/b1796902-3206-4112-a199-07b14b0b76de.png" 
-            alt="ST Coin Logo" 
+            src="/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png" 
+            alt="ST Pizza Logo" 
             className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2"
           />
           <h2 className="text-xl sm:text-2xl font-bold text-yellow-600 dark:text-yellow-500">

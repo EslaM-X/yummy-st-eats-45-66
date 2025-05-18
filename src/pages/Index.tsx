@@ -29,6 +29,13 @@ const Index: React.FC = () => {
       <main className="flex-grow">
         <section className="bg-gradient-to-br from-yellow-600 via-yellow-700 to-yellow-800 text-white py-20 md:py-32">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="mb-6 flex justify-center">
+              <img 
+                src="/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png" 
+                alt="ST Pizza Logo" 
+                className="h-20 w-20 sm:h-24 sm:w-24 mb-4 animate-pulse"
+              />
+            </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-cairo mb-6 leading-tight animate-fade-in">
               {t('deliverySlogan')}
             </h1>

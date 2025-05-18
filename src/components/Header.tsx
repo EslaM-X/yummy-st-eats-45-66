@@ -66,8 +66,8 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center" aria-label={t('home')}>
               <img 
-                src="/lovable-uploads/b1796902-3206-4112-a199-07b14b0b76de.png" 
-                alt="ST Coin Logo" 
+                src="/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png" 
+                alt="ST Pizza Logo" 
                 className="h-8 w-8 sm:h-10 sm:w-10 mr-2 rtl:mr-0 rtl:ml-2"
               />
               <h1 className="text-xl sm:text-3xl font-bold font-cairo text-yellow-800 dark:text-yellow-600">
