@@ -12,6 +12,7 @@ import WalletPage from "./pages/WalletPage";
 import CartPage from "./pages/CartPage";
 import RewardsPage from "./pages/RewardsPage";
 import AddFoodPage from "./pages/AddFoodPage";
+import RegisterRestaurantPage from "./pages/RegisterRestaurantPage";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/cart" element={<CartPage />} />
               <Route path="/rewards" element={<RewardsPage />} />
               <Route path="/add-food" element={<AddFoodPage />} />
+              <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>

@@ -20,7 +20,7 @@ const Index: React.FC = () => {
   };
 
   const handleRegisterRestaurant = () => {
-    window.alert(t('restaurantOwner'));
+    navigate('/register-restaurant');
   };
 
   return (
@@ -63,8 +63,12 @@ const Index: React.FC = () => {
                   variant="outline" 
                   size="lg" 
                   onClick={handleRegisterRestaurant}
-                  className="border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white font-semibold px-10 py-3 text-lg dark:border-yellow-500 dark:text-yellow-500 dark:hover:bg-yellow-500 font-cairo">
-                    {t('registerRestaurant')}
+                  className="border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white font-semibold px-10 py-3 text-lg dark:border-yellow-500 dark:text-yellow-500 dark:hover:bg-yellow-500 font-cairo relative group overflow-hidden">
+                    <span className="absolute inset-0 w-0 bg-yellow-600 transition-all duration-500 ease-out group-hover:w-full"></span>
+                    <span className="relative flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                      {t('registerRestaurant')}
+                    </span>
                 </Button>
             </div>
         </section>
