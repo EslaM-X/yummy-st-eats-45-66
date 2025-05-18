@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -26,7 +25,7 @@ const mockUserPoints: UserPoints = {
     pointsRequired: 400,
     benefits: [
       'خصم 10% على جميع الطلبات',
-      'توصيل مجاني للطلبات فوق 100 ريال',
+      'توصيل مجاني للطلبات فوق 100 ST',
       'نقاط مضاعفة في المناسبات الخاصة',
       'أولوية في خدمة العملاء'
     ],
@@ -52,7 +51,7 @@ const rewardTiers: RewardTier[] = [
     benefits: [
       'نقاط على كل طلب',
       'عروض أسبوعية خاصة',
-      'خصم 5% على الطلبات فوق 75 ريال'
+      'خصم 5% على الطلبات فوق 75 ST'
     ],
     icon: 'star'
   },
@@ -62,7 +61,7 @@ const rewardTiers: RewardTier[] = [
     pointsRequired: 400,
     benefits: [
       'خصم 10% على جميع الطلبات',
-      'توصيل مجاني للطلبات فوق 100 ريال',
+      'توصيل مجاني للطلبات فوق 100 ST',
       'نقاط مضاعفة في المناسبات الخاصة',
       'أولوية في خدمة العملاء'
     ],
@@ -89,7 +88,7 @@ const availableRewards: UserReward[] = [
     id: '1',
     name: 'خصم 25% على طلبك القادم',
     points: 150,
-    description: 'احصل على خصم 25% على أي طلب من أي مطعم (حتى 30 ريال)',
+    description: 'احصل على خصم 25% على أي طلب من أي مطعم (حتى 30 ST)',
     imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&auto=format',
     expiryDate: '2025-06-30',
     type: 'discount'
@@ -98,7 +97,7 @@ const availableRewards: UserReward[] = [
     id: '2',
     name: 'وجبة مجانية',
     points: 300,
-    description: 'طبق رئيسي مجاني من أي من مطاعمنا المميزة (حتى 45 ريال)',
+    description: 'طبق رئيسي مجاني من أي من مطاعمنا المميزة (حتى 45 ST)',
     imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format',
     expiryDate: '2025-06-15',
     type: 'freeItem'
@@ -409,7 +408,7 @@ const RewardsPage: React.FC = () => {
                 </div>
                 <h3 className="text-lg font-semibold mb-2">اطلب الطعام</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  اكسب نقاط على كل طلب طعام من أي مطعم (نقطة لكل ريال)
+                  اكسب نقاط على كل طلب طعام من أي مطعم (نقطة لكل ST)
                 </p>
               </div>
               
