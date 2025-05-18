@@ -8,9 +8,10 @@ interface PaymentButtonProps {
   amount: number;
   productName?: string;
   className?: string;
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | null | undefined;
 }
 
-const PaymentButton = ({ amount, productName, className }: PaymentButtonProps) => {
+const PaymentButton = ({ amount, productName, className, variant = "default" }: PaymentButtonProps) => {
   const { t } = useLanguage();
 
   const handlePayment = () => {
@@ -25,7 +26,8 @@ const PaymentButton = ({ amount, productName, className }: PaymentButtonProps) =
   return (
     <Button 
       onClick={handlePayment} 
-      className={`payment-button ${className}`}
+      className={`payment-button ${className || ""}`}
+      variant={variant}
     >
       <CreditCard className="h-5 w-5 mr-2 rtl:ml-2 rtl:mr-0" />
       {t('payNow')} {amount} ST

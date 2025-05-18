@@ -15,7 +15,14 @@ import AddFoodPage from "./pages/AddFoodPage";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -23,7 +30,7 @@ const App = () => (
       <LanguageProvider>
         <TooltipProvider>
           <Toaster />
-          <Sonner />
+          <Sonner position="top-center" closeButton richColors />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
