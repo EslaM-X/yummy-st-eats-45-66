@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Moon, Wallet, Menu, X, LogIn } from "lucide-react";
+import { ShoppingCart, Moon, Wallet, Menu, X, LogIn, Award } from "lucide-react";
 import { useTheme } from '@/components/theme-provider';
 import {
   NavigationMenu,
@@ -26,6 +26,7 @@ const Header: React.FC = () => {
     { title: "الرئيسية", path: "/" },
     { title: "المطاعم", path: "/restaurants" },
     { title: "المنتجات", path: "/products" },
+    { title: "المكافآت", path: "/rewards" }, // إضافة عنصر المكافآت
     { title: "المحفظة", path: "/wallet" },
   ];
 
@@ -111,6 +112,20 @@ const Header: React.FC = () => {
             >
               <Moon className="h-5 w-5" />
             </Button>
+            
+            <Link to="/rewards">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className={cn(
+                  "relative text-gray-600 dark:text-gray-300 hover:text-yellow-800 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20",
+                  isActive('/rewards') && "bg-yellow-50 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-500"
+                )}
+                aria-label="المكافآت"
+              >
+                <Award className="h-5 w-5" />
+              </Button>
+            </Link>
             
             <Link to="/wallet">
               <Button 
