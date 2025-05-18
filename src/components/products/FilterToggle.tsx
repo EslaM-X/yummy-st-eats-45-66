@@ -2,6 +2,7 @@
 import React from 'react';
 import { Filter, ChevronUp, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FilterToggleProps {
   isFiltersOpen: boolean;
@@ -9,14 +10,16 @@ interface FilterToggleProps {
 }
 
 const FilterToggle: React.FC<FilterToggleProps> = ({ isFiltersOpen, setIsFiltersOpen }) => {
+  const { t } = useLanguage();
+  
   return (
     <Button
       onClick={() => setIsFiltersOpen(!isFiltersOpen)}
       variant="outline"
-      className="flex items-center gap-2"
+      className="flex items-center gap-2 font-cairo"
     >
       <Filter className="h-4 w-4" />
-      فلترة وترتيب
+      {t('filter')}
       {isFiltersOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
     </Button>
   );

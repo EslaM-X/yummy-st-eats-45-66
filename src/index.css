@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -96,6 +97,42 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-cairo;
+  }
+
+  /* RTL specific adjustments */
+  html[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+
+  html[dir="rtl"] .space-x-6 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+
+  /* Language direction utilities */
+  .lang-ar {
+    font-family: 'Cairo', sans-serif;
+  }
+
+  .lang-en {
+    font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  }
+
+  /* Improved hover states */
+  .hover-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Responsive design adjustments */
+  @media (max-width: 640px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+  /* Payment button styles */
+  .payment-button {
+    @apply bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-700 hover:to-yellow-900 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-300;
   }
 }

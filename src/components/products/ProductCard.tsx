@@ -5,19 +5,22 @@ import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { Product } from '@/types';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { t } = useLanguage();
+  
   const handleAddToCart = () => {
-    toast.success(`تمت إضافة ${product.name} إلى سلة التسوق`);
+    toast.success(`${t('added')} ${product.name} ${t('toCart')}`);
   };
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toast.success(`تم ${product.isFavorite ? 'إزالة' : 'إضافة'} ${product.name} ${product.isFavorite ? 'من' : 'إلى'} المفضلة`);
+    toast.success(`${product.isFavorite ? t('removedFromFavorites') : t('addedToFavorites')} ${product.name} ${product.isFavorite ? t('from') : t('to')} ${t('favorite')}`);
   };
 
   return (
@@ -34,12 +37,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="absolute top-3 right-3 flex flex-col gap-2">
           {product.bestseller && (
             <span className="bg-amber-500 text-white text-xs font-bold py-1 px-2 rounded-full shadow-md flex items-center">
-              <Award className="h-3 w-3 mr-1" /> الأكثر مبيعاً
+              <Award className="h-3 w-3 mr-1 rtl:ml-1 rtl:mr-0" /> {t('bestSellers')}
             </span>
           )}
           {product.isNew && (
             <span className="bg-green-500 text-white text-xs font-bold py-1 px-2 rounded-full shadow-md">
-              جديد
+              {t('new')}
             </span>
           )}
         </div>
@@ -47,7 +50,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Discount Badge */}
         {product.discountPercent && (
           <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold py-1 px-2 rounded-full shadow-md flex items-center">
-            <Tag className="h-3 w-3 mr-1" /> خصم {product.discountPercent}%
+            <Tag className="h-3 w-3 mr-1 rtl:ml-1 rtl:mr-0" /> {t('discount')} {product.discountPercent}%
           </span>
         )}
         
@@ -73,14 +76,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <p className="text-sm text-gray-600 dark:text-gray-400">{product.restaurant}</p>
           {product.rating && (
             <div className="flex items-center">
-              <Star className="h-4 w-4 text-amber-500 fill-amber-500 mr-1" />
+              <Star className="h-4 w-4 text-amber-500 fill-amber-500 mr-1 rtl:ml-1 rtl:mr-0" />
               <span className="text-sm font-medium">{product.rating}</span>
             </div>
           )}
         </div>
         
-        <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-1">{product.name}</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">{product.description}</p>
+        <h3 className="text-lg font-bold font-cairo text-gray-800 dark:text-white mb-1">{product.name}</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2 font-cairo">{product.description}</p>
         
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -100,11 +103,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
         
         <Button 
-          className="w-full bg-gradient-to-r from-yellow-700 to-yellow-800 hover:from-yellow-800 hover:to-yellow-900 text-white font-semibold shadow-md"
+          className="w-full bg-gradient-to-r from-yellow-700 to-yellow-800 hover:from-yellow-800 hover:to-yellow-900 text-white font-semibold shadow-md font-cairo"
           onClick={handleAddToCart}
         >
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          أضف للسلة
+          <ShoppingCart className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+          {t('addToCart')}
         </Button>
       </div>
     </div>

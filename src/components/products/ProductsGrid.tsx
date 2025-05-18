@@ -4,6 +4,7 @@ import ProductCard from './ProductCard';
 import { Product } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Package, ArrowDown } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProductsGridProps {
   products: Product[];
@@ -12,6 +13,8 @@ interface ProductsGridProps {
 }
 
 const ProductsGrid: React.FC<ProductsGridProps> = ({ products, isLoading, handleClearFilters }) => {
+  const { t } = useLanguage();
+  
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -41,17 +44,17 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, isLoading, handle
         <div className="inline-block p-4 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
           <Package className="h-10 w-10 text-gray-400" />
         </div>
-        <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
-          لا توجد منتجات متطابقة مع بحثك
+        <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2 font-cairo">
+          {t('noProducts')}
         </h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          يرجى تعديل معايير البحث والمحاولة مرة أخرى
+        <p className="text-gray-600 dark:text-gray-400 mb-6 font-cairo">
+          {t('adjustSearch')}
         </p>
         <Button 
           onClick={handleClearFilters} 
-          className="bg-yellow-800 hover:bg-yellow-900 text-white font-semibold shadow-md"
+          className="bg-yellow-800 hover:bg-yellow-900 text-white font-semibold shadow-md font-cairo"
         >
-          عرض كل المنتجات
+          {t('showAll')}
         </Button>
       </div>
     );
@@ -66,9 +69,9 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, isLoading, handle
     return (
       <div className="mb-12">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center">
-            <Award className="h-5 w-5 mr-2 text-yellow-600" />
-            الأكثر مبيعاً
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center font-cairo">
+            <Award className="h-5 w-5 mr-2 rtl:ml-2 rtl:mr-0 text-yellow-600" />
+            {t('bestSellers')}
           </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -104,8 +107,8 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, isLoading, handle
       {renderTopSelections()}
       
       <div>
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6">
-          كل المنتجات
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6 font-cairo">
+          {t('allProducts')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {products
@@ -120,10 +123,10 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, isLoading, handle
         <div className="flex justify-center mt-8">
           <Button 
             variant="outline"
-            className="border-yellow-800 text-yellow-800 dark:border-yellow-600 dark:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950/20"
+            className="border-yellow-800 text-yellow-800 dark:border-yellow-600 dark:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950/20 font-cairo"
           >
-            تحميل المزيد
-            <ArrowDown className="h-4 w-4 mr-2" />
+            {t('loadMore')}
+            <ArrowDown className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
           </Button>
         </div>
       )}
