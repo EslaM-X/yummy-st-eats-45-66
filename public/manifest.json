@@ -1,0 +1,27 @@
+
+{
+  "name": "ST Eats",
+  "short_name": "ST Eats",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ca8a04",
+  "description": "منصة لطلب الطعام من مطاعم متنوعة",
+  "icons": [
+    {
+      "src": "/lovable-uploads/b1796902-3206-4112-a199-07b14b0b76de.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/lovable-uploads/b1796902-3206-4112-a199-07b14b0b76de.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "dir": "rtl",
+  "lang": "ar",
+  "orientation": "portrait",
+  "categories": ["food", "delivery", "restaurant"]
+}

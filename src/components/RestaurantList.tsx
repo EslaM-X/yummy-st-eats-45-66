@@ -10,7 +10,7 @@ const mockRestaurants: Restaurant[] = [
     cuisine: 'مأكولات شرقية, مشويات',
     rating: 4.5,
     deliveryTime: '25-35 دقيقة',
-    imageUrl: '/lovable-uploads/photo-1506744038136-46273834b3fb.png', // Example image
+    imageUrl: '/lovable-uploads/photo-1506744038136-46273834b3fb.png', 
     isNew: true,
   },
   {
@@ -19,7 +19,7 @@ const mockRestaurants: Restaurant[] = [
     cuisine: 'بيتزا, إيطالي',
     rating: 4.2,
     deliveryTime: '30-40 دقيقة',
-    imageUrl: '/lovable-uploads/photo-1618160702438-9b02ab6515c9.png', // Example image
+    imageUrl: '/lovable-uploads/photo-1618160702438-9b02ab6515c9.png',
     discount: '15%',
   },
   {
@@ -28,7 +28,7 @@ const mockRestaurants: Restaurant[] = [
     cuisine: 'ياباني, سوشي',
     rating: 4.8,
     deliveryTime: '35-45 دقيقة',
-    imageUrl: '/lovable-uploads/photo-1488590528505-98d2b5aba04b.png', // Example image for tech, will be restaurant-like
+    imageUrl: '/lovable-uploads/photo-1472396961693-142e6e269027.png',
   },
    {
     id: '4',
@@ -36,15 +36,15 @@ const mockRestaurants: Restaurant[] = [
     cuisine: 'أمريكي, برجر',
     rating: 4.3,
     deliveryTime: '20-30 دقيقة',
-    imageUrl: '/lovable-uploads/photo-1461749280684-dccba630e2f6.png', // Placeholder
+    imageUrl: '/lovable-uploads/photo-1469041797191-50ace28483c3.png',
   },
 ];
 
 const RestaurantList: React.FC = () => {
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-gray-50 dark:bg-gray-800">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl font-bold text-center text-gray-800 mb-10">
+        <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-10">
           اكتشف أفضل المطاعم
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">

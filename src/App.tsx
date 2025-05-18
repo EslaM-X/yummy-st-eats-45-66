@@ -6,26 +6,33 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import RestaurantsPage from "./pages/RestaurantsPage"; // Import new page
-import ProductsPage from "./pages/ProductsPage"; // Import new page
+import RestaurantsPage from "./pages/RestaurantsPage";
+import ProductsPage from "./pages/ProductsPage";
+import WalletPage from "./pages/WalletPage"; // Import wallet page
+
+// Create theme provider for dark mode
+import { ThemeProvider } from "@/components/theme-provider";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/restaurants" element={<RestaurantsPage />} /> {/* Add restaurants route */}
-          <Route path="/products" element={<ProductsPage />} /> {/* Add products route */}
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider defaultTheme="light" storageKey="st-eats-theme">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/restaurants" element={<RestaurantsPage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/wallet" element={<WalletPage />} /> {/* Add wallet route */}
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
