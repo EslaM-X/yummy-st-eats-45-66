@@ -1,0 +1,81 @@
+
+import React from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+
+const CoreTeamPage: React.FC = () => {
+  const { t, isRTL } = useLanguage();
+
+  return (
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+      <Header />
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-bold text-center mb-12 text-teal-600 dark:text-teal-400">
+              {t('coreTeamTitle')}
+            </h1>
+            
+            <div className="bg-gradient-to-br from-purple-50 to-teal-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-xl overflow-hidden">
+              <div className="p-8 md:p-12">
+                <div className="flex flex-col items-center">
+                  {/* Founder Image with animated border */}
+                  <div className="relative mb-8">
+                    <div className="absolute inset-0 bg-gradient-to-r from-teal-400 via-purple-500 to-yellow-500 rounded-full animate-pulse-slow blur-sm"></div>
+                    <div className="relative p-1 rounded-full bg-white dark:bg-gray-900">
+                      <img 
+                        src="/lovable-uploads/6c2261eb-dadf-4443-972b-0bf6428e6c83.png" 
+                        alt={t('founderImageAlt')} 
+                        className="rounded-full h-48 w-48 object-cover border-4 border-white dark:border-gray-800"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Founder Name */}
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 text-center">
+                    {t('founderName')}
+                  </h2>
+                  
+                  {/* Animated line */}
+                  <div className="w-24 h-1 bg-gradient-to-r from-teal-400 to-purple-600 rounded mb-6"></div>
+                  
+                  {/* Founder Role */}
+                  <div className="inline-flex items-center px-4 py-2 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 font-medium mb-8">
+                    <span className="mr-2">🚀</span>
+                    {t('founderTitle')}
+                  </div>
+                  
+                  {/* Founder Bio */}
+                  <p className={`text-lg leading-relaxed text-gray-700 dark:text-gray-300 mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('founderBio')}
+                  </p>
+                  
+                  {/* Skills/Interests Section */}
+                  <div className="w-full">
+                    <h3 className={`text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {t('interests')}
+                    </h3>
+                    <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                      {['programming', 'blockchain', 'ai', 'web3', 'web5', 'innovation'].map((skill) => (
+                        <span
+                          key={skill}
+                          className="px-3 py-1 rounded-full text-sm font-medium bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200 transition-transform hover:scale-110"
+                        >
+                          {t(`skill${skill.charAt(0).toUpperCase() + skill.slice(1)}`)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default CoreTeamPage;

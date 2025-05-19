@@ -57,6 +57,7 @@
   "termsConditions": "Terms & Conditions",
   "privacyPolicy": "Privacy Policy",
   "cookiePolicy": "Cookie Policy",
+  "coreTeam": "Core Team",
   "facebook": "Facebook",
   "twitter": "Twitter",
   "instagram": "Instagram",
@@ -303,5 +304,18 @@
   "goToAddFood": "Add a new dish",
   "redirectToAddFood": "It seems like you want to add a homemade dish. We'll redirect you to the add food page.",
   "submissionSuccess": "Submission Successful",
-  "restaurantRegistered": "Your restaurant has been successfully registered"
+  "restaurantRegistered": "Your restaurant has been successfully registered",
+  
+  "coreTeamTitle": "Core Team",
+  "founderImageAlt": "Islam Hisham - Founder of ST Eat",
+  "founderName": "Islam Hisham",
+  "founderTitle": "Founder Of ST Eat",
+  "founderBio": "A young Egyptian passionate about technology and innovation. With interests in programming, blockchain technology, artificial intelligence, Web3 and Web5 applications. Ambitious and forward-thinking founder of ST Eat.",
+  "interests": "Areas of Interest",
+  "skillProgramming": "Programming",
+  "skillBlockchain": "Blockchain",
+  "skillAi": "Artificial Intelligence",
+  "skillWeb3": "Web 3.0",
+  "skillWeb5": "Web 5.0",
+  "skillInnovation": "Innovation"
 }

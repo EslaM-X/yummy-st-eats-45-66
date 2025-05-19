@@ -44,6 +44,7 @@ const Footer: React.FC = () => {
                 <li><Link to="/terms-conditions" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('termsConditions')}</Link></li>
                 <li><Link to="/privacy-policy" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('privacyPolicy')}</Link></li>
                 <li><Link to="/cookie-policy" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('cookiePolicy')}</Link></li>
+                <li><Link to="/core-team" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('coreTeam')}</Link></li>
               </ul>
             </div>
             

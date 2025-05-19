@@ -18,6 +18,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import TermsConditionsPage from "./pages/TermsConditionsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import CookiePolicyPage from "./pages/CookiePolicyPage";
+import CoreTeamPage from "./pages/CoreTeamPage";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
@@ -53,6 +54,7 @@ const App = () => (
                 <Route path="/terms-conditions" element={<TermsConditionsPage />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                 <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+                <Route path="/core-team" element={<CoreTeamPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </TooltipProvider>
