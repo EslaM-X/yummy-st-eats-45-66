@@ -27,9 +27,6 @@ const paymentSchema = z.object({
     .refine(val => VirtualCardService.isCardNumberValid(val), {
       message: 'رقم البطاقة غير صالح',
     }),
-  cardHolder: z.string().min(3, { message: 'يجب إدخال اسم حامل البطاقة' }),
-  expiryDate: z.string()
-    .regex(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, { message: 'تاريخ الانتهاء غير صالح (MM/YY)' }),
   cvv: z.string()
     .min(3, { message: 'رمز CVV يجب أن يتكون من 3 أرقام على الأقل' })
     .max(4, { message: 'رمز CVV يجب ألا يتجاوز 4 أرقام' })
@@ -51,8 +48,6 @@ const CheckoutPage: React.FC = () => {
     resolver: zodResolver(paymentSchema),
     defaultValues: {
       cardNumber: '',
-      cardHolder: '',
-      expiryDate: '',
       cvv: '',
     },
   });
@@ -84,16 +79,6 @@ const CheckoutPage: React.FC = () => {
   const handleCardNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCardNumber(event.target.value);
     form.setValue('cardNumber', formattedValue);
-  };
-
-  const handleExpiryDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let value = event.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    
-    if (value.length > 2) {
-      value = `${value.substring(0, 2)}/${value.substring(2, 4)}`;
-    }
-    
-    form.setValue('expiryDate', value);
   };
 
   const handleSubmit = async (values: PaymentFormValues) => {
@@ -179,57 +164,22 @@ const CheckoutPage: React.FC = () => {
                       
                       <FormField
                         control={form.control}
-                        name="cardHolder"
+                        name="cvv"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>اسم حامل البطاقة</FormLabel>
+                            <FormLabel>رمز CVV</FormLabel>
                             <FormControl>
-                              <Input placeholder="الاسم كما هو مدون على البطاقة" {...field} />
+                              <Input 
+                                placeholder="123" 
+                                {...field}
+                                maxLength={4}
+                                type="password"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="expiryDate"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>تاريخ الانتهاء</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  placeholder="MM/YY" 
-                                  {...field}
-                                  onChange={handleExpiryDateChange}
-                                  maxLength={5}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="cvv"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>رمز CVV</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  placeholder="123" 
-                                  {...field}
-                                  maxLength={4}
-                                  type="password"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
                       
                       <Button 
                         type="submit" 

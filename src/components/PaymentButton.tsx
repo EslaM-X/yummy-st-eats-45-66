@@ -4,7 +4,6 @@ import { CreditCard } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { VirtualCardService, PaymentRequest } from '@/services/VirtualCardService';
 import { useNavigate } from 'react-router-dom';
 
 interface PaymentButtonProps {
