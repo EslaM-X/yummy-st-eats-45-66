@@ -108,7 +108,7 @@ const CoreTeamPage: React.FC = () => {
                   {/* Animated line */}
                   <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-teal-600 rounded mb-6"></div>
                   
-                  {/* CTO Role with coding emoji - UPDATED HERE */}
+                  {/* CTO Role with coding emoji */}
                   <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium mb-8">
                     <span className="mr-2">💻</span>
                     {t('ctoTitle')}
@@ -124,6 +124,19 @@ const CoreTeamPage: React.FC = () => {
                     <span className="text-lg font-semibold text-blue-800 dark:text-blue-200">
                       ST🍕 Eat
                     </span>
+                  </div>
+
+                  {/* Added text under ST Pizza Logo */}
+                  <div className="text-gray-700 dark:text-gray-300 mb-6 text-center">
+                    <p>ST🍕 Eat مؤسس ورئيس قسم التكنولوجيا ومطور في 🔗</p>
+                    <a 
+                      href={t('ctoCompanyLink')} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-teal-600 dark:text-teal-400 hover:underline"
+                    >
+                      salla-shop.com
+                    </a>
                   </div>
                   
                   {/* External Link */}
@@ -171,3 +184,4 @@ const CoreTeamPage: React.FC = () => {
 };
 
 export default CoreTeamPage;
+
