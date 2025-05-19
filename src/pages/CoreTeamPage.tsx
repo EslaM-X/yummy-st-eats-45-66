@@ -40,10 +40,22 @@ const CoreTeamPage: React.FC = () => {
                   {/* Animated line */}
                   <div className="w-24 h-1 bg-gradient-to-r from-teal-400 to-purple-600 rounded mb-6"></div>
                   
-                  {/* Founder Role */}
+                  {/* Founder Role with rocket emoji */}
                   <div className="inline-flex items-center px-4 py-2 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 font-medium mb-8">
                     <span className="mr-2">🚀</span>
                     {t('founderTitle')}
+                  </div>
+                  
+                  {/* Pizza Logo Reference */}
+                  <div className="flex items-center justify-center mb-6">
+                    <img 
+                      src="/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png" 
+                      alt="ST Pizza Logo" 
+                      className="h-10 w-10 mr-2"
+                    />
+                    <span className="text-lg font-semibold text-yellow-800 dark:text-yellow-200">
+                      ST🍕 Eat
+                    </span>
                   </div>
                   
                   {/* Founder Bio */}
