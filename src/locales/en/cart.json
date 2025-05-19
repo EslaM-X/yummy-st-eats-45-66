@@ -1,0 +1,13 @@
+
+{
+  "cartEmpty": "Cart is Empty",
+  "noProductsInCart": "You haven't added any products to your cart yet",
+  "browseProducts": "Browse Products",
+  "orderSummary": "Order Summary",
+  "subtotal": "Subtotal",
+  "deliveryFee": "Delivery Fee",
+  "removeFromCart": "Remove from cart",
+  "itemRemovedFromCart": "Item removed from cart",
+  "total": "Total",
+  "checkout": "Checkout"
+}

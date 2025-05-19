@@ -1,0 +1,24 @@
+
+{
+  "bestSellers": "الأكثر مبيعاً",
+  "allProducts": "كل المنتجات",
+  "loadMore": "تحميل المزيد",
+  "noProducts": "لا توجد منتجات متطابقة مع بحثك",
+  "adjustSearch": "يرجى تعديل معايير البحث والمحاولة مرة أخرى",
+  "showAll": "عرض كل المنتجات",
+  "productsPageTitle": "أشهى الأطباق والمنتجات",
+  "productsPageSubtitle": "اكتشف مجموعة متنوعة من الأطباق الشهية المحضرة بعناية من أفضل المطاعم في المدينة، مع خيارات توصيل سريعة",
+  "searchProductsPlaceholder": "ابحث عن منتج أو مطعم...",
+  "categoryFilterLabel": "تصنيف المنتجات",
+  "allCategoriesOption": "جميع التصنيفات",
+  "sortByOptionDefault": "الافتراضي",
+  "sortByOptionPriceAsc": "السعر: من الأقل إلى الأعلى",
+  "sortByOptionPriceDesc": "السعر: من الأعلى إلى الأقل",
+  "sortByOptionNameAsc": "الاسم: أبجدياً",
+  "addToCart": "أضف للسلة",
+  "added": "تمت إضافة",
+  "toCart": "إلى سلة التسوق",
+  "favorite": "المفضلة",
+  "addedToFavorites": "تم إضافة",
+  "removedFromFavorites": "تم إزالة"
+}

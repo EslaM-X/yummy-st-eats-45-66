@@ -1,0 +1,17 @@
+
+{
+  "language": "Language",
+  "english": "English",
+  "arabic": "العربية",
+  "lightMode": "Light Mode",
+  "darkMode": "Dark Mode",
+  "openMenu": "Open Menu",
+  "closeMenu": "Close Menu",
+  "search": "Search",
+  "from": "from",
+  "to": "to",
+  "orderNow": "Order Now",
+  "new": "New",
+  "discount": "Discount",
+  "filter": "Filter and sort"
+}

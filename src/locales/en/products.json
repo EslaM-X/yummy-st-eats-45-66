@@ -1,0 +1,24 @@
+
+{
+  "bestSellers": "Best Sellers",
+  "allProducts": "All Products",
+  "loadMore": "Load More",
+  "noProducts": "No products match your search",
+  "adjustSearch": "Please adjust your search criteria and try again",
+  "showAll": "Show all products",
+  "productsPageTitle": "Most Delicious Dishes and Products",
+  "productsPageSubtitle": "Discover a variety of tasty dishes carefully prepared by the best restaurants in the city, with quick delivery options",
+  "searchProductsPlaceholder": "Search for product or restaurant...",
+  "categoryFilterLabel": "Product Categories",
+  "allCategoriesOption": "All Categories",
+  "sortByOptionDefault": "Default",
+  "sortByOptionPriceAsc": "Price: Low to High",
+  "sortByOptionPriceDesc": "Price: High to Low",
+  "sortByOptionNameAsc": "Name: A-Z",
+  "addToCart": "Add to cart",
+  "added": "Added",
+  "toCart": "to cart",
+  "favorite": "Favorites",
+  "addedToFavorites": "Added",
+  "removedFromFavorites": "Removed"
+}

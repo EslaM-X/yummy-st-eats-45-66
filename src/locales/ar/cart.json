@@ -1,0 +1,13 @@
+
+{
+  "cartEmpty": "السلة فارغة",
+  "noProductsInCart": "لم تقم بإضافة أي منتجات إلى السلة بعد",
+  "browseProducts": "تصفح المنتجات",
+  "orderSummary": "ملخص الطلب",
+  "subtotal": "المجموع الفرعي",
+  "deliveryFee": "رسوم التوصيل",
+  "removeFromCart": "إزالة من السلة",
+  "itemRemovedFromCart": "تم إزالة العنصر من السلة",
+  "total": "المجموع",
+  "checkout": "الدفع"
+}

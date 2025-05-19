@@ -1,7 +1,35 @@
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import arTranslationsFromFile from '@/locales/ar.json';
-import enTranslationsFromFile from '@/locales/en.json';
+
+// Import English translations
+import enCommon from '@/locales/en/common.json';
+import enNavigation from '@/locales/en/navigation.json';
+import enHome from '@/locales/en/home.json';
+import enProducts from '@/locales/en/products.json';
+import enCart from '@/locales/en/cart.json';
+import enPayment from '@/locales/en/payment.json';
+import enRefund from '@/locales/en/refund.json';
+import enRestaurants from '@/locales/en/restaurants.json';
+import enRewards from '@/locales/en/rewards.json';
+import enAddFood from '@/locales/en/add-food.json';
+import enRegisterRestaurant from '@/locales/en/register-restaurant.json';
+import enFooter from '@/locales/en/footer.json';
+import enTeam from '@/locales/en/team.json';
+
+// Import Arabic translations
+import arCommon from '@/locales/ar/common.json';
+import arNavigation from '@/locales/ar/navigation.json';
+import arHome from '@/locales/ar/home.json';
+import arProducts from '@/locales/ar/products.json';
+import arCart from '@/locales/ar/cart.json';
+import arPayment from '@/locales/ar/payment.json';
+import arRefund from '@/locales/ar/refund.json';
+import arRestaurants from '@/locales/ar/restaurants.json';
+import arRewards from '@/locales/ar/rewards.json';
+import arAddFood from '@/locales/ar/add-food.json';
+import arRegisterRestaurant from '@/locales/ar/register-restaurant.json';
+import arFooter from '@/locales/ar/footer.json';
+import arTeam from '@/locales/ar/team.json';
 
 type Language = 'ar' | 'en';
 
@@ -12,10 +40,44 @@ interface LanguageContextType {
   isRTL: boolean;
 }
 
-// Use the imported translations from JSON files
+// Merge all English translations
+const enTranslations = {
+  ...enCommon,
+  ...enNavigation,
+  ...enHome,
+  ...enProducts,
+  ...enCart,
+  ...enPayment,
+  ...enRefund,
+  ...enRestaurants,
+  ...enRewards,
+  ...enAddFood,
+  ...enRegisterRestaurant,
+  ...enFooter,
+  ...enTeam
+};
+
+// Merge all Arabic translations
+const arTranslations = {
+  ...arCommon,
+  ...arNavigation,
+  ...arHome,
+  ...arProducts,
+  ...arCart,
+  ...arPayment,
+  ...arRefund,
+  ...arRestaurants,
+  ...arRewards,
+  ...arAddFood,
+  ...arRegisterRestaurant,
+  ...arFooter,
+  ...arTeam
+};
+
+// Combine translations for all languages
 const allAppTranslations: Record<Language, Record<string, string>> = {
-  ar: arTranslationsFromFile,
-  en: enTranslationsFromFile,
+  ar: arTranslations,
+  en: enTranslations,
 };
 
 export const LanguageContext = createContext<LanguageContextType>({

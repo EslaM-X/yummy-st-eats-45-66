@@ -1,0 +1,16 @@
+
+{
+  "orderIdRequired": "رقم الطلب مطلوب",
+  "amountGreaterThanZero": "يجب أن يكون المبلغ أكبر من 0",
+  "precisionRequired": "دقة الأرقام العشرية المطلوبة هي 5 منازل",
+  "invalidData": "بيانات غير صالحة",
+  "checkOrderIdAmount": "يرجى التأكد من صحة رقم الطلب والمبلغ",
+  "refundSuccess": "تم الاسترداد بنجاح",
+  "refundSuccessDetail": "تم استرداد {amount} ST بنجاح. معرف المعاملة: {id}",
+  "refundFailed": "فشل الاسترداد",
+  "refundProcessError": "حدث خطأ أثناء عملية الاسترداد. يرجى المحاولة مرة أخرى.",
+  "refundDescription": "أدخل المبلغ الذي تريد استرداده لهذا الطلب. سيتم إعادته إلى بطاقة ST الافتراضية الخاصة بك.",
+  "amountST": "المبلغ (ST)",
+  "cancel": "إلغاء",
+  "confirmRefund": "تأكيد الاسترداد"
+}
