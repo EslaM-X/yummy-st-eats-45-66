@@ -199,7 +199,7 @@ const RestaurantList: React.FC = () => {
                 
                 <div>
                   <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('ratingFilterLabel', { ratingValue: ratingDisplayValue })}
+                    {t('ratingFilterLabel')}
                   </h3>
                   <Slider
                     value={[minRating]}

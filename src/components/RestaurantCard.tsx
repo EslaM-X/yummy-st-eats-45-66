@@ -14,7 +14,7 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
   const handleOrderNowClick = () => {
     navigate(`/products?restaurant=${restaurant.id}`); // Assuming you want to filter products by restaurant ID
     toast({
-      title: t('restaurantCardSelectedToast', { restaurantName: restaurant.name }),
+      title: t('restaurantCardSelectedToast'),
       variant: "default",
     });
   };
@@ -74,14 +74,14 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
           </div>
           <div className="flex items-center">
             <MapPin className={`h-3 w-3 sm:h-4 sm:w-4 ${isRTL ? 'ml-1' : 'mr-1'} text-yellow-800 dark:text-yellow-500`} />
-            <span className="text-xs sm:text-sm">{t('restaurantCardDistance', { distance: '1.2', unit: t('restaurantCardKmUnit')})}</span>
+            <span className="text-xs sm:text-sm">{t('restaurantCardDistance')}</span>
           </div>
         </div>
         
         <div className="flex items-center gap-2 mb-4">
           <Coffee className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-800 dark:text-yellow-500" />
           <span className="text-xs text-yellow-800 dark:text-yellow-500 font-medium bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 rounded-full">
-            {t('restaurantCardMinOrder', { value: 20 })}
+            {t('restaurantCardMinOrder')}
           </span>
         </div>
         
