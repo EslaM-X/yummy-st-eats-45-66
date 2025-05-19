@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Moon, Menu, X, Award, Globe } from "lucide-react";
+import { ShoppingCart, Moon, Menu, X, Award, Globe, ChefHat } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
@@ -33,6 +33,21 @@ const HeaderActionButtons: React.FC<HeaderActionButtonsProps> = ({
 
   return (
     <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4 rtl:space-x-reverse">
+      {/* Add Food Button */}
+      <Link to="/add-food">
+        <Button 
+          variant="outline" 
+          size="sm"
+          className={cn(
+            "hidden sm:flex items-center text-sm font-medium bg-gradient-to-r from-yellow-500 to-amber-600 text-white hover:from-yellow-600 hover:to-amber-700 border-none transition-all duration-300 shadow-md hover:shadow-lg",
+            isActive('/add-food') && "bg-yellow-700"
+          )}
+        >
+          <ChefHat className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
+          {t('addYourFood')}
+        </Button>
+      </Link>
+    
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 

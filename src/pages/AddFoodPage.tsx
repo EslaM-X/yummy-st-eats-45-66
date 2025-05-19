@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -333,7 +332,7 @@ const AddFoodPage: React.FC = () => {
 
                       <Button 
                         type="submit" 
-                        className="w-full bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 py-6 text-lg"
+                        className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 py-6 text-lg shadow-md hover:shadow-lg transform transition-all hover:-translate-y-0.5 duration-200"
                       >
                         <Utensils className="mr-2 h-5 w-5" />
                         إضافة الطبق

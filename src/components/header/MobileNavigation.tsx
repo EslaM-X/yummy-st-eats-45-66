@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { LogIn } from "lucide-react";
+import { LogIn, ChefHat } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
+import { Button } from "@/components/ui/button";
 
 interface MobileNavigationProps {
   isOpen: boolean;
@@ -29,6 +30,17 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
   return (
     <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
       <nav className="flex flex-col space-y-3">
+        {/* Add Food Button - Mobile */}
+        <Link to="/add-food" onClick={onItemClick}>
+          <Button 
+            variant="outline" 
+            className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white hover:from-yellow-600 hover:to-amber-700 border-none transition-all duration-300"
+          >
+            <ChefHat className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
+            {t('addYourFood')}
+          </Button>
+        </Link>
+        
         {navItems.map((item) => (
           <Link 
             key={item.path} 
