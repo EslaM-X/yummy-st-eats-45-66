@@ -1,7 +1,57 @@
-
 import { UserPoints, UserReward, RewardTier, PointTransaction } from '@/types';
 
-// Mock user points data
+// نصوص الفوائد وأسماء المستويات كـ "مفاتيح ترجمة" (بصيغة tKey)
+export const rewardTiers: RewardTier[] = [
+  {
+    id: 'bronze',
+    name: 'rewardTierBronze',
+    pointsRequired: 0,
+    benefits: [
+      'rewardTierBronzeBenefit1',
+      'rewardTierBronzeBenefit2',
+    ],
+    icon: 'star'
+  },
+  {
+    id: 'silver',
+    name: 'rewardTierSilver',
+    pointsRequired: 200,
+    benefits: [
+      'rewardTierSilverBenefit1',
+      'rewardTierSilverBenefit2',
+      'rewardTierSilverBenefit3',
+    ],
+    icon: 'star'
+  },
+  {
+    id: 'gold',
+    name: 'rewardTierGold',
+    pointsRequired: 400,
+    benefits: [
+      'rewardTierGoldBenefit1',
+      'rewardTierGoldBenefit2',
+      'rewardTierGoldBenefit3',
+      'rewardTierGoldBenefit4'
+    ],
+    icon: 'award'
+  },
+  {
+    id: 'platinum',
+    name: 'rewardTierPlatinum',
+    pointsRequired: 1000,
+    benefits: [
+      'rewardTierPlatinumBenefit1',
+      'rewardTierPlatinumBenefit2',
+      'rewardTierPlatinumBenefit3',
+      'rewardTierPlatinumBenefit4',
+      'rewardTierPlatinumBenefit5',
+      'rewardTierPlatinumBenefit6'
+    ],
+    icon: 'award'
+  }
+];
+
+// تعديل userPoints لاستخدام مفتاح الترجمة بدلاً من الاسم العربي
 export const mockUserPoints: UserPoints = {
   total: 420,
   history: [
@@ -13,68 +63,17 @@ export const mockUserPoints: UserPoints = {
   ],
   tier: {
     id: 'gold',
-    name: 'المستوى الذهبي',
+    name: 'rewardTierGold',
     pointsRequired: 400,
     benefits: [
-      'خصم 10% على جميع الطلبات',
-      'توصيل مجاني للطلبات فوق 100 ST',
-      'نقاط مضاعفة في المناسبات الخاصة',
-      'أولوية في خدمة العملاء'
+      'rewardTierGoldBenefit1',
+      'rewardTierGoldBenefit2',
+      'rewardTierGoldBenefit3',
+      'rewardTierGoldBenefit4'
     ],
     icon: 'award'
   }
 };
-
-// Reward tiers data
-export const rewardTiers: RewardTier[] = [
-  {
-    id: 'bronze',
-    name: 'المستوى البرونزي',
-    pointsRequired: 0,
-    benefits: [
-      'نقاط على كل طلب',
-      'عروض أسبوعية خاصة'
-    ],
-    icon: 'star'
-  },
-  {
-    id: 'silver',
-    name: 'المستوى الفضي',
-    pointsRequired: 200,
-    benefits: [
-      'نقاط على كل طلب',
-      'عروض أسبوعية خاصة',
-      'خصم 5% على الطلبات فوق 75 ST'
-    ],
-    icon: 'star'
-  },
-  {
-    id: 'gold',
-    name: 'المستوى الذهبي',
-    pointsRequired: 400,
-    benefits: [
-      'خصم 10% على جميع الطلبات',
-      'توصيل مجاني للطلبات فوق 100 ST',
-      'نقاط مضاعفة في المناسبات الخاصة',
-      'أولوية في خدمة العملاء'
-    ],
-    icon: 'award'
-  },
-  {
-    id: 'platinum',
-    name: 'المستوى البلاتيني',
-    pointsRequired: 1000,
-    benefits: [
-      'خصم 15% على جميع الطلبات',
-      'توصيل مجاني بدون حد أدنى',
-      'نقاط مضاعفة دائماً',
-      'أولوية قصوى في خدمة العملاء',
-      'هدية عيد ميلاد سنوية',
-      'دعوات لفعاليات حصرية'
-    ],
-    icon: 'award'
-  }
-];
 
 // Available rewards data
 export const availableRewards: UserReward[] = [

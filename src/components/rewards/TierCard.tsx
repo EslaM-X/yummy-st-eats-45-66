@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Award, Star } from "lucide-react";
 import { RewardTier } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TierCardProps {
   tier: RewardTier;
@@ -10,6 +11,8 @@ interface TierCardProps {
 }
 
 const TierCard: React.FC<TierCardProps> = ({ tier, isCurrentTier }) => {
+  const { t, language } = useLanguage();
+
   const renderTierIcon = (iconName: string) => {
     if (iconName === 'award') {
       return <Award className="h-6 w-6 text-yellow-500" />;
@@ -30,16 +33,16 @@ const TierCard: React.FC<TierCardProps> = ({ tier, isCurrentTier }) => {
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center">
             {renderTierIcon(tier.icon)}
-            <span className="mr-2">{tier.name}</span>
+            <span className="mr-2">{t(tier.name)}</span>
           </CardTitle>
           {isCurrentTier && (
             <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
-              مستواك الحالي
+              {t("currentTierLabel")}
             </span>
           )}
         </div>
         <CardDescription className="text-lg font-semibold mt-2">
-          {tier.pointsRequired} نقطة
+          {tier.pointsRequired} {t("pointsUnit")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -51,7 +54,7 @@ const TierCard: React.FC<TierCardProps> = ({ tier, isCurrentTier }) => {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </div>
-              <span className="text-sm">{benefit}</span>
+              <span className="text-sm">{t(benefit)}</span>
             </li>
           ))}
         </ul>
