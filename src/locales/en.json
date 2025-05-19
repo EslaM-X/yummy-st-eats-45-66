@@ -1,4 +1,3 @@
-
 {
   "home": "Home",
   "deliverySlogan": "Delicious food delivered wherever you are!",
@@ -241,7 +240,7 @@
   
   "completePayment": "Complete Payment",
   "paymentSuccessful": "Payment Successful",
-  "orderCompletedMessage": "Your order #${orderId} has been completed successfully",
+  "orderCompletedMessage": "Your order has been completed successfully",
   "enterCardDetails": "Enter card details to complete your order",
   "orderDetails": "Order Details",
   "orderNumber": "Order Number",
@@ -260,5 +259,19 @@
   "cvvCode": "CVV Code",
   "processing": "Processing",
   "transactionId": "Transaction ID",
-  "paymentProcessError": "An error occurred while processing your payment"
+  "paymentProcessError": "An error occurred while processing your payment",
+  
+  "orderIdRequired": "Order ID is required",
+  "amountGreaterThanZero": "Amount must be greater than 0",
+  "precisionRequired": "Required precision is 5 decimal places",
+  "invalidData": "Invalid Data",
+  "checkOrderIdAmount": "Please ensure order ID and amount are entered correctly",
+  "refundSuccess": "Refund Successful",
+  "refundSuccessDetail": "Successfully refunded {amount} ST. Transaction ID: {id}",
+  "refundFailed": "Refund Failed",
+  "refundProcessError": "An error occurred during the refund process. Please try again.",
+  "refundDescription": "Enter the amount to refund for this order. It will be refunded to your ST virtual card.",
+  "amountST": "Amount (ST)",
+  "cancel": "Cancel",
+  "confirmRefund": "Confirm Refund"
 }

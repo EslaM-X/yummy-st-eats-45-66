@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { VirtualCardService } from '@/services/VirtualCardService';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Dialog,
   DialogContent,
@@ -16,24 +17,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-
-// نموذج التحقق لمعاملة الاسترداد
-const refundSchema = z.object({
-  order_id: z.number().min(1, "رقم الطلب مطلوب"),
-  amount: z.coerce.number()
-    .min(1, "المبلغ يجب أن يكون أكبر من 0")
-    .multipleOf(0.00001, "الدقة المطلوبة هي 5 أرقام عشرية")
-});
-
-type RefundFormValues = z.infer<typeof refundSchema>;
-
-interface RefundDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  orderId: number;
-  amount: number;
-  onSuccess?: () => void;
-}
 
 const RefundDialog: React.FC<RefundDialogProps> = ({
   open,
@@ -44,6 +27,17 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
+
+  // Refund validation schema with translations
+  const refundSchema = z.object({
+    order_id: z.number().min(1, t('orderIdRequired')),
+    amount: z.coerce.number()
+      .min(1, t('amountGreaterThanZero'))
+      .multipleOf(0.00001, t('precisionRequired'))
+  });
+
+  type RefundFormValues = z.infer<typeof refundSchema>;
 
   const form = useForm<RefundFormValues>({
     resolver: zodResolver(refundSchema),
@@ -56,8 +50,8 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
   const handleRefund = async (values: RefundFormValues) => {
     if (!values.order_id || values.amount <= 0) {
       toast({
-        title: "بيانات غير صالحة",
-        description: "يرجى التأكد من إدخال رقم الطلب والمبلغ بشكل صحيح",
+        title: t('invalidData'),
+        description: t('checkOrderIdAmount'),
         variant: "destructive",
       });
       return;
@@ -65,18 +59,18 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
 
     setLoading(true);
     try {
-      // تنسيق البيانات للواجهة البرمجية
+      // Format data for API
       const refundData = {
         order_id: values.order_id,
         amount: Number(values.amount.toFixed(5))
       };
       
-      // إرسال طلب الاسترداد
+      // Send refund request
       const response = await VirtualCardService.createRefundTransaction(refundData);
       
       toast({
-        title: "تم الاسترداد بنجاح",
-        description: `تم استرداد ${values.amount} ST بنجاح. معرف المعاملة: REF-${response.refund_txn_id}`,
+        title: t('refundSuccess'),
+        description: t('refundSuccessDetail', { amount: values.amount, id: `REF-${response.refund_txn_id}` }),
       });
       
       form.reset();
@@ -84,8 +78,8 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
       if (onSuccess) onSuccess();
     } catch (error) {
       toast({
-        title: "فشل الاسترداد",
-        description: error instanceof Error ? error.message : "حدث خطأ أثناء معالجة عملية الاسترداد. يرجى المحاولة مرة أخرى.",
+        title: t('refundFailed'),
+        description: error instanceof Error ? error.message : t('refundProcessError'),
         variant: "destructive",
       });
     } finally {
@@ -97,9 +91,9 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>طلب استرداد</DialogTitle>
+          <DialogTitle>{t('requestRefund')}</DialogTitle>
           <DialogDescription>
-            أدخل المبلغ المراد استرداده لهذا الطلب. سيتم استرداده إلى بطاقة ST الافتراضية.
+            {t('refundDescription')}
           </DialogDescription>
         </DialogHeader>
         
@@ -110,7 +104,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
               name="order_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>رقم الطلب</FormLabel>
+                  <FormLabel>{t('orderNumber')}</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -133,7 +127,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>المبلغ (ST)</FormLabel>
+                  <FormLabel>{t('amountST')}</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -154,10 +148,10 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
             
             <DialogFooter className="mt-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-                إلغاء
+                {t('cancel')}
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? 'جارٍ المعالجة...' : 'تأكيد الاسترداد'}
+                {loading ? t('processing') : t('confirmRefund')}
               </Button>
             </DialogFooter>
           </form>
@@ -166,5 +160,13 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
     </Dialog>
   );
 };
+
+interface RefundDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  orderId: number;
+  amount: number;
+  onSuccess?: () => void;
+}
 
 export default RefundDialog;
