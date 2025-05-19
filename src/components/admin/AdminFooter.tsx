@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const AdminFooter: React.FC = () => {
   return (
@@ -9,15 +10,15 @@ const AdminFooter: React.FC = () => {
           &copy; {new Date().getFullYear()} ST Eats. جميع الحقوق محفوظة
         </p>
         <div className="flex gap-4">
-          <a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
+          <Link to="/privacy-policy" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
             سياسة الخصوصية
-          </a>
-          <a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
+          </Link>
+          <Link to="/terms-conditions" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
             الشروط والأحكام
-          </a>
-          <a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
+          </Link>
+          <Link to="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
             المساعدة
-          </a>
+          </Link>
         </div>
       </div>
     </footer>

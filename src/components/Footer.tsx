@@ -61,9 +61,6 @@ const Footer: React.FC = () => {
             <p>
               &copy; {currentYear} ST Eats. {t('allRightsReserved')}
             </p>
-             <p className="text-xs mt-2">
-              {t('createdBy')} Lovable.
-            </p>
           </div>
         </div>
       </div>
