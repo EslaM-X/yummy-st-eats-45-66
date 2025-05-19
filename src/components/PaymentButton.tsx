@@ -5,14 +5,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { VirtualCardService, PaymentRequest } from '@/services/VirtualCardService';
+import { useNavigate } from 'react-router-dom';
 
 interface PaymentButtonProps {
   amount: number;
   productName?: string;
   className?: string;
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | null | undefined;
-  cardNumber?: string;
-  cvv?: string;
+  cartItems?: any[];
 }
 
 const PaymentButton = ({ 
@@ -20,52 +20,28 @@ const PaymentButton = ({
   productName, 
   className, 
   variant = "default",
-  cardNumber,
-  cvv
+  cartItems = []
 }: PaymentButtonProps) => {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handlePayment = async () => {
-    // إذا لم يتم توفير معلومات بطاقة، استخدم الشكل القديم
-    if (!cardNumber || !cvv) {
-      toast({
-        title: `${t('paymentSuccess')}: ${amount} ST`,
-        variant: "default",
-      });
-      return;
-    }
-    
-    // إذا تم توفير معلومات البطاقة، استخدم API
-    setLoading(true);
-    
-    try {
-      // إنشاء طلب دفع
-      const paymentData: PaymentRequest = {
-        card_number: cardNumber.replace(/\s+/g, ''),
-        cvv: cvv,
-        amount: Number(amount.toFixed(5)),
-        order_id: Math.floor(Math.random() * 10000) // إنشاء معرف طلب عشوائي للعرض
-      };
-      
-      // إرسال الطلب
-      const response = await VirtualCardService.createPaymentTransaction(paymentData);
-      
-      toast({
-        title: `${t('paymentSuccess')}: ${amount} ST`,
-        description: `معرف المعاملة: ${response.transaction_id}`,
-        variant: "default",
-      });
-    } catch (error) {
-      toast({
-        title: `${t('paymentFailed')}`,
-        description: error instanceof Error ? error.message : "حدث خطأ أثناء معالجة المعاملة",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handlePayment = () => {
+    // انتقل إلى صفحة الدفع مع تمرير معلومات المنتج
+    navigate('/checkout', { 
+      state: { 
+        amount: amount,
+        cartItems: cartItems.length ? cartItems : [
+          {
+            id: Math.random().toString(36).substring(7),
+            name: productName || 'منتج',
+            price: amount,
+            quantity: 1
+          }
+        ]
+      } 
+    });
   };
 
   return (

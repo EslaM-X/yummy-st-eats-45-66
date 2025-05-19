@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Trash2, Plus, Minus } from "lucide-react";
 import { toast } from 'sonner';
 
 const CartPage: React.FC = () => {
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = React.useState([
     { 
       id: 1, 
@@ -62,7 +63,13 @@ const CartPage: React.FC = () => {
   };
 
   const handleCheckout = () => {
-    toast.success('تم إرسال طلبك بنجاح!');
+    // انتقل إلى صفحة الدفع مع تمرير معلومات السلة
+    navigate('/checkout', { 
+      state: { 
+        amount: calculateTotal() + 15, // المجموع + رسوم التوصيل
+        cartItems 
+      } 
+    });
   };
 
   return (
@@ -154,7 +161,7 @@ const CartPage: React.FC = () => {
                       onClick={handleCheckout}
                       className="w-full bg-yellow-800 hover:bg-yellow-900 text-white py-3 mt-4 font-medium"
                     >
-                      إتمام الطلب
+                      متابعة الدفع
                     </Button>
                   </div>
                 </div>

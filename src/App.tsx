@@ -8,8 +8,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RestaurantsPage from "./pages/RestaurantsPage";
 import ProductsPage from "./pages/ProductsPage";
-import WalletPage from "./pages/WalletPage";
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
 import RewardsPage from "./pages/RewardsPage";
 import AddFoodPage from "./pages/AddFoodPage";
 import RegisterRestaurantPage from "./pages/RegisterRestaurantPage";
@@ -38,8 +38,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/restaurants" element={<RestaurantsPage />} />
               <Route path="/products" element={<ProductsPage />} />
-              <Route path="/wallet" element={<WalletPage />} />
               <Route path="/cart" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/rewards" element={<RewardsPage />} />
               <Route path="/add-food" element={<AddFoodPage />} />
               <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
