@@ -26,6 +26,7 @@ const CheckoutPage: React.FC = () => {
   
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
+  const [refundProcessed, setRefundProcessed] = useState(false);
 
   // Redirect to cart if no information was passed
   useEffect(() => {
@@ -37,6 +38,13 @@ const CheckoutPage: React.FC = () => {
   // Payment success handler
   const handlePaymentSuccess = () => {
     setPaymentComplete(true);
+    // Store the order information in localStorage for persistence
+    localStorage.setItem('lastCompletedOrder', JSON.stringify({
+      orderId,
+      amount,
+      date: new Date().toISOString(),
+      items: cartItems
+    }));
   };
 
   // Refund request handler
@@ -46,10 +54,15 @@ const CheckoutPage: React.FC = () => {
 
   // Refund success handler
   const handleRefundSuccess = () => {
+    setRefundProcessed(true);
+    
     toast({
       title: t('refundCompleted'),
       description: t('redirectingToHome'),
     });
+    
+    // Remove the completed order from storage since it's been refunded
+    localStorage.removeItem('lastCompletedOrder');
     
     // Wait a moment before redirecting
     setTimeout(() => {
@@ -102,8 +115,16 @@ const CheckoutPage: React.FC = () => {
                     </div>
                     <div className="flex justify-between py-2">
                       <span className="text-gray-600 dark:text-gray-400">{t('orderStatus')}:</span>
-                      <span className="font-medium text-green-600 dark:text-green-400">{t('completed')}</span>
+                      <span className="font-medium text-green-600 dark:text-green-400">
+                        {refundProcessed ? t('refunded') : t('completed')}
+                      </span>
                     </div>
+                    {refundProcessed && (
+                      <div className="flex justify-between py-2">
+                        <span className="text-gray-600 dark:text-gray-400">{t('refundStatus')}:</span>
+                        <span className="font-medium text-amber-600 dark:text-amber-400">{t('processed')}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -115,7 +136,7 @@ const CheckoutPage: React.FC = () => {
                 amount={amount}
                 orderId={orderId}
                 onRefundClick={handleRefundRequest}
-                paymentComplete={paymentComplete}
+                paymentComplete={paymentComplete && !refundProcessed}
               />
             </div>
           </div>

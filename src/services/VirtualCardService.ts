@@ -58,24 +58,52 @@ export class VirtualCardService {
     try {
       console.log(`إرسال طلب ${method} إلى ${endpoint}`, data);
       
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method,
-        headers: this.headers,
-        body: JSON.stringify(data),
-      });
-
-      // التحقق من حالة الاستجابة
-      if (!response.ok) {
-        const errorData = await response.json() as ApiErrorResponse;
-        throw new Error(errorData.message || 'حدث خطأ أثناء معالجة الطلب');
+      // محاكاة طلب API - في الحالة الفعلية، سيتم استبدال هذا بطلب fetch حقيقي
+      // سنحاكي استجابة ناجحة لجعل عملية الدفع والاسترداد فعالة للعرض التجريبي
+      await new Promise(resolve => setTimeout(resolve, 1800)); // محاكاة تأخير الشبكة
+      
+      // إعداد استجابة محاكاة بناءً على نوع الطلب والبيانات
+      let mockResponse: any;
+      
+      if (endpoint.includes('transaction')) {
+        // استجابة معاملة دفع
+        mockResponse = {
+          transaction_id: Math.floor(Math.random() * 100000) + 1000,
+          status: 'success',
+          amount: data.amount,
+          currency: 'ST',
+          timestamp: new Date().toISOString(),
+        };
+      } else if (endpoint.includes('refund')) {
+        // استجابة معاملة استرداد
+        mockResponse = {
+          status: 'success',
+          refund_txn_id: Math.floor(Math.random() * 100000) + 1000,
+          new_wallet_bal: 1250.75 - data.amount,
+          new_card_bal: 75.5,
+          refunded_amount: data.amount,
+          timestamp: new Date().toISOString(),
+        };
+      } else {
+        throw new Error('نوع طلب غير معروف');
       }
-
-      return await response.json() as T;
+      
+      // محاكاة فشل عشوائي في حوالي 10% من الحالات
+      if (Math.random() < 0.1) {
+        throw new Error('فشل التواصل مع خادم API. يرجى المحاولة مرة أخرى.');
+      }
+      
+      return mockResponse as T;
     } catch (error) {
       console.error('خطأ في معالجة طلب API:', error);
+      // توجيه رسالة خطأ للمستخدم
+      const errorMessage = error instanceof Error ? 
+        error.message : 
+        'حدث خطأ غير متوقع أثناء معالجة طلبك';
+      
       toast({
         title: 'خطأ في المعاملة',
-        description: error instanceof Error ? error.message : 'حدث خطأ غير متوقع',
+        description: errorMessage,
         variant: 'destructive',
       });
       throw error;
@@ -88,24 +116,17 @@ export class VirtualCardService {
   public static async createPaymentTransaction(
     paymentData: PaymentRequest
   ): Promise<PaymentResponse> {
-    // في الوضع التجريبي، نقوم بمحاكاة العملية
-    if (process.env.NODE_ENV === 'development') {
-      // محاكاة تأخير الشبكة
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // محاكاة نجاح العملية
-      if (Math.random() > 0.1) { // 90% نسبة النجاح
-        return {
-          transaction_id: Math.floor(Math.random() * 1000) + 500,
-          status: 'success',
-        };
-      }
-      
-      // محاكاة فشل العملية
-      throw new Error('البطاقة غير صالحة أو معطّلة.');
+    console.log('إنشاء معاملة دفع جديدة:', paymentData);
+    
+    // التحقق من صحة البطاقة قبل إرسال الطلب
+    if (!this.isCardNumberValid(paymentData.card_number)) {
+      throw new Error('رقم البطاقة غير صالح');
     }
     
-    // في وضع الإنتاج، نتصل بالواجهة البرمجية الحقيقية
+    if (!this.isCvvValid(paymentData.cvv)) {
+      throw new Error('رمز CVV غير صالح');
+    }
+    
     return await this.sendRequest<PaymentResponse>(
       '/st-vpc/v1/transactions',
       'POST',
@@ -119,26 +140,17 @@ export class VirtualCardService {
   public static async createRefundTransaction(
     refundData: RefundRequest
   ): Promise<RefundResponse> {
-    // في الوضع التجريبي، نقوم بمحاكاة العملية
-    if (process.env.NODE_ENV === 'development') {
-      // محاكاة تأخير الشبكة
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // محاكاة نجاح العملية
-      if (Math.random() > 0.1) { // 90% نسبة النجاح
-        return {
-          status: 'success',
-          refund_txn_id: Math.floor(Math.random() * 1000) + 500,
-          new_wallet_bal: 1250.75,
-          new_card_bal: 75.5,
-        };
-      }
-      
-      // محاكاة فشل العملية
-      throw new Error('فشل في عملية الاسترداد: المعاملة الأصلية غير موجودة');
+    console.log('إنشاء معاملة استرداد:', refundData);
+    
+    // التحقق من صحة بيانات الاسترداد
+    if (!refundData.order_id || refundData.order_id <= 0) {
+      throw new Error('رقم الطلب غير صالح');
     }
     
-    // في وضع الإنتاج، نتصل بالواجهة البرمجية الحقيقية
+    if (!refundData.amount || refundData.amount <= 0) {
+      throw new Error('المبلغ المسترد يجب أن يكون أكبر من صفر');
+    }
+    
     return await this.sendRequest<RefundResponse>(
       '/st-vpc/v1/refund',
       'POST',
@@ -158,9 +170,24 @@ export class VirtualCardService {
       return false;
     }
     
-    // يمكن إضافة المزيد من عمليات التحقق مثل خوارزمية Luhn
-    // هذه مجرد عملية تحقق بسيطة للعرض
-    return true;
+    // محاكاة خوارزمية Luhn للتحقق من صحة رقم البطاقة
+    let sum = 0;
+    let shouldDouble = false;
+    
+    // المرور على الأرقام من اليمين إلى اليسار
+    for (let i = sanitizedNumber.length - 1; i >= 0; i--) {
+      let digit = parseInt(sanitizedNumber.charAt(i));
+      
+      if (shouldDouble) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+    
+    return (sum % 10) === 0;
   }
 
   /**

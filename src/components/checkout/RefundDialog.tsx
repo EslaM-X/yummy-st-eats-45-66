@@ -35,6 +35,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
     amount: z.coerce.number()
       .min(1, t('amountGreaterThanZero'))
       .multipleOf(0.00001, t('precisionRequired'))
+      .max(amount, t('amountCannotExceedTotal'))
   });
 
   type RefundFormValues = z.infer<typeof refundSchema>;
@@ -68,10 +69,10 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
       // Send refund request
       const response = await VirtualCardService.createRefundTransaction(refundData);
       
-      // Fix: Use template literals for string interpolation instead of passing multiple arguments to t()
+      // Use template literals for string interpolation
       toast({
         title: t('refundSuccess'),
-        description: t('refundSuccessDetail').replace('{amount}', values.amount.toString()).replace('{id}', `REF-${response.refund_txn_id}`),
+        description: `${t('amount')}: ${values.amount} ST, ${t('refundId')}: REF-${response.refund_txn_id}`,
       });
       
       form.reset();
@@ -138,7 +139,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
                       {...field}
                       onChange={(e) => {
                         const value = parseFloat(e.target.value);
-                        field.onChange(isNaN(value) ? 0 : value);
+                        field.onChange(isNaN(value) ? 0 : Math.min(value, amount));
                       }}
                     />
                   </FormControl>

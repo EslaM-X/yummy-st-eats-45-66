@@ -12,6 +12,7 @@ import { VirtualCardService } from '@/services/VirtualCardService';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCart } from '@/contexts/CartContext';
 
 const paymentSchema = z.object({
   cardNumber: z.string()
@@ -47,6 +48,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { t, language } = useLanguage();
+  const { clearCart } = useCart(); // Add clearCart from useCart hook
   
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
@@ -96,6 +98,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         title: t('paymentSuccessful'),
         description: `${t('transactionId')}: ${response.transaction_id}`,
       });
+      
+      // Clear the cart after successful payment
+      clearCart();
       
       // Call success function if it exists
       if (onSuccess) {
