@@ -3,17 +3,18 @@ import React from 'react';
 import { Restaurant } from '@/types';
 import { useNavigate } from 'react-router-dom';
 import { Star, Clock, ArrowRight, MapPin, Coffee } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast'; // Changed from '@/hooks/use-toast' to a more common pattern
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) => {
   const navigate = useNavigate();
   const { t, isRTL } = useLanguage();
+  const { toast } = useToast(); // Corrected hook usage
 
   const handleOrderNowClick = () => {
-    navigate(`/products`);
+    navigate(`/products?restaurant=${restaurant.id}`); // Assuming you want to filter products by restaurant ID
     toast({
-      title: isRTL ? `تم اختيار ${restaurant.name}` : `Selected ${restaurant.name}`,
+      title: t('restaurantCardSelectedToast', { restaurantName: restaurant.name }),
       variant: "default",
     });
   };
@@ -36,16 +37,17 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
           loading="lazy"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
+            // Fallback image can also be localized if needed, or use a generic one
             target.src = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80&txt=Restaurant+Image";
           }}
         />
         {restaurant.isNew && (
-          <span className="absolute top-3 right-3 bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+          <span className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm`}>
             {t('new')}
           </span>
         )}
         {restaurant.discount && (
-          <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+          <span className={`absolute top-3 ${isRTL ? 'right-3' : 'left-3'} bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm`}>
             {t('discount')} {restaurant.discount}
           </span>
         )}
@@ -72,14 +74,14 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
           </div>
           <div className="flex items-center">
             <MapPin className={`h-3 w-3 sm:h-4 sm:w-4 ${isRTL ? 'ml-1' : 'mr-1'} text-yellow-800 dark:text-yellow-500`} />
-            <span className="text-xs sm:text-sm">1.2 {isRTL ? 'كم' : 'km'}</span>
+            <span className="text-xs sm:text-sm">{t('restaurantCardDistance', { distance: '1.2', unit: t('restaurantCardKmUnit')})}</span>
           </div>
         </div>
         
         <div className="flex items-center gap-2 mb-4">
           <Coffee className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-800 dark:text-yellow-500" />
           <span className="text-xs text-yellow-800 dark:text-yellow-500 font-medium bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 rounded-full">
-            {isRTL ? 'الحد الأدنى للطلب 20 ST' : 'Min order 20 ST'}
+            {t('restaurantCardMinOrder', { value: 20 })}
           </span>
         </div>
         
@@ -87,7 +89,7 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
           onClick={handleOrderNowClick}
           className="w-full bg-gradient-to-r from-yellow-700 to-yellow-800 hover:from-yellow-800 hover:to-yellow-900 text-white font-semibold py-2 sm:py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg text-xs sm:text-sm">
           {t('orderNow')}
-          <ArrowRight className={`h-3 w-3 sm:h-4 sm:w-4 ${isRTL ? 'mr-2 rtl:rotate-180' : 'ml-2'}`} />
+          <ArrowRight className={`h-3 w-3 sm:h-4 sm:w-4 ${isRTL ? 'mr-2 rtl:rotate-180' : 'ml-2 ltr:rotate-0'}`} />
         </button>
       </div>
     </div>

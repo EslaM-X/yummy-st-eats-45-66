@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Restaurant } from '@/types';
 import RestaurantCard from './RestaurantCard';
@@ -13,6 +12,7 @@ import {
   CardTitle, 
   CardDescription 
 } from "@/components/ui/card";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const mockRestaurants: Restaurant[] = [
   {
@@ -67,6 +67,7 @@ const mockRestaurants: Restaurant[] = [
 ];
 
 const RestaurantList: React.FC = () => {
+  const { t, isRTL } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [cuisineFilter, setCuisineFilter] = useState<string>('');
   const [minRating, setMinRating] = useState<number>(0);
@@ -78,15 +79,21 @@ const RestaurantList: React.FC = () => {
   
   // Get unique cuisines for filter
   const allCuisines = mockRestaurants
-    .flatMap(restaurant => restaurant.cuisine.split(', '))
-    .filter((cuisine, index, self) => self.indexOf(cuisine) === index);
+    .flatMap(restaurant => restaurant.cuisine.split(', ').map(c => c.trim()))
+    .filter((cuisine, index, self) => self.indexOf(cuisine) === index && cuisine !== '');
   
   // Apply filters when any filter changes
   useEffect(() => {
     let filtered = mockRestaurants.filter(restaurant => {
-      const matchesSearch = restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            restaurant.cuisine.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            (restaurant.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
+      const nameForSearch = restaurant.name; // Assuming name is always available and could be in Arabic or English
+      const cuisineForSearch = restaurant.cuisine;
+      const descriptionForSearch = restaurant.description || "";
+
+      const searchTermLower = searchTerm.toLowerCase();
+      
+      const matchesSearch = nameForSearch.toLowerCase().includes(searchTermLower) || 
+                            cuisineForSearch.toLowerCase().includes(searchTermLower) ||
+                            descriptionForSearch.toLowerCase().includes(searchTermLower);
       
       const matchesCuisine = cuisineFilter === '' || restaurant.cuisine.includes(cuisineFilter);
       const matchesRating = restaurant.rating >= minRating;
@@ -102,23 +109,25 @@ const RestaurantList: React.FC = () => {
         filtered = filtered.sort((a, b) => b.rating - a.rating);
         break;
       case 'name':
-        filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
+        // localeCompare handles sorting for different languages appropriately
+        filtered = filtered.sort((a, b) => a.name.localeCompare(b.name, isRTL ? 'ar' : 'en'));
         break;
       case 'deliveryTime':
         filtered = filtered.sort((a, b) => {
-          const aTime = parseInt(a.deliveryTime.split('-')[0]);
-          const bTime = parseInt(b.deliveryTime.split('-')[0]);
+          const extractTime = (timeStr: string) => parseInt(timeStr.match(/\d+/)?.[0] || '999');
+          const aTime = extractTime(a.deliveryTime);
+          const bTime = extractTime(b.deliveryTime);
           return aTime - bTime;
         });
         break;
       case 'recommended':
       default:
-        // Keep original order
+        // Keep original order or apply a default recommendation logic if available
         break;
     }
     
     setFilteredRestaurants(filtered);
-  }, [searchTerm, cuisineFilter, minRating, showNewOnly, showDiscountOnly, sortBy]);
+  }, [searchTerm, cuisineFilter, minRating, showNewOnly, showDiscountOnly, sortBy, isRTL]);
   
   const resetFilters = () => {
     setSearchTerm('');
@@ -129,6 +138,8 @@ const RestaurantList: React.FC = () => {
     setSortBy('recommended');
   };
 
+  const ratingDisplayValue = minRating > 0 ? `${minRating}+` : t('ratingFilterAll');
+
   return (
     <section className="py-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -137,13 +148,13 @@ const RestaurantList: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <div className="relative flex-grow">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Search className={`absolute top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 ${isRTL ? 'right-3' : 'left-3'}`} />
                 <Input 
                   type="text"
-                  placeholder="ابحث عن مطعم أو نوع طعام..."
+                  placeholder={t('searchRestaurantPlaceholderRList')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full"
+                  className={`${isRTL ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 w-full`}
                 />
               </div>
               
@@ -153,7 +164,7 @@ const RestaurantList: React.FC = () => {
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <Sliders className="h-4 w-4" />
-                <span>فلترة وترتيب</span>
+                <span>{t('filterSortButton')}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? 'transform rotate-180' : ''}`} />
               </Button>
               
@@ -164,8 +175,8 @@ const RestaurantList: React.FC = () => {
                   onClick={resetFilters}
                   className="text-gray-500"
                 >
-                  <X className="h-4 w-4 mr-1" />
-                  إعادة ضبط
+                  <X className={`h-4 w-4 ${isRTL ? 'ml-1' : 'mr-1'}`} />
+                  {t('resetFiltersButton')}
                 </Button>
               )}
             </div>
@@ -173,13 +184,13 @@ const RestaurantList: React.FC = () => {
             {showFilters && (
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 border-t pt-4 border-gray-200 dark:border-gray-700">
                 <div>
-                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">المطبخ</h3>
+                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">{t('cuisineFilterLabel')}</h3>
                   <select
                     value={cuisineFilter}
                     onChange={(e) => setCuisineFilter(e.target.value)}
                     className="w-full p-2 rounded-md bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
                   >
-                    <option value="">جميع المطابخ</option>
+                    <option value="">{t('allCuisinesOption')}</option>
                     {allCuisines.map((cuisine, index) => (
                       <option key={index} value={cuisine}>{cuisine}</option>
                     ))}
@@ -188,7 +199,7 @@ const RestaurantList: React.FC = () => {
                 
                 <div>
                   <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    التقييم: {minRating > 0 ? `${minRating}+` : 'الكل'}
+                    {t('ratingFilterLabel', { ratingValue: ratingDisplayValue })}
                   </h3>
                   <Slider
                     value={[minRating]}
@@ -197,42 +208,43 @@ const RestaurantList: React.FC = () => {
                     step={0.5}
                     className="py-4"
                     onValueChange={(value) => setMinRating(value[0])}
+                    dir={isRTL ? 'rtl' : 'ltr'}
                   />
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">ترتيب حسب</h3>
+                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">{t('sortByFilterLabel')}</h3>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     className="w-full p-2 rounded-md bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
                   >
-                    <option value="recommended">الأكثر رواجاً</option>
-                    <option value="rating">التقييم: من الأعلى للأقل</option>
-                    <option value="name">أبجدياً: أ-ي</option>
-                    <option value="deliveryTime">وقت التوصيل: الأسرع أولاً</option>
+                    <option value="recommended">{t('sortByOptionRecommended')}</option>
+                    <option value="rating">{t('sortByOptionRating')}</option>
+                    <option value="name">{t('sortByOptionName')}</option>
+                    <option value="deliveryTime">{t('sortByOptionDelivery')}</option>
                   </select>
                 </div>
                 
-                <div className="flex items-center space-x-6 space-x-reverse md:col-span-3">
-                  <label className="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                <div className={`flex items-center md:col-span-3 ${isRTL ? 'space-x-6 space-x-reverse' : 'space-x-6'}`}>
+                  <label className={`flex items-center cursor-pointer ${isRTL ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
                     <input 
                       type="checkbox" 
                       checked={showNewOnly} 
                       onChange={(e) => setShowNewOnly(e.target.checked)} 
-                      className="rounded text-yellow-800"
+                      className="rounded text-yellow-800 focus:ring-yellow-700"
                     />
-                    <span className="text-gray-700 dark:text-gray-300">المطاعم الجديدة فقط</span>
+                    <span className="text-gray-700 dark:text-gray-300">{t('newOnlyCheckboxLabel')}</span>
                   </label>
                   
-                  <label className="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                  <label className={`flex items-center cursor-pointer ${isRTL ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
                     <input 
                       type="checkbox" 
                       checked={showDiscountOnly} 
                       onChange={(e) => setShowDiscountOnly(e.target.checked)} 
-                      className="rounded text-yellow-800"
+                      className="rounded text-yellow-800 focus:ring-yellow-700"
                     />
-                    <span className="text-gray-700 dark:text-gray-300">العروض والخصومات فقط</span>
+                    <span className="text-gray-700 dark:text-gray-300">{t('discountOnlyCheckboxLabel')}</span>
                   </label>
                 </div>
               </div>
@@ -253,17 +265,17 @@ const RestaurantList: React.FC = () => {
               <Search className="h-8 w-8 text-gray-400" />
             </div>
             <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
-              لا توجد مطاعم متطابقة مع بحثك
+              {t('noRestaurantsFoundTitleRList')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              يرجى تعديل معايير البحث والمحاولة مرة أخرى
+              {t('noRestaurantsFoundSubtitleRList')}
             </p>
             <Button 
               onClick={resetFilters} 
               variant="outline" 
               className="font-semibold"
             >
-              عرض كل المطاعم
+              {t('showAllRestaurantsButtonRList')}
             </Button>
           </div>
         )}

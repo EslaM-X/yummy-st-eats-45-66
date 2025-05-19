@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -14,6 +13,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
 import { Coffee, Star, MapPin } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Mock featured restaurants data
 const featuredRestaurants: Restaurant[] = [
@@ -52,6 +52,7 @@ const featuredRestaurants: Restaurant[] = [
 const RestaurantsPage: React.FC = () => {
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     // تأخير ظهور العناصر لإضافة تأثير حركي
@@ -77,10 +78,11 @@ const RestaurantsPage: React.FC = () => {
               <Coffee className="h-6 w-6 text-yellow-800 dark:text-yellow-500" />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white mb-4 animate-fade-in">
-              استكشف أفضل <span className="text-yellow-800 dark:text-yellow-500">المطاعم</span>
+              {t('restaurantsPageTitlePart1')}{' '}
+              <span className="text-yellow-800 dark:text-yellow-500">{t('restaurantsPageTitlePart2')}</span>
             </h1>
             <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8 text-lg">
-              اكتشف مجموعة متنوعة من المطاعم المتميزة التي تقدم أشهى الأكلات بجودة عالية وأسعار مناسبة
+              {t('restaurantsPageSubtitle')}
             </p>
           </div>
         </section>
@@ -90,10 +92,10 @@ const RestaurantsPage: React.FC = () => {
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-                المطاعم <span className="text-yellow-800 dark:text-yellow-500">المميزة</span>
+                {t('featuredRestaurantsTitle')}
               </h2>
               <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <span>اسحب للمزيد</span>
+                <span>{t('swipeForMore')}</span>
                 <div className="w-12 h-0.5 bg-gray-300 dark:bg-gray-700"></div>
               </div>
             </div>
@@ -112,13 +114,13 @@ const RestaurantsPage: React.FC = () => {
                               className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                             />
                             {restaurant.isNew && (
-                              <span className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                جديد
+                              <span className="absolute top-2 right-2 rtl:right-2 rtl:left-auto ltr:left-auto ltr:right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                {t('new')}
                               </span>
                             )}
                             {restaurant.discount && (
-                              <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                خصم {restaurant.discount}
+                              <span className="absolute top-2 left-2 rtl:left-2 rtl:right-auto ltr:right-auto ltr:left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                {t('discount')} {restaurant.discount}
                               </span>
                             )}
                           </div>
@@ -128,7 +130,7 @@ const RestaurantsPage: React.FC = () => {
                             <div className="mt-auto flex items-center justify-between">
                               <div className="flex items-center text-yellow-500">
                                 <Star className="h-4 w-4 fill-current" />
-                                <span className="text-sm ml-1">{restaurant.rating}</span>
+                                <span className="text-sm ml-1 rtl:ml-0 rtl:mr-1">{restaurant.rating}</span>
                               </div>
                               <span className="text-sm text-gray-600 dark:text-gray-300">{restaurant.deliveryTime}</span>
                             </div>
@@ -140,8 +142,8 @@ const RestaurantsPage: React.FC = () => {
                 ))}
               </CarouselContent>
               <div className="hidden md:block">
-                <CarouselPrevious className="left-0" />
-                <CarouselNext className="right-0" />
+                <CarouselPrevious className="left-0 rtl:right-0 rtl:left-auto" />
+                <CarouselNext className="right-0 rtl:left-0 rtl:right-auto" />
               </div>
             </Carousel>
           </div>
@@ -155,29 +157,29 @@ const RestaurantsPage: React.FC = () => {
                 <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mb-3">
                   <Coffee className="h-8 w-8 text-yellow-800 dark:text-yellow-500" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-800 dark:text-white">50+</h3>
-                <p className="text-gray-600 dark:text-gray-400">مطعم متميز</p>
+                <h3 className="text-3xl font-bold text-gray-800 dark:text-white">{t('statsVal1')}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{t('statsSectionTitle1')}</p>
               </div>
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mb-3">
                   <Star className="h-8 w-8 text-yellow-800 dark:text-yellow-500" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-800 dark:text-white">4.8</h3>
-                <p className="text-gray-600 dark:text-gray-400">متوسط التقييم</p>
+                <h3 className="text-3xl font-bold text-gray-800 dark:text-white">{t('statsVal2')}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{t('statsSectionTitle2')}</p>
               </div>
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mb-3">
                   <MapPin className="h-8 w-8 text-yellow-800 dark:text-yellow-500" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-800 dark:text-white">15+</h3>
-                <p className="text-gray-600 dark:text-gray-400">منطقة توصيل</p>
+                <h3 className="text-3xl font-bold text-gray-800 dark:text-white">{t('statsVal3')}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{t('statsSectionTitle3')}</p>
               </div>
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mb-3">
                   <Coffee className="h-8 w-8 text-yellow-800 dark:text-yellow-500" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-800 dark:text-white">1000+</h3>
-                <p className="text-gray-600 dark:text-gray-400">طعام متنوع</p>
+                <h3 className="text-3xl font-bold text-gray-800 dark:text-white">{t('statsVal4')}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{t('statsSectionTitle4')}</p>
               </div>
             </div>
           </div>
@@ -188,7 +190,8 @@ const RestaurantsPage: React.FC = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
-                استكشف <span className="text-yellow-800 dark:text-yellow-500">جميع المطاعم</span>
+                {t('allRestaurantsSectionTitlePart1')}{' '}
+                <span className="text-yellow-800 dark:text-yellow-500">{t('allRestaurantsSectionTitlePart2')}</span>
               </h2>
               <div className="w-24 h-1 bg-yellow-800 dark:bg-yellow-500 mx-auto"></div>
             </div>
