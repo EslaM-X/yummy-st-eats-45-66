@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 const CoreTeamPage: React.FC = () => {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
@@ -125,12 +126,13 @@ const CoreTeamPage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Modified text under ST Pizza Logo */}
+                  {/* Modified text under ST Pizza Logo - now language-dependent */}
                   <div className="text-gray-700 dark:text-gray-300 mb-6 text-center">
-                    <p>مؤسس ورئيس قسم التكنولوجيا ومطور في</p>
-                    <span className="text-teal-600 dark:text-teal-400">
-                      سلة- شوب
-                    </span>
+                    {language === 'en' ? (
+                      <p>Founder, CTO and Developer at <span className="text-teal-600 dark:text-teal-400">salla-shop</span></p>
+                    ) : (
+                      <p>مؤسس ورئيس قسم التكنولوجيا ومطور في <span className="text-teal-600 dark:text-teal-400">سلة- شوب</span></p>
+                    )}
                   </div>
                   
                   {/* External Link */}
