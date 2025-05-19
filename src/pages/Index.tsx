@@ -23,6 +23,10 @@ const Index: React.FC = () => {
     navigate('/register-restaurant');
   };
 
+  const handleAdminAccess = () => {
+    navigate('/admin');
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       <Header />
@@ -33,7 +37,7 @@ const Index: React.FC = () => {
               <img 
                 src="/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png" 
                 alt="ST Pizza Logo" 
-                className="h-20 w-20 sm:h-24 sm:w-24 mb-4 animate-pulse"
+                className="h-28 w-28 sm:h-36 sm:w-36 md:h-40 md:w-40 mb-4 animate-pulse"
               />
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-cairo mb-6 leading-tight animate-fade-in">
@@ -66,17 +70,30 @@ const Index: React.FC = () => {
                 <p className="text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-xl mx-auto font-cairo">
                     {t('restaurantOwnerDesc')}
                 </p>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  onClick={handleRegisterRestaurant}
-                  className="border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white font-semibold px-10 py-3 text-lg dark:border-yellow-500 dark:text-yellow-500 dark:hover:bg-yellow-500 font-cairo relative group overflow-hidden">
-                    <span className="absolute inset-0 w-0 bg-yellow-600 transition-all duration-500 ease-out group-hover:w-full"></span>
-                    <span className="relative flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
-                      {t('registerRestaurant')}
-                    </span>
-                </Button>
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      onClick={handleRegisterRestaurant}
+                      className="border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white font-semibold px-10 py-3 text-lg dark:border-yellow-500 dark:text-yellow-500 dark:hover:bg-yellow-500 font-cairo relative group overflow-hidden">
+                        <span className="absolute inset-0 w-0 bg-yellow-600 transition-all duration-500 ease-out group-hover:w-full"></span>
+                        <span className="relative flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                          {t('registerRestaurant')}
+                        </span>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      onClick={handleAdminAccess}
+                      className="border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-semibold px-10 py-3 text-lg dark:border-teal-500 dark:text-teal-500 dark:hover:bg-teal-500 font-cairo relative group overflow-hidden">
+                        <span className="absolute inset-0 w-0 bg-teal-600 transition-all duration-500 ease-out group-hover:w-full"></span>
+                        <span className="relative flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full bg-teal-500 animate-pulse"></span>
+                          لوحة الإدارة
+                        </span>
+                    </Button>
+                </div>
             </div>
         </section>
       </main>
