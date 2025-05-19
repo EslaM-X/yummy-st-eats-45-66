@@ -138,7 +138,7 @@
   "statsSectionTitle1": "مطاعم متميزة",
   "statsVal1": "+٥٠",
   "statsSectionTitle2": "متوسط التقييم",
-  "statsVal2": "٤.٨",
+  "statsVal2": "٣.٨",
   "statsSectionTitle3": "مناطق توصيل",
   "statsVal3": "+١٥",
   "statsSectionTitle4": "خيارات طعام متنوعة",
@@ -194,5 +194,10 @@
   "earnByAddingFoodDesc": "اكسب 50 نقطة عند إضافة أطباق منزلية أو وصفات خاصة",
   "earnBySpecialMissionsTitle": "مهام خاصة",
   "earnBySpecialMissionsDesc": "أكمل المهام الأسبوعية والتحديات الموسمية لكسب نقاط إضافية",
-  "addFoodCta": "أضف طعامك الآن واكسب 50 نقطة"
+  "addFoodCta": "أضف طعامك الآن واكسب 50 نقطة",
+  "enjoyCurrentTierPerks": "استمتع بمزايا حصرية مع مستواك الحالي",
+  "pointsUnit": "نقطة",
+  "toReach": "نقطة متبقية للوصول إلى",
+  "congratsMaxTier": "تهانينا! لقد وصلت إلى أعلى مستوى في برنامج المكافآت",
+  "currentTierPerks": "مزايا مستواك الحالي:"
 }

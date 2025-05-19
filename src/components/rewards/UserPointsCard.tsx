@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Award, Star } from "lucide-react";
 import { UserPoints, RewardTier } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface UserPointsCardProps {
   userPoints: UserPoints;
@@ -18,6 +19,8 @@ const UserPointsCard: React.FC<UserPointsCardProps> = ({
   progressPercentage,
   pointsToNextTier
 }) => {
+  const { t } = useLanguage();
+
   const renderTierIcon = (iconName: string) => {
     if (iconName === 'award') {
       return <Award className="h-6 w-6 text-yellow-500" />;
@@ -35,12 +38,14 @@ const UserPointsCard: React.FC<UserPointsCardProps> = ({
               {renderTierIcon(userPoints.tier.icon)}
               <span className="mr-2">{userPoints.tier.name}</span>
             </CardTitle>
-            <CardDescription>استمتع بمزايا حصرية مع مستواك الحالي</CardDescription>
+            <CardDescription>
+              {t('enjoyCurrentTierPerks')}
+            </CardDescription>
           </div>
           <div className="mt-4 md:mt-0">
             <div className="text-3xl font-bold text-yellow-700 dark:text-yellow-500 flex items-center">
               <Star className="inline-block h-6 w-6 mr-2 fill-yellow-500 text-yellow-500" />
-              {userPoints.total} نقطة
+              {userPoints.total} {t('pointsUnit')}
             </div>
           </div>
         </div>
@@ -54,20 +59,20 @@ const UserPointsCard: React.FC<UserPointsCardProps> = ({
             </div>
             <Progress value={progressPercentage} className="h-2" />
             <p className="text-sm text-center mt-2 text-gray-600 dark:text-gray-400">
-              {pointsToNextTier} نقطة متبقية للوصول إلى {nextTier.name}
+              {pointsToNextTier} {t('pointsUnit')} {t('toReach')} {nextTier.name}
             </p>
           </div>
         ) : (
           <div className="mb-6 text-center">
             <p className="text-green-600 dark:text-green-500 font-semibold">
-              تهانينا! لقد وصلت إلى أعلى مستوى في برنامج المكافآت
+              {t('congratsMaxTier')}
             </p>
             <Progress value={100} className="h-2 mt-2" />
           </div>
         )}
         
         <div className="mt-6">
-          <h4 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">مزايا مستواك الحالي:</h4>
+          <h4 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">{t('currentTierPerks')}</h4>
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {userPoints.tier.benefits.map((benefit, index) => (
               <li key={index} className="flex items-start">

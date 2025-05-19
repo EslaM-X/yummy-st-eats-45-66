@@ -194,5 +194,11 @@
   "earnByAddingFoodDesc": "Earn 50 points for adding homemade dishes or private recipes",
   "earnBySpecialMissionsTitle": "Special Missions",
   "earnBySpecialMissionsDesc": "Complete weekly missions and seasonal challenges to earn extra points",
-  "addFoodCta": "Add your food now & earn 50 points"
+  "addFoodCta": "Add your food now & earn 50 points",
+
+  "enjoyCurrentTierPerks": "Enjoy exclusive perks with your current tier",
+  "pointsUnit": "points",
+  "toReach": "points left to reach",
+  "congratsMaxTier": "Congratulations! You've reached the highest tier in the rewards program.",
+  "currentTierPerks": "Your current tier's benefits:"
 }
