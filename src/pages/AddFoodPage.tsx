@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -240,7 +241,7 @@ const AddFoodPage: React.FC = () => {
                           name="price"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>السعر المقترح (ر.س)</FormLabel>
+                              <FormLabel>السعر المقترح (ST)</FormLabel>
                               <FormControl>
                                 <Input type="number" placeholder="35" {...field} />
                               </FormControl>
