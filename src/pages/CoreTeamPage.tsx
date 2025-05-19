@@ -108,7 +108,7 @@ const CoreTeamPage: React.FC = () => {
                   {/* Animated line */}
                   <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-teal-600 rounded mb-6"></div>
                   
-                  {/* CTO Role with coding emoji */}
+                  {/* CTO Role with coding emoji - UPDATED HERE */}
                   <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium mb-8">
                     <span className="mr-2">💻</span>
                     {t('ctoTitle')}
