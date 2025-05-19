@@ -1,6 +1,7 @@
+
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import arTranslations from '@/locales/ar.json';
-import enTranslations from '@/locales/en.json';
+import arTranslationsFromFile from '@/locales/ar.json';
+import enTranslationsFromFile from '@/locales/en.json';
 
 type Language = 'ar' | 'en';
 
@@ -11,59 +12,10 @@ interface LanguageContextType {
   isRTL: boolean;
 }
 
-const translations: Record<string, any> = {
-  ar: {
-    home: 'الرئيسية',
-    restaurants: 'المطاعم',
-    products: 'المنتجات',
-    rewards: 'المكافآت',
-    cart: 'السلة',
-    login: 'تسجيل الدخول',
-    signup: 'إنشاء حساب',
-    logout: 'تسجيل الخروج',
-    language: 'اللغة',
-    darkMode: 'الوضع المظلم',
-    lightMode: 'الوضع المضيء',
-    closeMenu: 'إغلاق القائمة',
-    openMenu: 'فتح القائمة',
-    searchPlaceholder: 'البحث عن منتجات...',
-    filter: 'تصفية',
-    categories: 'التصنيفات',
-    price: 'السعر',
-    rating: 'التقييم',
-    all: 'الكل',
-    addToCart: 'أضف إلى السلة',
-    viewDetails: 'عرض التفاصيل',
-    processing: 'جاري المعالجة',
-    payNow: 'ادفع الآن',
-    addYourFood: 'أضف طعامك',
-  },
-  en: {
-    home: 'Home',
-    restaurants: 'Restaurants',
-    products: 'Products',
-    rewards: 'Rewards',
-    cart: 'Cart',
-    login: 'Login',
-    signup: 'Sign Up',
-    logout: 'Logout',
-    language: 'Language',
-    darkMode: 'Dark Mode',
-    lightMode: 'Light Mode',
-    closeMenu: 'Close Menu',
-    openMenu: 'Open Menu',
-    searchPlaceholder: 'Search products...',
-    filter: 'Filter',
-    categories: 'Categories',
-    price: 'Price',
-    rating: 'Rating',
-    all: 'All',
-    addToCart: 'Add to Cart',
-    viewDetails: 'View Details',
-    processing: 'Processing',
-    payNow: 'Pay Now',
-    addYourFood: 'Add Your Food',
-  }
+// Use the imported translations from JSON files
+const allAppTranslations: Record<Language, Record<string, string>> = {
+  ar: arTranslationsFromFile,
+  en: enTranslationsFromFile,
 };
 
 export const LanguageContext = createContext<LanguageContextType>({
@@ -93,8 +45,10 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const t = (key: string): string => {
     if (!key) return '';
-    const translation = translations[language][key as keyof typeof translations[typeof language]];
-    return translation || key;
+    // Access translations from the combined object using the current language
+    const langTranslations = allAppTranslations[language];
+    const translation = langTranslations ? langTranslations[key] : undefined;
+    return translation || key; // Fallback to key if translation is not found
   };
 
   return (
@@ -105,3 +59,4 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 };
 
 export const useLanguage = () => useContext(LanguageContext);
+
