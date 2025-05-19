@@ -18,7 +18,18 @@ const CoreTeamPage: React.FC = () => {
     bio: t('founderBio'),
     companyLogoSrc: "/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png",
     companyName: "ST🍕 Eat",
-    skills: ['programming', 'cybersecurity', 'infosecurity', 'smartcontracts', 'systemdevelopment', 'systemdesign', 'frontenddesign'],
+    skills: [
+      'programming', 
+      'cybersecurity', 
+      'infosecurity', 
+      'smartcontracts', 
+      'systemdevelopment', 
+      'systemdesign', 
+      'frontenddesign',
+      'mobiledev', // Added mobile app development
+      'projectmanagement', // Added project management
+      'technicalleadership' // Added technical leadership
+    ],
     interests: ['programming', 'blockchain', 'ai', 'web3', 'web5', 'innovation', 'dapp'],
     borderGradient: "from-purple-50 to-teal-50 dark:from-gray-800 dark:to-gray-900",
     roleEmoji: "🚀",
