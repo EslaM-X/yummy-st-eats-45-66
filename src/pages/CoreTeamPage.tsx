@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
@@ -41,7 +42,7 @@ const CoreTeamPage: React.FC = () => {
 
   // CTO data configuration - تحديث الصورة هنا
   const ctoData = {
-    imageSrc: "/lovable-uploads/48d16486-dd8b-41f1-92c6-baf1ec27c515.png", // تم تحديث الصورة
+    imageSrc: "/lovable-uploads/1609993d-07d1-4e29-9549-0882719efaa0.png", // تم تحديث الصورة بالصورة الجديدة
     imageAlt: t('ctoImageAlt'),
     name: t('ctoName'),
     title: t('ctoTitle'),
