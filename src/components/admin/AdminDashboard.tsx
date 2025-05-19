@@ -17,9 +17,29 @@ import TopRestaurants from './dashboard/TopRestaurants';
 import SystemAlerts from './dashboard/SystemAlerts';
 import SalesChart from './dashboard/SalesChart';
 
+// تعريف الأنواع المسموح بها للتنبيهات وحالات الطلبات
+type AlertType = 'warning' | 'info' | 'success' | 'error';
+type OrderStatus = 'مكتمل' | 'قيد التحضير' | 'قيد التوصيل' | 'ملغي';
+
+// تعريف نوع البيانات للطلب
+interface Order {
+  id: string;
+  customer: string;
+  amount: number;
+  status: OrderStatus;
+  time: string;
+}
+
+// تعريف نوع البيانات للتنبيه
+interface Alert {
+  type: AlertType;
+  title: string;
+  message: string;
+}
+
 const AdminDashboard: React.FC = () => {
   // Mock data for recent orders
-  const recentOrders = [
+  const recentOrders: Order[] = [
     { id: 'ORD-7243', customer: 'أحمد محمد', amount: 145, status: 'مكتمل', time: 'منذ 10 دقائق' },
     { id: 'ORD-7244', customer: 'نورة سعد', amount: 67, status: 'قيد التوصيل', time: 'منذ 27 دقيقة' },
     { id: 'ORD-7245', customer: 'عبدالله خالد', amount: 89, status: 'قيد التحضير', time: 'منذ 35 دقيقة' },
@@ -36,7 +56,7 @@ const AdminDashboard: React.FC = () => {
   ];
 
   // Mock data for system alerts
-  const systemAlerts = [
+  const systemAlerts: Alert[] = [
     { 
       type: 'warning', 
       title: 'مشكلة في المخزون', 
@@ -156,13 +176,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ salesData }) => {
 
 // Orders Section Component
 interface OrdersSectionProps {
-  orders: {
-    id: string;
-    customer: string;
-    amount: number;
-    status: string;
-    time: string;
-  }[];
+  orders: Order[];
 }
 
 const OrdersSection: React.FC<OrdersSectionProps> = ({ orders }) => {
@@ -186,11 +200,7 @@ const OrdersSection: React.FC<OrdersSectionProps> = ({ orders }) => {
 // Bottom Section Component
 interface BottomSectionProps {
   restaurants: { name: string; orders: number; rating: number }[];
-  alerts: { 
-    type: 'warning' | 'info' | 'success' | 'error'; 
-    title: string; 
-    message: string 
-  }[];
+  alerts: Alert[];
 }
 
 const BottomSection: React.FC<BottomSectionProps> = ({ restaurants, alerts }) => {
