@@ -45,10 +45,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const t = (key: string): string => {
     if (!key) return '';
+    
     // Access translations from the combined object using the current language
     const langTranslations = allAppTranslations[language];
-    const translation = langTranslations ? langTranslations[key] : undefined;
-    return translation || key; // Fallback to key if translation is not found
+    const translation = langTranslations?.[key];
+    
+    // Return translation if found, otherwise return key as fallback
+    return translation || key;
   };
 
   return (

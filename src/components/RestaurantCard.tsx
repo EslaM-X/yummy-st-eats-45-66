@@ -88,7 +88,7 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
           onClick={handleOrderNowClick}
           className="w-full bg-gradient-to-r from-yellow-700 to-yellow-800 hover:from-yellow-800 hover:to-yellow-900 text-white font-semibold py-2 sm:py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg text-xs sm:text-sm">
           {t('orderNow')}
-          <ArrowRight className={`h-3 w-3 sm:h-4 sm:w-4 ${isRTL ? 'mr-2 rtl:rotate-180' : 'ml-2 ltr:rotate-0'}`} />
+          <ArrowRight className={`h-3 w-3 sm:h-4 sm:w-4 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
         </button>
       </div>
     </div>
