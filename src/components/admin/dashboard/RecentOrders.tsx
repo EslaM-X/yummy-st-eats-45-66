@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-interface Order {
+export interface Order {
   id: string;
   customer: string;
   amount: number;

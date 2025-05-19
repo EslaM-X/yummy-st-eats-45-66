@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   BarChart,
@@ -12,14 +13,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import StatCard from './dashboard/StatCard';
 import ChartCard from './dashboard/ChartCard';
 import OrderStatusChart from './dashboard/OrderStatusChart';
-import RecentOrders from './dashboard/RecentOrders';
+import RecentOrders, { Order } from './dashboard/RecentOrders';
 import TopRestaurants from './dashboard/TopRestaurants';
 import SystemAlerts from './dashboard/SystemAlerts';
 import SalesChart from './dashboard/SalesChart';
 
 const AdminDashboard: React.FC = () => {
   // Mock data for recent orders
-  const recentOrders = [
+  const recentOrders: Order[] = [
     { id: 'ORD-7243', customer: 'أحمد محمد', amount: 145, status: 'مكتمل', time: 'منذ 10 دقائق' },
     { id: 'ORD-7244', customer: 'نورة سعد', amount: 67, status: 'قيد التوصيل', time: 'منذ 27 دقيقة' },
     { id: 'ORD-7245', customer: 'عبدالله خالد', amount: 89, status: 'قيد التحضير', time: 'منذ 35 دقيقة' },
