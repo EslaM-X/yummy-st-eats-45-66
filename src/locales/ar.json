@@ -1,3 +1,4 @@
+
 {
   "home": "الرئيسية",
   "deliverySlogan": "أشهى الأطعمة تصلك أينما كنت!",
@@ -225,5 +226,37 @@
   "redeemButton": "استبدال",
   "notEnoughPoints": "نقاط غير كافية",
   "pointsHistoryTitle": "سجل النقاط",
-  "pointsHistoryDescription": "تاريخ كسب واستبدال النقاط"
+  "pointsHistoryDescription": "تاريخ كسب واستبدال النقاط",
+  
+  "cartEmpty": "السلة فارغة",
+  "noProductsInCart": "لم تقم بإضافة أي منتجات إلى السلة بعد",
+  "browseProducts": "تصفح المنتجات",
+  "orderSummary": "ملخص الطلب",
+  "subtotal": "المجموع الفرعي",
+  "deliveryFee": "رسوم التوصيل",
+  "removeFromCart": "إزالة من السلة",
+  "itemRemovedFromCart": "تم إزالة العنصر من السلة",
+  
+  "completePayment": "إتمام الدفع",
+  "paymentSuccessful": "تمت عملية الدفع بنجاح",
+  "orderCompletedMessage": "طلبك رقم #${orderId} قد اكتمل بنجاح",
+  "enterCardDetails": "أدخل بيانات البطاقة لإتمام الطلب",
+  "orderDetails": "تفاصيل الطلب",
+  "orderNumber": "رقم الطلب",
+  "totalAmount": "المبلغ الإجمالي",
+  "orderStatus": "حالة الطلب",
+  "completed": "مكتمل",
+  "requestRefund": "طلب استرداد",
+  "refundCompleted": "تم الانتهاء من عملية الاسترداد",
+  "redirectingToHome": "سيتم توجيهك للصفحة الرئيسية خلال لحظات",
+  "securePaymentInfo": "معلومات الدفع الآمن",
+  "securePaymentDescription": "جميع المعاملات تتم بشكل آمن ومشفر. لا يتم تخزين بيانات بطاقتك على خوادمنا.",
+  "refundTimeframe": "تم إتمام عملية الدفع بنجاح! يمكنك طلب استرداد المبلغ خلال 14 يومًا من تاريخ الشراء.",
+  "paymentDetails": "بيانات الدفع",
+  "enterVirtualCardDetails": "أدخل بيانات البطاقة الافتراضية ST لإتمام عملية الدفع",
+  "cardNumber": "رقم البطاقة",
+  "cvvCode": "رمز CVV",
+  "processing": "جارِ المعالجة",
+  "transactionId": "معرف المعاملة",
+  "paymentProcessError": "حدث خطأ أثناء معالجة الدفع"
 }

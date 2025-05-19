@@ -1,3 +1,4 @@
+
 {
   "home": "Home",
   "deliverySlogan": "Delicious food delivered wherever you are!",
@@ -227,5 +228,37 @@
   "redeemButton": "Redeem",
   "notEnoughPoints": "Not enough points",
   "pointsHistoryTitle": "Points History",
-  "pointsHistoryDescription": "Earned and redeemed points history"
+  "pointsHistoryDescription": "Earned and redeemed points history",
+  
+  "cartEmpty": "Cart is Empty",
+  "noProductsInCart": "You haven't added any products to your cart yet",
+  "browseProducts": "Browse Products",
+  "orderSummary": "Order Summary",
+  "subtotal": "Subtotal",
+  "deliveryFee": "Delivery Fee",
+  "removeFromCart": "Remove from cart",
+  "itemRemovedFromCart": "Item removed from cart",
+  
+  "completePayment": "Complete Payment",
+  "paymentSuccessful": "Payment Successful",
+  "orderCompletedMessage": "Your order #${orderId} has been completed successfully",
+  "enterCardDetails": "Enter card details to complete your order",
+  "orderDetails": "Order Details",
+  "orderNumber": "Order Number",
+  "totalAmount": "Total Amount",
+  "orderStatus": "Order Status",
+  "completed": "Completed",
+  "requestRefund": "Request Refund",
+  "refundCompleted": "Refund process completed",
+  "redirectingToHome": "You'll be redirected to the home page in a moment",
+  "securePaymentInfo": "Secure Payment Information",
+  "securePaymentDescription": "All transactions are secure and encrypted. Your card information is not stored on our servers.",
+  "refundTimeframe": "Payment completed successfully! You can request a refund within 14 days of purchase.",
+  "paymentDetails": "Payment Details",
+  "enterVirtualCardDetails": "Enter ST virtual card details to complete payment",
+  "cardNumber": "Card Number",
+  "cvvCode": "CVV Code",
+  "processing": "Processing",
+  "transactionId": "Transaction ID",
+  "paymentProcessError": "An error occurred while processing your payment"
 }

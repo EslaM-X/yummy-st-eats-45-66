@@ -11,19 +11,20 @@ import { CreditCard } from 'lucide-react';
 import { VirtualCardService } from '@/services/VirtualCardService';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const paymentSchema = z.object({
   cardNumber: z.string()
-    .min(16, { message: 'رقم البطاقة يجب أن يتكون من 16 رقم على الأقل' })
-    .max(19, { message: 'رقم البطاقة يجب ألا يتجاوز 19 رقم' })
+    .min(16, { message: 'Card number must be at least 16 digits' })
+    .max(19, { message: 'Card number must not exceed 19 digits' })
     .refine(val => VirtualCardService.isCardNumberValid(val), {
-      message: 'رقم البطاقة غير صالح',
+      message: 'Invalid card number',
     }),
   cvv: z.string()
-    .min(3, { message: 'رمز CVV يجب أن يتكون من 3 أرقام على الأقل' })
-    .max(4, { message: 'رمز CVV يجب ألا يتجاوز 4 أرقام' })
+    .min(3, { message: 'CVV must be at least 3 digits' })
+    .max(4, { message: 'CVV must not exceed 4 digits' })
     .refine(val => VirtualCardService.isCvvValid(val), {
-      message: 'رمز CVV غير صالح',
+      message: 'Invalid CVV',
     }),
 });
 
@@ -45,6 +46,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t, language } = useLanguage();
   
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
@@ -80,7 +82,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     setLoading(true);
     
     try {
-      // إرسال طلب الدفع
+      // Send payment request
       const paymentData = {
         card_number: values.cardNumber.replace(/\s+/g, ''),
         cvv: values.cvv,
@@ -91,23 +93,23 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       const response = await VirtualCardService.createPaymentTransaction(paymentData);
       
       toast({
-        title: "تمت عملية الدفع بنجاح",
-        description: `معرف المعاملة: ${response.transaction_id}`,
+        title: t('paymentSuccessful'),
+        description: `${t('transactionId')}: ${response.transaction_id}`,
       });
       
-      // استدعاء وظيفة النجاح إذا كانت موجودة
+      // Call success function if it exists
       if (onSuccess) {
         onSuccess();
       } else {
-        // انتظار لحظة قبل الانتقال
+        // Wait a moment before redirecting
         setTimeout(() => {
           navigate('/', { replace: true });
         }, 2000);
       }
     } catch (error) {
       toast({
-        title: "فشل في عملية الدفع",
-        description: error instanceof Error ? error.message : "حدث خطأ أثناء معالجة الدفع",
+        title: t('paymentFailed'),
+        description: error instanceof Error ? error.message : t('paymentProcessError'),
         variant: "destructive",
       });
     } finally {
@@ -120,10 +122,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          بيانات الدفع
+          {t('paymentDetails')}
         </CardTitle>
         <CardDescription>
-          أدخل بيانات البطاقة الافتراضية ST لإتمام عملية الدفع
+          {t('enterVirtualCardDetails')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -134,7 +136,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
               name="cardNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>رقم البطاقة</FormLabel>
+                  <FormLabel>{t('cardNumber')}</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="1234 5678 9012 3456" 
@@ -153,7 +155,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
               name="cvv"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>رمز CVV</FormLabel>
+                  <FormLabel>{t('cvvCode')}</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="123" 
@@ -172,7 +174,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
               className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
               disabled={loading}
             >
-              {loading ? 'جارِ المعالجة...' : `إتمام الدفع - ${amount} ST`}
+              {loading ? t('processing') : `${t('completePayment')} - ${amount} ST`}
             </Button>
           </form>
         </Form>

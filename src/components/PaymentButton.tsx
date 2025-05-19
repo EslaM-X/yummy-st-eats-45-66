@@ -27,14 +27,14 @@ const PaymentButton = ({
   const navigate = useNavigate();
 
   const handlePayment = () => {
-    // انتقل إلى صفحة الدفع مع تمرير معلومات المنتج
+    // Navigate to checkout page with product details
     navigate('/checkout', { 
       state: { 
         amount: amount,
         cartItems: cartItems.length ? cartItems : [
           {
             id: Math.random().toString(36).substring(7),
-            name: productName || 'منتج',
+            name: productName || t('product'),
             price: amount,
             quantity: 1
           }

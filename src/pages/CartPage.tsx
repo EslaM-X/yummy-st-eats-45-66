@@ -6,9 +6,11 @@ import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Minus } from "lucide-react";
 import { toast } from 'sonner';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [cartItems, setCartItems] = React.useState([
     { 
       id: 1, 
@@ -55,7 +57,7 @@ const CartPage: React.FC = () => {
 
   const removeItem = (id: number) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-    toast.success('تم إزالة العنصر من السلة');
+    toast.success(t('itemRemovedFromCart'));
   };
 
   const calculateTotal = () => {
@@ -78,7 +80,7 @@ const CartPage: React.FC = () => {
       <main className="flex-grow py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-8 text-center">
-            سلة التسوق
+            {t('cart')}
           </h1>
 
           {cartItems.length > 0 ? (
@@ -126,7 +128,7 @@ const CartPage: React.FC = () => {
                           <button
                             onClick={() => removeItem(item.id)}
                             className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                            aria-label="إزالة من السلة"
+                            aria-label={t('removeFromCart')}
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
@@ -139,20 +141,20 @@ const CartPage: React.FC = () => {
 
               <div className="lg:col-span-1">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 sticky top-24">
-                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">ملخص الطلب</h2>
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">{t('orderSummary')}</h2>
                   
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-300">المجموع الفرعي:</span>
+                      <span className="text-gray-600 dark:text-gray-300">{t('subtotal')}:</span>
                       <span className="text-gray-800 dark:text-white font-medium">{calculateTotal()} ST</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-300">رسوم التوصيل:</span>
+                      <span className="text-gray-600 dark:text-gray-300">{t('deliveryFee')}:</span>
                       <span className="text-gray-800 dark:text-white font-medium">15 ST</span>
                     </div>
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
                       <div className="flex justify-between">
-                        <span className="text-lg font-bold text-gray-800 dark:text-white">المجموع:</span>
+                        <span className="text-lg font-bold text-gray-800 dark:text-white">{t('total')}:</span>
                         <span className="text-lg font-bold text-yellow-800 dark:text-yellow-500">{calculateTotal() + 15} ST</span>
                       </div>
                     </div>
@@ -161,7 +163,7 @@ const CartPage: React.FC = () => {
                       onClick={handleCheckout}
                       className="w-full bg-yellow-800 hover:bg-yellow-900 text-white py-3 mt-4 font-medium"
                     >
-                      متابعة الدفع
+                      {t('checkout')}
                     </Button>
                   </div>
                 </div>
@@ -169,10 +171,10 @@ const CartPage: React.FC = () => {
             </div>
           ) : (
             <div className="text-center py-16">
-              <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">السلة فارغة</h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">لم تقم بإضافة أي منتجات إلى السلة بعد</p>
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">{t('cartEmpty')}</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">{t('noProductsInCart')}</p>
               <Button asChild className="bg-yellow-800 hover:bg-yellow-900 text-white">
-                <Link to="/products">تصفح المنتجات</Link>
+                <Link to="/products">{t('browseProducts')}</Link>
               </Button>
             </div>
           )}

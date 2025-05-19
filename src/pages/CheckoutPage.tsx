@@ -7,6 +7,7 @@ import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import RefundDialog from '@/components/checkout/RefundDialog';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LocationState {
   amount: number;
@@ -16,40 +17,41 @@ interface LocationState {
 const CheckoutPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [orderId] = useState(Math.floor(Math.random() * 100000)); // إنشاء معرف طلب عشوائي للعرض
+  const [orderId] = useState(Math.floor(Math.random() * 100000)); // Random order ID for display
   const { toast } = useToast();
+  const { t } = useLanguage();
   
-  // استخراج البيانات من location.state بشكل آمن مع قيم افتراضية
+  // Safely extract data from location.state with fallback values
   const { amount = 0, cartItems = [] } = (location.state as LocationState) || {};
   
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
 
-  // إذا لم يتم تمرير معلومات من السلة، نعيد التوجيه إلى صفحة السلة
+  // Redirect to cart if no information was passed
   useEffect(() => {
     if (!location.state || amount <= 0) {
       navigate('/cart');
     }
   }, [location.state, navigate, amount]);
 
-  // دالة لمعالجة نجاح عملية الدفع
+  // Payment success handler
   const handlePaymentSuccess = () => {
     setPaymentComplete(true);
   };
 
-  // دالة لمعالجة طلب الاسترداد
+  // Refund request handler
   const handleRefundRequest = () => {
     setRefundDialogOpen(true);
   };
 
-  // دالة لمعالجة نجاح عملية الاسترداد
+  // Refund success handler
   const handleRefundSuccess = () => {
     toast({
-      title: "تم الانتهاء من عملية الاسترداد",
-      description: "سيتم توجيهك للصفحة الرئيسية خلال لحظات",
+      title: t('refundCompleted'),
+      description: t('redirectingToHome'),
     });
     
-    // انتظار لحظة قبل الانتقال
+    // Wait a moment before redirecting
     setTimeout(() => {
       navigate('/', { replace: true });
     }, 2000);
@@ -62,12 +64,12 @@ const CheckoutPage: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-              {paymentComplete ? "تمت عملية الدفع بنجاح" : "إتمام الدفع"}
+              {paymentComplete ? t('paymentSuccessful') : t('completePayment')}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               {paymentComplete 
-                ? `طلبك رقم #${orderId} قد اكتمل بنجاح` 
-                : "أدخل بيانات البطاقة لإتمام الطلب"
+                ? t('orderCompletedMessage', { orderId }) 
+                : t('enterCardDetails')
               }
             </p>
           </div>
@@ -88,19 +90,19 @@ const CheckoutPage: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <h2 className="text-xl font-semibold text-center mb-4">تفاصيل الطلب</h2>
+                  <h2 className="text-xl font-semibold text-center mb-4">{t('orderDetails')}</h2>
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
                     <div className="flex justify-between py-2">
-                      <span className="text-gray-600 dark:text-gray-400">رقم الطلب:</span>
+                      <span className="text-gray-600 dark:text-gray-400">{t('orderNumber')}:</span>
                       <span className="font-medium">{orderId}</span>
                     </div>
                     <div className="flex justify-between py-2">
-                      <span className="text-gray-600 dark:text-gray-400">المبلغ الإجمالي:</span>
+                      <span className="text-gray-600 dark:text-gray-400">{t('totalAmount')}:</span>
                       <span className="font-medium">{amount} ST</span>
                     </div>
                     <div className="flex justify-between py-2">
-                      <span className="text-gray-600 dark:text-gray-400">حالة الطلب:</span>
-                      <span className="font-medium text-green-600 dark:text-green-400">مكتمل</span>
+                      <span className="text-gray-600 dark:text-gray-400">{t('orderStatus')}:</span>
+                      <span className="font-medium text-green-600 dark:text-green-400">{t('completed')}</span>
                     </div>
                   </div>
                 </div>
