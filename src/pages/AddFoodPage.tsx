@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
@@ -51,12 +52,12 @@ const foodCategories = [
   { value: "fast-food", label: "وجبات سريعة" },
 ];
 
-// صور توضيحية للمطبخ المنزلي - تبقى كما هي
+// صور توضيحية للمطبخ المنزلي - تم تحديث عنوان URL للصورة الرابعة
 const kitchenGalleryImages = [
   "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=500&auto=format",
   "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500&auto=format",
   "https://images.unsplash.com/photo-1556911261-6bd341186b2f?w=500&auto=format",
-  "https://images.unsplash.com/photo-1590675396922-40db3af5a378?w=500&auto=format",
+  "https://images.unsplash.com/photo-1590675396922-40db3af5a378?w=500&auto=format&fit=crop",
   "https://images.unsplash.com/photo-1605522469906-3fe226b356bc?w=500&auto=format",
   "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=500&auto=format",
 ];
