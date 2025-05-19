@@ -1,4 +1,3 @@
-
 {
   "home": "الرئيسية",
   "deliverySlogan": "أشهى الأطعمة تصلك أينما كنت!",
@@ -178,5 +177,22 @@
   "sortByOptionDefault": "الافتراضي",
   "sortByOptionPriceAsc": "السعر: من الأقل إلى الأعلى",
   "sortByOptionPriceDesc": "السعر: من الأعلى إلى الأقل",
-  "sortByOptionNameAsc": "الاسم: أبجدياً"
+  "sortByOptionNameAsc": "الاسم: أبجدياً",
+  
+  "rewardsHeroTitle": "نظام المكافآت",
+  "rewardsHeroSubtitle": "اكسب النقاط واستبدل المكافآت الحصرية مع كل طلب. كلما طلبت أكثر، كلما حصلت على مزايا أكثر!",
+  "rewardsAvailableTab": "المكافآت المتاحة",
+  "rewardsHistoryTab": "سجل النقاط",
+  "rewardRedeemedAlert": "تم استبدال المكافأة",
+  "membershipTiersTitle": "مستويات العضوية",
+  "howToEarnPointsTitle": "كيف تكسب المزيد من النقاط؟",
+  "earnByOrderingTitle": "اطلب الطعام",
+  "earnByOrderingDesc": "اكسب نقاط على كل طلب طعام من أي مطعم (نقطة لكل ST)",
+  "earnByRatingTitle": "قيّم المطاعم",
+  "earnByRatingDesc": "اكسب 20 نقطة عند تقييم المطاعم والأطباق مع تعليق",
+  "earnByAddingFoodTitle": "أضف طعامك",
+  "earnByAddingFoodDesc": "اكسب 50 نقطة عند إضافة أطباق منزلية أو وصفات خاصة",
+  "earnBySpecialMissionsTitle": "مهام خاصة",
+  "earnBySpecialMissionsDesc": "أكمل المهام الأسبوعية والتحديات الموسمية لكسب نقاط إضافية",
+  "addFoodCta": "أضف طعامك الآن واكسب 50 نقطة"
 }
