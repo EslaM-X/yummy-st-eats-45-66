@@ -3,9 +3,56 @@ import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import TeamPageHeader from '@/components/team/TeamPageHeader';
+import TeamMemberCard from '@/components/team/TeamMemberCard';
 
 const CoreTeamPage: React.FC = () => {
-  const { t, isRTL, language } = useLanguage();
+  const { t, language } = useLanguage();
+
+  // Founder data configuration
+  const founderData = {
+    imageSrc: "/lovable-uploads/a71929a4-ce05-455b-bf7d-1626766a38cb.png",
+    imageAlt: t('founderImageAlt'),
+    name: t('founderName'),
+    title: t('founderTitle'),
+    bio: t('founderBio'),
+    companyLogoSrc: "/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png",
+    companyName: "ST🍕 Eat",
+    skills: ['programming', 'cybersecurity', 'infosecurity', 'smartcontracts', 'systemdevelopment', 'systemdesign', 'frontenddesign'],
+    interests: ['programming', 'blockchain', 'ai', 'web3', 'web5', 'innovation', 'dapp'],
+    borderGradient: "from-purple-50 to-teal-50 dark:from-gray-800 dark:to-gray-900",
+    roleEmoji: "🚀",
+    badgeBgClass: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200",
+    skillsBgClass: "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200",
+    interestsBgClass: "bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200",
+    techSkillsTitle: t('founderTechSkills'),
+    interestsTitle: t('interests')
+  };
+
+  // CTO data configuration
+  const ctoData = {
+    imageSrc: "/lovable-uploads/66f00907-d09d-4dbd-ad4d-dc8d1569f4ce.png",
+    imageAlt: t('ctoImageAlt'),
+    name: t('ctoName'),
+    title: t('ctoTitle'),
+    bio: t('ctoBio'),
+    companyLogoSrc: "/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png",
+    companyName: "ST🍕 Eat",
+    companyLink: t('ctoCompanyLink'),
+    linkText: "salla-shop.com",
+    companyDescription: language === 'en' 
+      ? "Founder, CTO and Developer at salla-shop" 
+      : "مؤسس ورئيس قسم التكنولوجيا ومطور في سلة- شوب",
+    skills: ['frontend', 'backend', 'devops', 'mobile', 'database', 'architecture', 'security'],
+    interests: ['programming', 'innovation', 'ai', 'mobiledev', 'cloudcomputing', 'cybersecurity', 'systemdesign', 'web3', 'web5', 'dapp'],
+    borderGradient: "from-teal-50 to-blue-50 dark:from-gray-800 dark:to-gray-900",
+    roleEmoji: "💻",
+    badgeBgClass: "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200",
+    skillsBgClass: "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200",
+    interestsBgClass: "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200",
+    techSkillsTitle: t('techSkills'),
+    interestsTitle: t('interests')
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
@@ -13,198 +60,13 @@ const CoreTeamPage: React.FC = () => {
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-bold text-center mb-12 text-teal-600 dark:text-teal-400">
-              {t('coreTeamTitle')}
-            </h1>
+            <TeamPageHeader />
             
-            {/* First Team Member - CEO */}
-            <div className="bg-gradient-to-br from-purple-50 to-teal-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-xl overflow-hidden mb-12">
-              <div className="p-8 md:p-12">
-                <div className="flex flex-col items-center">
-                  {/* Founder Image with animated border */}
-                  <div className="relative mb-8">
-                    <div className="absolute inset-0 bg-gradient-to-r from-teal-400 via-purple-500 to-yellow-500 rounded-full animate-pulse-slow blur-sm"></div>
-                    <div className="relative p-1 rounded-full bg-white dark:bg-gray-900">
-                      <img 
-                        src="/lovable-uploads/a71929a4-ce05-455b-bf7d-1626766a38cb.png" 
-                        alt={t('founderImageAlt')} 
-                        className="rounded-full h-48 w-48 object-cover border-4 border-white dark:border-gray-800"
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Founder Name */}
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 text-center">
-                    {t('founderName')}
-                  </h2>
-                  
-                  {/* Animated line */}
-                  <div className="w-24 h-1 bg-gradient-to-r from-teal-400 to-purple-600 rounded mb-6"></div>
-                  
-                  {/* Founder Role with rocket emoji */}
-                  <div className="inline-flex items-center px-4 py-2 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 font-medium mb-8">
-                    <span className="mr-2">🚀</span>
-                    {t('founderTitle')}
-                  </div>
-                  
-                  {/* Pizza Logo Reference */}
-                  <div className="flex items-center justify-center mb-6">
-                    <img 
-                      src="/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png" 
-                      alt="ST Pizza Logo" 
-                      className="h-10 w-10 mr-2"
-                    />
-                    <span className="text-lg font-semibold text-yellow-800 dark:text-yellow-200">
-                      ST🍕 Eat
-                    </span>
-                  </div>
-                  
-                  {/* Founder Bio */}
-                  <p className={`text-lg leading-relaxed text-gray-700 dark:text-gray-300 mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
-                    {t('founderBio')}
-                  </p>
-                  
-                  {/* Technical Expertise Section - New Addition */}
-                  <div className="w-full mb-8">
-                    <h3 className={`text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {t('founderTechSkills')}
-                    </h3>
-                    <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                      {['programming', 'cybersecurity', 'infosecurity', 'smartcontracts', 'systemdevelopment', 'systemdesign', 'frontenddesign'].map((skill) => (
-                        <span
-                          key={skill}
-                          className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 transition-transform hover:scale-110"
-                        >
-                          {t(`skill${skill.charAt(0).toUpperCase() + skill.slice(1)}`)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Skills/Interests Section */}
-                  <div className="w-full">
-                    <h3 className={`text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {t('interests')}
-                    </h3>
-                    <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                      {['programming', 'blockchain', 'ai', 'web3', 'web5', 'innovation', 'dapp'].map((skill) => (
-                        <span
-                          key={skill}
-                          className="px-3 py-1 rounded-full text-sm font-medium bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200 transition-transform hover:scale-110"
-                        >
-                          {t(`skill${skill.charAt(0).toUpperCase() + skill.slice(1)}`)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Founder Card */}
+            <TeamMemberCard {...founderData} />
             
-            {/* Second Team Member - CTO */}
-            <div className="bg-gradient-to-br from-teal-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-xl overflow-hidden mb-12">
-              <div className="p-8 md:p-12">
-                <div className="flex flex-col items-center">
-                  {/* CTO Image with animated border */}
-                  <div className="relative mb-8">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-teal-500 to-green-500 rounded-full animate-pulse-slow blur-sm"></div>
-                    <div className="relative p-1 rounded-full bg-white dark:bg-gray-900">
-                      <img 
-                        src="/lovable-uploads/66f00907-d09d-4dbd-ad4d-dc8d1569f4ce.png" 
-                        alt={t('ctoImageAlt')} 
-                        className="rounded-full h-48 w-48 object-cover border-4 border-white dark:border-gray-800"
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* CTO Name */}
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 text-center">
-                    {t('ctoName')}
-                  </h2>
-                  
-                  {/* Animated line */}
-                  <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-teal-600 rounded mb-6"></div>
-                  
-                  {/* CTO Role with coding emoji */}
-                  <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium mb-8">
-                    <span className="mr-2">💻</span>
-                    {t('ctoTitle')}
-                  </div>
-                  
-                  {/* Pizza Logo Reference */}
-                  <div className="flex items-center justify-center mb-6">
-                    <img 
-                      src="/lovable-uploads/5483091a-e5bd-4397-9e86-24fb0ce87243.png" 
-                      alt="ST Pizza Logo" 
-                      className="h-10 w-10 mr-2"
-                    />
-                    <span className="text-lg font-semibold text-blue-800 dark:text-blue-200">
-                      ST🍕 Eat
-                    </span>
-                  </div>
-
-                  {/* Modified text under ST Pizza Logo - now language-dependent */}
-                  <div className="text-gray-700 dark:text-gray-300 mb-6 text-center">
-                    {language === 'en' ? (
-                      <p>Founder, CTO and Developer at <span className="text-teal-600 dark:text-teal-400">salla-shop</span></p>
-                    ) : (
-                      <p>مؤسس ورئيس قسم التكنولوجيا ومطور في <span className="text-teal-600 dark:text-teal-400">سلة- شوب</span></p>
-                    )}
-                  </div>
-                  
-                  {/* External Link */}
-                  <div className="mb-6">
-                    <a 
-                      href={t('ctoCompanyLink')} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-teal-600 dark:text-teal-400 hover:underline flex items-center"
-                    >
-                      <span className="mr-1">🔗</span> salla-shop.com
-                    </a>
-                  </div>
-                  
-                  {/* CTO Bio */}
-                  <p className={`text-lg leading-relaxed text-gray-700 dark:text-gray-300 mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
-                    {t('ctoBio')}
-                  </p>
-                  
-                  {/* Skills/Interests Section */}
-                  <div className="w-full">
-                    <h3 className={`text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {t('techSkills')}
-                    </h3>
-                    <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                      {['frontend', 'backend', 'devops', 'mobile', 'database', 'architecture', 'security'].map((skill) => (
-                        <span
-                          key={skill}
-                          className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 transition-transform hover:scale-110"
-                        >
-                          {t(`skill${skill.charAt(0).toUpperCase() + skill.slice(1)}`)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Personal Interests Section - Modified to include new interests */}
-                  <div className="w-full mt-8">
-                    <h3 className={`text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {t('interests')}
-                    </h3>
-                    <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                      {['programming', 'innovation', 'ai', 'mobiledev', 'cloudcomputing', 'cybersecurity', 'systemdesign', 'web3', 'web5', 'dapp'].map((interest) => (
-                        <span
-                          key={interest}
-                          className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 transition-transform hover:scale-110"
-                        >
-                          {t(`skill${interest.charAt(0).toUpperCase() + interest.slice(1)}`)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* CTO Card */}
+            <TeamMemberCard {...ctoData} />
           </div>
         </div>
       </main>
@@ -214,4 +76,3 @@ const CoreTeamPage: React.FC = () => {
 };
 
 export default CoreTeamPage;
-
