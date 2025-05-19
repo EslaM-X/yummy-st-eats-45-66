@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   BarChart,
@@ -26,7 +25,7 @@ const AdminDashboard: React.FC = () => {
     { id: 'ORD-7245', customer: 'عبدالله خالد', amount: 89, status: 'قيد التحضير', time: 'منذ 35 دقيقة' },
     { id: 'ORD-7246', customer: 'سارة علي', amount: 120, status: 'مكتمل', time: 'منذ 45 دقيقة' },
     { id: 'ORD-7247', customer: 'محمد عمر', amount: 240, status: 'ملغي', time: 'منذ ساعة' },
-  ] as const;
+  ];
 
   // Mock data for top restaurants
   const topRestaurants = [
