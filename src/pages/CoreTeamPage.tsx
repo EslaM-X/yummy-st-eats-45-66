@@ -64,6 +64,23 @@ const CoreTeamPage: React.FC = () => {
                     {t('founderBio')}
                   </p>
                   
+                  {/* Technical Expertise Section - New Addition */}
+                  <div className="w-full mb-8">
+                    <h3 className={`text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {t('founderTechSkills')}
+                    </h3>
+                    <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                      {['programming', 'cybersecurity', 'infosecurity', 'smartcontracts', 'systemdevelopment', 'systemdesign', 'frontenddesign'].map((skill) => (
+                        <span
+                          key={skill}
+                          className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 transition-transform hover:scale-110"
+                        >
+                          {t(`skill${skill.charAt(0).toUpperCase() + skill.slice(1)}`)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  
                   {/* Skills/Interests Section */}
                   <div className="w-full">
                     <h3 className={`text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 ${isRTL ? 'text-right' : 'text-left'}`}>
