@@ -1,3 +1,4 @@
+
 {
   "home": "الرئيسية",
   "deliverySlogan": "أشهى الأطعمة تصلك أينما كنت!",
@@ -61,6 +62,20 @@
   "instagram": "انستجرام",
   "allRightsReserved": "جميع الحقوق محفوظة",
   "createdBy": "تطبيق تجريبي تم إنشاؤه بواسطة",
+  
+  "coreTeam": "الفريق المؤسس",
+  "coreTeamTitle": "الفريق المؤسس",
+  "founderName": "مؤسس تطبيق ST Eats",
+  "founderTitle": "المؤسس والرئيس التنفيذي",
+  "founderImageAlt": "صورة المؤسس",
+  "founderBio": "خبير تقني متحمس ومبتكر، متخصص في تطوير منصات الويب والتطبيقات بتقنيات البلوكتشين. يسعى دائماً لإنشاء حلول تكنولوجية تحدث تأثيراً إيجابياً في المجتمع وتحسن حياة الناس.",
+  "interests": "الاهتمامات",
+  "skillProgramming": "البرمجة",
+  "skillBlockchain": "البلوكتشين",
+  "skillAi": "الذكاء الاصطناعي",
+  "skillWeb3": "ويب 3",
+  "skillWeb5": "ويب 5",
+  "skillInnovation": "الابتكار",
 
   "addYourFood": "أضف طعامك",
   "addFoodPageTitle": "أضف طعامك الخاص",

@@ -25,7 +25,7 @@ const CoreTeamPage: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-teal-400 via-purple-500 to-yellow-500 rounded-full animate-pulse-slow blur-sm"></div>
                     <div className="relative p-1 rounded-full bg-white dark:bg-gray-900">
                       <img 
-                        src="/lovable-uploads/6c2261eb-dadf-4443-972b-0bf6428e6c83.png" 
+                        src="/lovable-uploads/a71929a4-ce05-455b-bf7d-1626766a38cb.png" 
                         alt={t('founderImageAlt')} 
                         className="rounded-full h-48 w-48 object-cover border-4 border-white dark:border-gray-800"
                       />
