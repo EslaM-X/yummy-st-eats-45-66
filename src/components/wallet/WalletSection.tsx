@@ -73,13 +73,14 @@ const WalletSection: React.FC<WalletSectionProps> = ({
             icon="🎁" 
             title="قسائم الخصم" 
             description="وفر على طلباتك القادمة"
-            path="#"
+            path="/rewards"
           />
           <QuickLinkCard 
             icon="💳" 
-            title="طرق الدفع" 
-            description="أضف أو عدل طرق الدفع"
-            path="#"
+            title="واجهة برمجة البطاقات" 
+            description="وثائق API للمطورين"
+            path="https://salla-shop.com/salla-developer/"
+            isExternal={true}
           />
           <QuickLinkCard 
             icon="⭐" 

@@ -1,9 +1,8 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Copy, Eye, EyeOff, RefreshCw, Check } from 'lucide-react';
+import { CreditCard, Copy, Eye, EyeOff, Check, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface VirtualCardProps {
@@ -121,11 +120,20 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
             </div>
           </div>
         </CardContent>
-        <CardFooter className="bg-black/20 flex justify-center py-3">
-          <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse">
+        <CardFooter className="bg-black/20 flex justify-between items-center py-3">
+          <div className="flex items-center space-x-2 rtl:space-x-reverse">
             <CreditCard className="h-5 w-5 text-gray-200" />
             <span className="text-sm text-gray-200">VISA</span>
           </div>
+          <a 
+            href="https://salla-shop.com/salla-developer/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-xs flex items-center text-gray-200 hover:text-white transition-colors"
+          >
+            <span className="ml-1 rtl:mr-1 rtl:ml-0">مطور Salla</span>
+            <ExternalLink size={12} />
+          </a>
         </CardFooter>
       </div>
     </Card>

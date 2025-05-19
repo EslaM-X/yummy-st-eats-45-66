@@ -3,26 +3,40 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from '@/hooks/use-toast';
+import { VirtualCardService, PaymentRequest, RefundRequest } from '@/services/VirtualCardService';
 
 // نموذج التحقق لمعاملة الدفع
 const paymentSchema = z.object({
-  card_number: z.string().min(16, "رقم البطاقة يجب أن يكون 16 رقماً").max(19),
-  cvv: z.string().min(3, "الرمز السري يجب أن يكون 3 أرقام").max(4),
-  amount: z.coerce.number().min(1, "المبلغ يجب أن يكون أكبر من 0"),
+  card_number: z.string()
+    .min(16, "رقم البطاقة يجب أن يكون 16 رقماً")
+    .max(19)
+    .refine(val => VirtualCardService.isCardNumberValid(val), {
+      message: "رقم البطاقة غير صالح"
+    }),
+  cvv: z.string()
+    .min(3, "الرمز السري يجب أن يكون 3 أرقام")
+    .max(4)
+    .refine(val => VirtualCardService.isCvvValid(val), {
+      message: "رمز CVV غير صالح"
+    }),
+  amount: z.coerce.number()
+    .min(1, "المبلغ يجب أن يكون أكبر من 0")
+    .multipleOf(0.00001, "الدقة المطلوبة هي 5 أرقام عشرية"),
   order_id: z.coerce.number().min(1, "رقم الطلب مطلوب")
 });
 
 // نموذج التحقق لمعاملة الاسترداد
 const refundSchema = z.object({
   order_id: z.coerce.number().min(1, "رقم الطلب مطلوب"),
-  amount: z.coerce.number().min(1, "المبلغ يجب أن يكون أكبر من 0")
+  amount: z.coerce.number()
+    .min(1, "المبلغ يجب أن يكون أكبر من 0")
+    .multipleOf(0.00001, "الدقة المطلوبة هي 5 أرقام عشرية")
 });
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
@@ -63,19 +77,24 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     },
   });
 
-  // عملية الدفع - محاكاة فقط
+  // معالجة عملية الدفع باستخدام API
   const handlePayment = async (values: PaymentFormValues) => {
     setLoading(true);
     try {
-      // هنا سيتم إرسال البيانات إلى الـ API
-      console.log("إرسال معاملة دفع:", values);
+      // تنسيق البيانات للواجهة البرمجية
+      const paymentData: PaymentRequest = {
+        card_number: values.card_number.replace(/\s+/g, ''),
+        cvv: values.cvv,
+        amount: Number(values.amount.toFixed(5)),
+        order_id: values.order_id
+      };
       
-      // محاكاة طلب API - في التطبيق الحقيقي سيكون هناك اتصال فعلي بـ API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // إرسال طلب الدفع
+      const response = await VirtualCardService.createPaymentTransaction(paymentData);
       
       toast({
         title: "تمت المعاملة بنجاح",
-        description: `تم دفع ${values.amount} ST بنجاح. معرف المعاملة: TXN-${Math.floor(Math.random() * 1000)}`,
+        description: `تم دفع ${values.amount} ST بنجاح. معرف المعاملة: ${response.transaction_id}`,
       });
       
       paymentForm.reset();
@@ -83,7 +102,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     } catch (error) {
       toast({
         title: "فشلت المعاملة",
-        description: "حدث خطأ أثناء معالجة المعاملة. يرجى المحاولة مرة أخرى.",
+        description: error instanceof Error ? error.message : "حدث خطأ أثناء معالجة المعاملة. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
     } finally {
@@ -91,19 +110,22 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     }
   };
 
-  // عملية الاسترداد - محاكاة فقط
+  // معالجة عملية الاسترداد باستخدام API
   const handleRefund = async (values: RefundFormValues) => {
     setLoading(true);
     try {
-      // هنا سيتم إرسال البيانات إلى الـ API
-      console.log("إرسال معاملة استرداد:", values);
+      // تنسيق البيانات للواجهة البرمجية
+      const refundData: RefundRequest = {
+        order_id: values.order_id,
+        amount: Number(values.amount.toFixed(5))
+      };
       
-      // محاكاة طلب API - في التطبيق الحقيقي سيكون هناك اتصال فعلي بـ API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // إرسال طلب الاسترداد
+      const response = await VirtualCardService.createRefundTransaction(refundData);
       
       toast({
         title: "تم الاسترداد بنجاح",
-        description: `تم استرداد ${values.amount} ST بنجاح. معرف المعاملة: REF-${Math.floor(Math.random() * 1000)}`,
+        description: `تم استرداد ${values.amount} ST بنجاح. معرف المعاملة: REF-${response.refund_txn_id}`,
       });
       
       refundForm.reset();
@@ -111,7 +133,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     } catch (error) {
       toast({
         title: "فشل الاسترداد",
-        description: "حدث خطأ أثناء معالجة عملية الاسترداد. يرجى المحاولة مرة أخرى.",
+        description: error instanceof Error ? error.message : "حدث خطأ أثناء معالجة عملية الاسترداد. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
     } finally {
@@ -123,7 +145,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     <Card>
       <CardHeader>
         <CardTitle>معاملات بطاقة ST</CardTitle>
-        <CardDescription>يمكنك إجراء عمليات الدفع أو الاسترداد</CardDescription>
+        <CardDescription>يمكنك إجراء عمليات الدفع أو الاسترداد باستخدام API المركزي</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -143,7 +165,19 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                       <FormItem>
                         <FormLabel>رقم البطاقة</FormLabel>
                         <FormControl>
-                          <Input placeholder="XXXX XXXX XXXX XXXX" {...field} />
+                          <Input 
+                            placeholder="XXXX XXXX XXXX XXXX" 
+                            {...field} 
+                            onChange={(e) => {
+                              // تنسيق رقم البطاقة أثناء الكتابة (إضافة مسافات)
+                              const value = e.target.value.replace(/\s+/g, '').substring(0, 16);
+                              const parts = [];
+                              for (let i = 0; i < value.length; i += 4) {
+                                parts.push(value.substring(i, i + 4));
+                              }
+                              field.onChange(parts.join(' '));
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -157,7 +191,15 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                       <FormItem>
                         <FormLabel>رمز CVV</FormLabel>
                         <FormControl>
-                          <Input placeholder="123" {...field} maxLength={4} />
+                          <Input 
+                            placeholder="123" 
+                            {...field} 
+                            maxLength={4} 
+                            onChange={(e) => {
+                              // السماح بالأرقام فقط
+                              field.onChange(e.target.value.replace(/\D/g, ''));
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -173,7 +215,16 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                       <FormItem>
                         <FormLabel>المبلغ (ST)</FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" min="1" {...field} />
+                          <Input 
+                            type="number" 
+                            step="0.00001" 
+                            min="1" 
+                            {...field}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              field.onChange(isNaN(value) ? 0 : value);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -187,7 +238,15 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                       <FormItem>
                         <FormLabel>رقم الطلب</FormLabel>
                         <FormControl>
-                          <Input type="number" min="1" {...field} />
+                          <Input 
+                            type="number" 
+                            min="1" 
+                            {...field}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              field.onChange(isNaN(value) ? 0 : value);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -213,7 +272,15 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                       <FormItem>
                         <FormLabel>رقم الطلب</FormLabel>
                         <FormControl>
-                          <Input type="number" min="1" {...field} />
+                          <Input 
+                            type="number" 
+                            min="1" 
+                            {...field}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              field.onChange(isNaN(value) ? 0 : value);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -227,7 +294,16 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                       <FormItem>
                         <FormLabel>المبلغ (ST)</FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" min="1" {...field} />
+                          <Input 
+                            type="number" 
+                            step="0.00001" 
+                            min="1" 
+                            {...field}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              field.onChange(isNaN(value) ? 0 : value);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -244,8 +320,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         </Tabs>
       </CardContent>
       <CardFooter className="flex flex-col text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50">
-        <p className="mb-1">🔑 جميع المعاملات تتطلب مصادقة وتتم بشكل آمن.</p>
-        <p>💡 تتم معالجة المدفوعات والاستردادات بدقة 5 خانات عشرية.</p>
+        <p className="mb-1">🔑 جميع المعاملات تتم بواسطة واجهة برمجة التطبيقات المركزية لـ Salla.</p>
+        <p>💡 تتم معالجة المدفوعات والاستردادات بدقة 5 خانات عشرية كما هو مطلوب.</p>
       </CardFooter>
     </Card>
   );
