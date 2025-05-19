@@ -22,7 +22,6 @@ const Header: React.FC = () => {
     { title: t('restaurants'), path: "/restaurants" },
     { title: t('products'), path: "/products" },
     { title: t('rewards'), path: "/rewards" },
-    { title: t('wallet'), path: "/wallet" },
   ];
 
   const isActive = (path: string) => {

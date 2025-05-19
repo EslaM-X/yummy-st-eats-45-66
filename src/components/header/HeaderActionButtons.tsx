@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Moon, Wallet, Menu, X, Award, Globe } from "lucide-react";
+import { ShoppingCart, Moon, Menu, X, Award, Globe } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
@@ -75,20 +75,6 @@ const HeaderActionButtons: React.FC<HeaderActionButtonsProps> = ({
           aria-label={t('rewards')}
         >
           <Award className="h-4 w-4 sm:h-5 sm:w-5" />
-        </Button>
-      </Link>
-      
-      <Link to="/wallet">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className={cn(
-            "relative text-gray-600 dark:text-gray-300 hover:text-yellow-800 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 h-8 w-8",
-            isActive('/wallet') && "bg-yellow-50 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-500"
-          )}
-          aria-label={t('wallet')}
-        >
-          <Wallet className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
       </Link>
       
