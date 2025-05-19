@@ -5,13 +5,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '@/contexts/CartContext';
 
 interface PaymentButtonProps {
   amount: number;
   productName?: string;
   className?: string;
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | null | undefined;
-  cartItems?: any[];
+  useCartItems?: boolean;
 }
 
 const PaymentButton = ({ 
@@ -19,19 +20,29 @@ const PaymentButton = ({
   productName, 
   className, 
   variant = "default",
-  cartItems = []
+  useCartItems = false
 }: PaymentButtonProps) => {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { cartItems } = useCart();
 
   const handlePayment = () => {
+    if (useCartItems && cartItems.length === 0) {
+      toast({
+        title: t('cartEmpty'),
+        description: t('noProductsInCart'),
+        variant: "destructive"
+      });
+      return;
+    }
+    
     // Navigate to checkout page with product details
     navigate('/checkout', { 
       state: { 
         amount: amount,
-        cartItems: cartItems.length ? cartItems : [
+        cartItems: useCartItems ? cartItems : [
           {
             id: Math.random().toString(36).substring(7),
             name: productName || t('product'),

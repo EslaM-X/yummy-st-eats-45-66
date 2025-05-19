@@ -20,6 +20,7 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import CookiePolicyPage from "./pages/CookiePolicyPage";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { CartProvider } from "@/contexts/CartContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,27 +35,29 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light" storageKey="st-eats-theme">
       <LanguageProvider>
-        <BrowserRouter>
-          <TooltipProvider>
-            <Toaster />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/restaurants" element={<RestaurantsPage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/rewards" element={<RewardsPage />} />
-              <Route path="/add-food" element={<AddFoodPage />} />
-              <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
-              <Route path="/admin-login" element={<AdminLoginPage />} />
-              <Route path="/admin" element={<AdminPage />} />
-              <Route path="/terms-conditions" element={<TermsConditionsPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </TooltipProvider>
-        </BrowserRouter>
+        <CartProvider>
+          <BrowserRouter>
+            <TooltipProvider>
+              <Toaster />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/restaurants" element={<RestaurantsPage />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/rewards" element={<RewardsPage />} />
+                <Route path="/add-food" element={<AddFoodPage />} />
+                <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
+                <Route path="/admin-login" element={<AdminLoginPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </TooltipProvider>
+          </BrowserRouter>
+        </CartProvider>
       </LanguageProvider>
     </ThemeProvider>
   </QueryClientProvider>

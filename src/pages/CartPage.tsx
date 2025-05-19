@@ -7,68 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Minus } from "lucide-react";
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCart } from '@/contexts/CartContext';
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [cartItems, setCartItems] = React.useState([
-    { 
-      id: 1, 
-      name: 'بيتزا مارغريتا', 
-      price: 50, 
-      quantity: 1, 
-      imageUrl: '/lovable-uploads/photo-1618160702438-9b02ab6515c9.png',
-      restaurant: 'بيتزا بلس'
-    },
-    { 
-      id: 2, 
-      name: 'طبق شاورما دجاج', 
-      price: 75, 
-      quantity: 2, 
-      imageUrl: '/lovable-uploads/photo-1506744038136-46273834b3fb.png',
-      restaurant: 'مطعم الأصيل'
-    },
-    { 
-      id: 3, 
-      name: 'برجر لحم مشوي', 
-      price: 85, 
-      quantity: 1, 
-      imageUrl: '/lovable-uploads/photo-1469041797191-50ace28483c3.png',
-      restaurant: 'برجر فاكتوري'
-    },
-  ]);
-
-  const updateQuantity = (id: number, action: 'increase' | 'decrease') => {
-    setCartItems(prevItems => 
-      prevItems.map(item => {
-        if (item.id === id) {
-          if (action === 'decrease' && item.quantity === 1) {
-            return item;
-          }
-          return {
-            ...item,
-            quantity: action === 'increase' ? item.quantity + 1 : item.quantity - 1
-          };
-        }
-        return item;
-      })
-    );
-  };
-
-  const removeItem = (id: number) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-    toast.success(t('itemRemovedFromCart'));
-  };
-
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+  const { cartItems, removeFromCart, updateQuantity, totalAmount } = useCart();
 
   const handleCheckout = () => {
-    // انتقل إلى صفحة الدفع مع تمرير معلومات السلة
+    // Navigate to checkout page with cart information
     navigate('/checkout', { 
       state: { 
-        amount: calculateTotal() + 15, // المجموع + رسوم التوصيل
+        amount: totalAmount + 15, // Total + delivery fee
         cartItems 
       } 
     });
@@ -126,7 +76,7 @@ const CartPage: React.FC = () => {
                             </button>
                           </div>
                           <button
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeFromCart(item.id)}
                             className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                             aria-label={t('removeFromCart')}
                           >
@@ -146,7 +96,7 @@ const CartPage: React.FC = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-300">{t('subtotal')}:</span>
-                      <span className="text-gray-800 dark:text-white font-medium">{calculateTotal()} ST</span>
+                      <span className="text-gray-800 dark:text-white font-medium">{totalAmount} ST</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-300">{t('deliveryFee')}:</span>
@@ -155,7 +105,7 @@ const CartPage: React.FC = () => {
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
                       <div className="flex justify-between">
                         <span className="text-lg font-bold text-gray-800 dark:text-white">{t('total')}:</span>
-                        <span className="text-lg font-bold text-yellow-800 dark:text-yellow-500">{calculateTotal() + 15} ST</span>
+                        <span className="text-lg font-bold text-yellow-800 dark:text-yellow-500">{totalAmount + 15} ST</span>
                       </div>
                     </div>
                     

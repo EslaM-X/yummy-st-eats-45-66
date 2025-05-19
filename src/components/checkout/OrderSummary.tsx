@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { CartItem } from '@/contexts/CartContext';
 
 interface OrderSummaryProps {
-  cartItems: any[];
+  cartItems: CartItem[];
   amount: number;
   orderId?: number;
   onRefundClick?: () => void;

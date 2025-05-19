@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Star, Heart, Award, Tag, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { Product } from '@/types';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCart } from '@/contexts/CartContext';
 
 interface ProductCardProps {
   product: Product;
@@ -13,21 +14,39 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { t } = useLanguage();
+  const { addToCart, cartItems } = useCart();
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isLoadingCart, setIsLoadingCart] = useState(false);
+  
+  // Check if product is already in cart
+  useEffect(() => {
+    const isInCart = cartItems.some(item => item.id === product.id);
+    setIsAddedToCart(isInCart);
+  }, [cartItems, product.id]);
   
   const handleAddToCart = () => {
     if (isAddedToCart) return;
     
     setIsLoadingCart(true);
+    
+    // Extract the numeric price from the string (e.g., "50 ST" -> 50)
+    const numericPrice = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+    
+    // Create cart item from product
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: numericPrice,
+      quantity: 1,
+      imageUrl: product.imageUrl,
+      restaurant: product.restaurant
+    };
+    
     // Simulate API call
     setTimeout(() => {
+      addToCart(cartItem);
       setIsAddedToCart(true);
       setIsLoadingCart(false);
-      toast({
-        title: `${t('added')} ${product.name} ${t('toCart')}`,
-        variant: "default",
-      });
     }, 600);
   };
 
@@ -35,7 +54,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     e.stopPropagation();
     toast({
       title: `${product.isFavorite ? t('removedFromFavorites') : t('addedToFavorites')} ${product.name} ${product.isFavorite ? t('from') : t('to')} ${t('favorite')}`,
-      variant: "default",
     });
   };
 
