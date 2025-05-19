@@ -68,7 +68,7 @@ const CheckoutPage: React.FC = () => {
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               {paymentComplete 
-                ? t('orderCompletedMessage', { orderId }) 
+                ? t('orderCompletedMessage') 
                 : t('enterCardDetails')
               }
             </p>
