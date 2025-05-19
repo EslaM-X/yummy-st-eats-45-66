@@ -6,8 +6,7 @@ import Footer from '@/components/Footer';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import RefundDialog from '@/components/checkout/RefundDialog';
-import { Dialog } from '@/components/ui/dialog';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface LocationState {
   amount: number;
@@ -18,16 +17,20 @@ const CheckoutPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [orderId] = useState(Math.floor(Math.random() * 100000)); // إنشاء معرف طلب عشوائي للعرض
-  const { amount, cartItems } = (location.state as LocationState) || { amount: 0, cartItems: [] };
+  const { toast } = useToast();
+  
+  // استخراج البيانات من location.state بشكل آمن مع قيم افتراضية
+  const { amount = 0, cartItems = [] } = (location.state as LocationState) || {};
+  
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
 
   // إذا لم يتم تمرير معلومات من السلة، نعيد التوجيه إلى صفحة السلة
   useEffect(() => {
-    if (!location.state) {
+    if (!location.state || amount <= 0) {
       navigate('/cart');
     }
-  }, [location.state, navigate]);
+  }, [location.state, navigate, amount]);
 
   // دالة لمعالجة نجاح عملية الدفع
   const handlePaymentSuccess = () => {

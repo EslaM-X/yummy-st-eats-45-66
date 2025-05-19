@@ -54,6 +54,15 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
   });
 
   const handleRefund = async (values: RefundFormValues) => {
+    if (!values.order_id || values.amount <= 0) {
+      toast({
+        title: "بيانات غير صالحة",
+        description: "يرجى التأكد من إدخال رقم الطلب والمبلغ بشكل صحيح",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       // تنسيق البيانات للواجهة البرمجية
