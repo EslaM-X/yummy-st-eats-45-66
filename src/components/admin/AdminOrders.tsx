@@ -1,36 +1,10 @@
 
 import React, { useState } from 'react';
-import { Search, Filter, Eye, RefreshCw, Check, X, Map, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
-
-interface Order {
-  id: string;
-  customer: {
-    name: string;
-    address: string;
-    phone: string;
-  };
-  restaurant: {
-    name: string;
-    address: string;
-  };
-  items: {
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
-  status: 'جديد' | 'قيد التحضير' | 'قيد التوصيل' | 'مكتمل' | 'ملغي';
-  paymentMethod: 'بطاقة' | 'نقداً عند الاستلام' | 'محفظة إلكترونية';
-  total: number;
-  orderDate: string;
-  deliveryTime: string | null;
-}
+import OrdersFilter from './orders/OrdersFilter';
+import OrdersTable from './orders/OrdersTable';
+import { Order } from '@/types/admin';
 
 const AdminOrders: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -186,165 +160,26 @@ const AdminOrders: React.FC = () => {
     });
   };
 
-  // Get status badge style
-  const getStatusBadge = (status: Order['status']) => {
-    switch (status) {
-      case 'جديد':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'قيد التحضير':
-        return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300';
-      case 'قيد التوصيل':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-      case 'مكتمل':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'ملغي':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-    }
-  };
-
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <CardTitle>الطلبات</CardTitle>
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="بحث عن طلب..."
-                className="pl-8 pr-4 w-full"
-              />
-            </div>
-            <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="تصفية حسب التاريخ" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">جميع الأيام</SelectItem>
-                <SelectItem value="today">اليوم</SelectItem>
-                <SelectItem value="yesterday">الأمس</SelectItem>
-                <SelectItem value="week">آخر 7 أيام</SelectItem>
-                <SelectItem value="month">آخر 30 يوم</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <OrdersFilter 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            selectedTab={selectedTab}
+            onTabChange={setSelectedTab}
+            dateFilter={dateFilter}
+            onDateFilterChange={setDateFilter}
+          />
         </CardHeader>
         <CardContent>
-          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-6">
-            <TabsList className="grid grid-cols-3 md:grid-cols-6 w-full">
-              <TabsTrigger value="all">الكل</TabsTrigger>
-              <TabsTrigger value="new">جديد</TabsTrigger>
-              <TabsTrigger value="preparing">قيد التحضير</TabsTrigger>
-              <TabsTrigger value="delivering">قيد التوصيل</TabsTrigger>
-              <TabsTrigger value="completed">مكتمل</TabsTrigger>
-              <TabsTrigger value="cancelled">ملغي</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b dark:border-gray-700">
-                  <th className="px-4 py-3 text-right rtl:text-left">رقم الطلب</th>
-                  <th className="px-4 py-3 text-right rtl:text-left">العميل</th>
-                  <th className="px-4 py-3 text-right rtl:text-left">المطعم</th>
-                  <th className="px-4 py-3 text-right rtl:text-left">المبلغ</th>
-                  <th className="px-4 py-3 text-right rtl:text-left">الحالة</th>
-                  <th className="px-4 py-3 text-right rtl:text-left">التاريخ</th>
-                  <th className="px-4 py-3 text-center">الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredOrders.length > 0 ? (
-                  filteredOrders.map((order) => (
-                    <tr key={order.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <td className="px-4 py-3 text-sm font-medium">{order.id}</td>
-                      <td className="px-4 py-3">
-                        <div>
-                          <p className="font-medium">{order.customer.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{order.customer.phone}</p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm">{order.restaurant.name}</td>
-                      <td className="px-4 py-3 text-sm font-semibold">{order.total} ST</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(order.status)}`}>
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{order.orderDate}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-center space-x-2 rtl:space-x-reverse">
-                          <Button variant="ghost" size="sm" onClick={() => handleViewOrder(order.id)}>
-                            <Eye className="h-4 w-4" />
-                            <span className="sr-only">عرض</span>
-                          </Button>
-                          
-                          {order.status === 'جديد' && (
-                            <>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="text-amber-600 hover:text-amber-700 hover:bg-amber-100"
-                                onClick={() => handleUpdateStatus(order.id, 'قيد التحضير')}
-                              >
-                                <RefreshCw className="h-4 w-4" />
-                                <span className="sr-only">بدء التحضير</span>
-                              </Button>
-                              
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="text-red-600 hover:text-red-700 hover:bg-red-100"
-                                onClick={() => handleUpdateStatus(order.id, 'ملغي')}
-                              >
-                                <X className="h-4 w-4" />
-                                <span className="sr-only">إلغاء</span>
-                              </Button>
-                            </>
-                          )}
-                          
-                          {order.status === 'قيد التحضير' && (
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-purple-600 hover:text-purple-700 hover:bg-purple-100"
-                              onClick={() => handleUpdateStatus(order.id, 'قيد التوصيل')}
-                            >
-                              <Map className="h-4 w-4" />
-                              <span className="sr-only">بدء التوصيل</span>
-                            </Button>
-                          )}
-                          
-                          {order.status === 'قيد التوصيل' && (
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-green-600 hover:text-green-700 hover:bg-green-100"
-                              onClick={() => handleUpdateStatus(order.id, 'مكتمل')}
-                            >
-                              <Check className="h-4 w-4" />
-                              <span className="sr-only">إكمال</span>
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                      لا يوجد طلبات مطابقة لمعايير البحث
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+          <OrdersTable 
+            orders={filteredOrders} 
+            onViewOrder={handleViewOrder}
+            onUpdateStatus={handleUpdateStatus}
+          />
         </CardContent>
       </Card>
     </div>

@@ -23,10 +23,6 @@ const Index: React.FC = () => {
     navigate('/register-restaurant');
   };
 
-  const handleAdminAccess = () => {
-    navigate('/admin');
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       <Header />
@@ -80,17 +76,6 @@ const Index: React.FC = () => {
                         <span className="relative flex items-center gap-2">
                           <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
                           {t('registerRestaurant')}
-                        </span>
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="lg" 
-                      onClick={handleAdminAccess}
-                      className="border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-semibold px-10 py-3 text-lg dark:border-teal-500 dark:text-teal-500 dark:hover:bg-teal-500 font-cairo relative group overflow-hidden">
-                        <span className="absolute inset-0 w-0 bg-teal-600 transition-all duration-500 ease-out group-hover:w-full"></span>
-                        <span className="relative flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-teal-500 animate-pulse"></span>
-                          لوحة الإدارة
                         </span>
                     </Button>
                 </div>
