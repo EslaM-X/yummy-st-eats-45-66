@@ -93,7 +93,7 @@ const CoreTeamPage: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-teal-500 to-green-500 rounded-full animate-pulse-slow blur-sm"></div>
                     <div className="relative p-1 rounded-full bg-white dark:bg-gray-900">
                       <img 
-                        src="/lovable-uploads/b1796902-3206-4112-a199-07b14b0b76de.png" 
+                        src="/lovable-uploads/66f00907-d09d-4dbd-ad4d-dc8d1569f4ce.png" 
                         alt={t('ctoImageAlt')} 
                         className="rounded-full h-48 w-48 object-cover border-4 border-white dark:border-gray-800"
                       />
