@@ -33,9 +33,15 @@ interface CheckoutFormProps {
   amount: number;
   orderId: number;
   cartItems: any[];
+  onSuccess?: () => void;
 }
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({ amount, orderId, cartItems }) => {
+const CheckoutForm: React.FC<CheckoutFormProps> = ({ 
+  amount, 
+  orderId, 
+  cartItems,
+  onSuccess 
+}) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -89,10 +95,15 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ amount, orderId, cartItems 
         description: `معرف المعاملة: ${response.transaction_id}`,
       });
       
-      // انتظار لحظة قبل الانتقال
-      setTimeout(() => {
-        navigate('/', { replace: true });
-      }, 2000);
+      // استدعاء وظيفة النجاح إذا كانت موجودة
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        // انتظار لحظة قبل الانتقال
+        setTimeout(() => {
+          navigate('/', { replace: true });
+        }, 2000);
+      }
     } catch (error) {
       toast({
         title: "فشل في عملية الدفع",
