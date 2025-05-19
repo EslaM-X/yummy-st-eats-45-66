@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
@@ -26,9 +25,9 @@ const CoreTeamPage: React.FC = () => {
       'systemdevelopment', 
       'systemdesign', 
       'frontenddesign',
-      'mobiledev', // Added mobile app development
-      'projectmanagement', // Added project management
-      'technicalleadership' // Added technical leadership
+      'mobiledev', 
+      'projectmanagement', 
+      'technicalleadership'
     ],
     interests: ['programming', 'blockchain', 'ai', 'web3', 'web5', 'innovation', 'dapp'],
     borderGradient: "from-purple-50 to-teal-50 dark:from-gray-800 dark:to-gray-900",
@@ -40,9 +39,9 @@ const CoreTeamPage: React.FC = () => {
     interestsTitle: t('interests')
   };
 
-  // CTO data configuration
+  // CTO data configuration - تحديث الصورة هنا
   const ctoData = {
-    imageSrc: "/lovable-uploads/66f00907-d09d-4dbd-ad4d-dc8d1569f4ce.png",
+    imageSrc: "/lovable-uploads/48d16486-dd8b-41f1-92c6-baf1ec27c515.png", // تم تحديث الصورة
     imageAlt: t('ctoImageAlt'),
     name: t('ctoName'),
     title: t('ctoTitle'),
@@ -62,10 +61,10 @@ const CoreTeamPage: React.FC = () => {
       'database', 
       'architecture', 
       'security',
-      'mobiledev', // Added mobile app development
-      'projectmanagement', // Added project management
-      'smartcontracts', // Added smart contracts
-      'dapp' // Added decentralized application development
+      'mobiledev', 
+      'projectmanagement', 
+      'smartcontracts', 
+      'dapp' 
     ],
     interests: ['programming', 'innovation', 'ai', 'mobiledev', 'cloudcomputing', 'cybersecurity', 'systemdesign', 'web3', 'web5', 'dapp'],
     borderGradient: "from-teal-50 to-blue-50 dark:from-gray-800 dark:to-gray-900",
