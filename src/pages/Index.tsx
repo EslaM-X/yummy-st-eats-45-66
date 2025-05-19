@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -6,6 +5,7 @@ import Footer from '@/components/Footer';
 import RestaurantList from '@/components/RestaurantList';
 import { Button } from "@/components/ui/button";
 import { useLanguage } from '@/contexts/LanguageContext';
+import AdPlaceholder from '@/components/AdPlaceholder';
 
 const Index: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,7 +59,15 @@ const Index: React.FC = () => {
             </form>
           </div>
         </section>
+        
+        <section className="py-12">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <AdPlaceholder className="mb-12" />
+          </div>
+        </section>
+
         <RestaurantList />
+        
         <section className="py-16 bg-teal-50 dark:bg-gray-800">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 className="text-3xl font-bold text-teal-600 dark:text-teal-400 mb-6 font-cairo">{t('restaurantOwner')}</h2>

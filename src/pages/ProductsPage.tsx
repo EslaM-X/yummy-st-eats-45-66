@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,6 +7,7 @@ import FilterSection from '@/components/products/FilterSection';
 import ProductsGrid from '@/components/products/ProductsGrid';
 import { getCategories, getFilteredProducts } from '@/services/ProductService';
 import { Product } from '@/types';
+import AdPlaceholder from '@/components/AdPlaceholder';
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -71,6 +71,11 @@ const ProductsPage: React.FC = () => {
                 handleClearFilters={handleClearFilters}
               />
             )}
+          </div>
+
+          {/* Ad Placeholder */}
+          <div className="my-8">
+            <AdPlaceholder />
           </div>
 
           {/* Products grid */}
