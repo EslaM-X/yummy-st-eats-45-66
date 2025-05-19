@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { ShoppingCart, Star, Heart, Award, Tag } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingCart, Star, Heart, Award, Tag, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from '@/hooks/use-toast';
 import { Product } from '@/types';
@@ -13,12 +13,22 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { t } = useLanguage();
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const [isLoadingCart, setIsLoadingCart] = useState(false);
   
   const handleAddToCart = () => {
-    toast({
-      title: `${t('added')} ${product.name} ${t('toCart')}`,
-      variant: "default",
-    });
+    if (isAddedToCart) return;
+    
+    setIsLoadingCart(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsAddedToCart(true);
+      setIsLoadingCart(false);
+      toast({
+        title: `${t('added')} ${product.name} ${t('toCart')}`,
+        variant: "default",
+      });
+    }, 600);
   };
 
   const toggleFavorite = (e: React.MouseEvent) => {
@@ -113,11 +123,37 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
         
         <Button 
-          className="w-full bg-gradient-to-r from-yellow-700 to-yellow-800 hover:from-yellow-800 hover:to-yellow-900 text-white font-semibold shadow-md font-cairo"
+          className={cn(
+            "w-full relative overflow-hidden font-semibold shadow-md font-cairo",
+            isAddedToCart 
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-gradient-to-r from-yellow-700 to-yellow-800 hover:from-yellow-800 hover:to-yellow-900"
+          )}
           onClick={handleAddToCart}
+          disabled={isLoadingCart || isAddedToCart}
         >
-          <ShoppingCart className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
-          {t('addToCart')}
+          <div className={cn(
+            "flex items-center justify-center gap-2 w-full transition-all",
+            isLoadingCart && "opacity-0"
+          )}>
+            {isAddedToCart ? (
+              <>
+                <Check className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                {t('added')}
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+                {t('addToCart')}
+              </>
+            )}
+          </div>
+          
+          {isLoadingCart && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full border-2 border-t-transparent border-white animate-spin"></div>
+            </div>
+          )}
         </Button>
       </div>
     </div>

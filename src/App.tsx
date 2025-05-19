@@ -15,6 +15,9 @@ import AddFoodPage from "./pages/AddFoodPage";
 import RegisterRestaurantPage from "./pages/RegisterRestaurantPage";
 import AdminPage from "./pages/AdminPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
+import TermsConditionsPage from "./pages/TermsConditionsPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import CookiePolicyPage from "./pages/CookiePolicyPage";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
@@ -45,6 +48,9 @@ const App = () => (
               <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
               <Route path="/admin-login" element={<AdminLoginPage />} />
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/cookie-policy" element={<CookiePolicyPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>

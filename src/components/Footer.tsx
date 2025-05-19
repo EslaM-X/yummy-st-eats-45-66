@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-3 gap-4 md:gap-8 mb-8">
             <div className="text-center md:text-start">
               <h5 className="font-semibold text-base sm:text-lg text-white dark:text-gray-200 mb-3">{t('quickLinks')}</h5>
               <ul className="space-y-2">
@@ -41,9 +41,9 @@ const Footer: React.FC = () => {
             <div className="text-center md:text-start">
               <h5 className="font-semibold text-base sm:text-lg text-white dark:text-gray-200 mb-3">{t('legal')}</h5>
               <ul className="space-y-2">
-                <li><a href="#" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('termsConditions')}</a></li>
-                <li><a href="#" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('privacyPolicy')}</a></li>
-                <li><a href="#" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('cookiePolicy')}</a></li>
+                <li><Link to="/terms-conditions" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('termsConditions')}</Link></li>
+                <li><Link to="/privacy-policy" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('privacyPolicy')}</Link></li>
+                <li><Link to="/cookie-policy" className="hover:text-yellow-500 transition-colors duration-200 text-sm sm:text-base">{t('cookiePolicy')}</Link></li>
               </ul>
             </div>
             
