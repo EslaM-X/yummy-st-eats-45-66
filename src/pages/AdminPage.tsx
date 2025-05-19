@@ -1,13 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { 
-  LayoutDashboard, 
-  Users, 
-  Utensils, 
-  ShoppingBag, 
-  Settings, 
   Bell, 
   Search, 
   LogOut, 
@@ -28,9 +23,25 @@ import AdminSidebar from '@/components/admin/AdminSidebar';
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+
+  // Check if admin is authenticated
+  useEffect(() => {
+    const adminAuth = localStorage.getItem('adminAuthenticated');
+    if (adminAuth !== 'true') {
+      toast({
+        title: "غير مصرح",
+        description: "يجب تسجيل الدخول للوصول إلى لوحة الإدارة",
+        variant: "destructive",
+      });
+      navigate('/admin-login');
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [navigate, toast]);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -41,6 +52,7 @@ const AdminPage: React.FC = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('adminAuthenticated');
     toast({
       title: "تسجيل الخروج",
       description: "تم تسجيل خروجك بنجاح",
@@ -66,6 +78,10 @@ const AdminPage: React.FC = () => {
       default: return '';
     }
   };
+
+  if (!isAuthenticated) {
+    return null; // Return null while checking authentication
+  }
 
   return (
     <SidebarProvider>

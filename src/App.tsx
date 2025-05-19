@@ -14,6 +14,7 @@ import RewardsPage from "./pages/RewardsPage";
 import AddFoodPage from "./pages/AddFoodPage";
 import RegisterRestaurantPage from "./pages/RegisterRestaurantPage";
 import AdminPage from "./pages/AdminPage";
+import AdminLoginPage from "./pages/AdminLoginPage";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/rewards" element={<RewardsPage />} />
               <Route path="/add-food" element={<AddFoodPage />} />
               <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
+              <Route path="/admin-login" element={<AdminLoginPage />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
