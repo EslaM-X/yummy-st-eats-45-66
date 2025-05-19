@@ -68,9 +68,10 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
       // Send refund request
       const response = await VirtualCardService.createRefundTransaction(refundData);
       
+      // Fix: Use template literals for string interpolation instead of passing multiple arguments to t()
       toast({
         title: t('refundSuccess'),
-        description: t('refundSuccessDetail', { amount: values.amount, id: `REF-${response.refund_txn_id}` }),
+        description: t('refundSuccessDetail').replace('{amount}', values.amount.toString()).replace('{id}', `REF-${response.refund_txn_id}`),
       });
       
       form.reset();
