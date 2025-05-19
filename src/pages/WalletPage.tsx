@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Wallet, History, PlusCircle, CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import ApiDocumentation from '@/components/wallet/ApiDocumentation';
 import WalletSection from '@/components/wallet/WalletSection';
 import CardSection from '@/components/wallet/CardSection';
 import { Transaction } from '@/components/wallet/TransactionList';
@@ -71,7 +70,7 @@ const WalletPage: React.FC = () => {
             </div>
           </div>
           
-          {/* الأقسام الرئيسية: المحفظة والبطاقة الافتراضية ووثائق API */}
+          {/* الأقسام الرئيسية: المحفظة والبطاقة الافتراضية */}
           <Tabs value={mainTab} onValueChange={setMainTab} className="mb-8">
             <TabsList className="w-full max-w-md mx-auto mb-8">
               <TabsTrigger value="wallet" className="flex-1">
@@ -79,10 +78,6 @@ const WalletPage: React.FC = () => {
               </TabsTrigger>
               <TabsTrigger value="card" className="flex-1">
                 <CreditCard className="h-4 w-4 mr-2" /> البطاقة الافتراضية
-              </TabsTrigger>
-              <TabsTrigger value="api" className="flex-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2"><path d="M17 6.1H3"></path><path d="M21 12.1H3"></path><path d="M15.1 18H3"></path></svg>
-                API
               </TabsTrigger>
             </TabsList>
           
@@ -98,11 +93,6 @@ const WalletPage: React.FC = () => {
             {/* قسم البطاقة الافتراضية */}
             <TabsContent value="card">
               <CardSection virtualCard={virtualCard} />
-            </TabsContent>
-            
-            {/* قسم توثيق API */}
-            <TabsContent value="api">
-              <ApiDocumentation />
             </TabsContent>
           </Tabs>
         </div>
