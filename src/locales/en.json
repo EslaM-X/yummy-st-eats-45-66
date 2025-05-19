@@ -168,5 +168,15 @@
   "restaurantCardKmUnit": "km",
   "restaurantCardDistance": "{{distance}} {{unit}}",
   "restaurantCardMinOrder": "Min order {{value}} ST",
-  "restaurantCardSelectedToast": "Selected {{restaurantName}}"
+  "restaurantCardSelectedToast": "Selected {{restaurantName}}",
+
+  "productsPageTitle": "Most Delicious Dishes and Products",
+  "productsPageSubtitle": "Discover a variety of tasty dishes carefully prepared by the best restaurants in the city, with quick delivery options",
+  "searchProductsPlaceholder": "Search for product or restaurant...",
+  "categoryFilterLabel": "Product Categories",
+  "allCategoriesOption": "All Categories",
+  "sortByOptionDefault": "Default",
+  "sortByOptionPriceAsc": "Price: Low to High",
+  "sortByOptionPriceDesc": "Price: High to Low",
+  "sortByOptionNameAsc": "Name: A-Z"
 }

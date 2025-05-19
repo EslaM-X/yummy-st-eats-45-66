@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,6 +9,7 @@ import ProductsGrid from '@/components/products/ProductsGrid';
 import { getCategories, getFilteredProducts } from '@/services/ProductService';
 import { Product } from '@/types';
 import AdPlaceholder from '@/components/AdPlaceholder';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -16,6 +18,7 @@ const ProductsPage: React.FC = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [sortBy, setSortBy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useLanguage();
 
   // Extract unique categories
   const categories = getCategories();
@@ -46,11 +49,11 @@ const ProductsPage: React.FC = () => {
           {/* Hero Section */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4 relative inline-block">
-              <span className="relative z-10">أشهى الأطباق والمنتجات</span>
+              <span className="relative z-10">{t('productsPageTitle')}</span>
               <span className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300/30 dark:bg-yellow-800/30 -z-0 transform -rotate-1"></span>
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              اكتشف مجموعة متنوعة من الأطباق الشهية المحضرة بعناية من أفضل المطاعم في المدينة، مع خيارات توصيل سريعة
+              {t('productsPageSubtitle')}
             </p>
           </div>
 

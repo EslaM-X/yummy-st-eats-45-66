@@ -168,5 +168,15 @@
   "restaurantCardKmUnit": "كم",
   "restaurantCardDistance": "{{distance}} {{unit}}",
   "restaurantCardMinOrder": "الحد الأدنى للطلب {{value}} ST",
-  "restaurantCardSelectedToast": "تم اختيار {{restaurantName}}"
+  "restaurantCardSelectedToast": "تم اختيار {{restaurantName}}",
+  
+  "productsPageTitle": "أشهى الأطباق والمنتجات",
+  "productsPageSubtitle": "اكتشف مجموعة متنوعة من الأطباق الشهية المحضرة بعناية من أفضل المطاعم في المدينة، مع خيارات توصيل سريعة",
+  "searchProductsPlaceholder": "ابحث عن منتج أو مطعم...",
+  "categoryFilterLabel": "تصنيف المنتجات",
+  "allCategoriesOption": "جميع التصنيفات",
+  "sortByOptionDefault": "الافتراضي",
+  "sortByOptionPriceAsc": "السعر: من الأقل إلى الأعلى",
+  "sortByOptionPriceDesc": "السعر: من الأعلى إلى الأقل",
+  "sortByOptionNameAsc": "الاسم: أبجدياً"
 }

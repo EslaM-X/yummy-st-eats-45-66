@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FilterSectionProps {
   selectedCategory: string;
@@ -19,19 +20,21 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   categories,
   handleClearFilters
 }) => {
+  const { t } = useLanguage();
+  
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow-md mb-6 animate-fade-in">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            تصنيف المنتجات
+            {t('categoryFilterLabel')}
           </label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
           >
-            <option value="">جميع التصنيفات</option>
+            <option value="">{t('allCategoriesOption')}</option>
             {categories.map((category, index) => (
               <option key={index} value={category}>{category}</option>
             ))}
@@ -40,17 +43,17 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            الترتيب حسب
+            {t('sortByFilterLabel')}
           </label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
           >
-            <option value="">الافتراضي</option>
-            <option value="price-asc">السعر: من الأقل إلى الأعلى</option>
-            <option value="price-desc">السعر: من الأعلى إلى الأقل</option>
-            <option value="name-asc">الاسم: أبجدياً</option>
+            <option value="">{t('sortByOptionDefault')}</option>
+            <option value="price-asc">{t('sortByOptionPriceAsc')}</option>
+            <option value="price-desc">{t('sortByOptionPriceDesc')}</option>
+            <option value="name-asc">{t('sortByOptionNameAsc')}</option>
           </select>
         </div>
         
@@ -60,7 +63,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             variant="outline"
             className="w-full"
           >
-            إعادة تعيين الفلاتر
+            {t('resetFiltersButton')}
           </Button>
         </div>
       </div>
