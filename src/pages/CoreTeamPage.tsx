@@ -54,7 +54,19 @@ const CoreTeamPage: React.FC = () => {
     companyDescription: language === 'en' 
       ? "Founder, CTO and Developer at salla-shop" 
       : "مؤسس ورئيس قسم التكنولوجيا ومطور في سلة- شوب",
-    skills: ['frontend', 'backend', 'devops', 'mobile', 'database', 'architecture', 'security'],
+    skills: [
+      'frontend', 
+      'backend', 
+      'devops', 
+      'mobile', 
+      'database', 
+      'architecture', 
+      'security',
+      'mobiledev', // Added mobile app development
+      'projectmanagement', // Added project management
+      'smartcontracts', // Added smart contracts
+      'dapp' // Added decentralized application development
+    ],
     interests: ['programming', 'innovation', 'ai', 'mobiledev', 'cloudcomputing', 'cybersecurity', 'systemdesign', 'web3', 'web5', 'dapp'],
     borderGradient: "from-teal-50 to-blue-50 dark:from-gray-800 dark:to-gray-900",
     roleEmoji: "💻",
