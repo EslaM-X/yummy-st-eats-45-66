@@ -186,13 +186,13 @@ const CoreTeamPage: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* Personal Interests Section - New addition */}
+                  {/* Personal Interests Section - Modified to include new interests */}
                   <div className="w-full mt-8">
                     <h3 className={`text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 ${isRTL ? 'text-right' : 'text-left'}`}>
                       {t('interests')}
                     </h3>
                     <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                      {['programming', 'innovation', 'ai', 'mobiledev', 'cloudcomputing', 'cybersecurity', 'systemdesign'].map((interest) => (
+                      {['programming', 'innovation', 'ai', 'mobiledev', 'cloudcomputing', 'cybersecurity', 'systemdesign', 'web3', 'web5', 'dapp'].map((interest) => (
                         <span
                           key={interest}
                           className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 transition-transform hover:scale-110"
@@ -214,3 +214,4 @@ const CoreTeamPage: React.FC = () => {
 };
 
 export default CoreTeamPage;
+
