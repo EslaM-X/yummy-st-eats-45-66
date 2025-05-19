@@ -1,4 +1,3 @@
-
 {
   "home": "الرئيسية",
   "deliverySlogan": "أشهى الأطعمة تصلك أينما كنت!",
@@ -76,7 +75,8 @@
   "skillWeb3": "ويب 3",
   "skillWeb5": "ويب 5",
   "skillInnovation": "الابتكار",
-
+  "skillDapp": "التطبيقات اللامركزية (Dapp)",
+  
   "addYourFood": "أضف طعامك",
   "addFoodPageTitle": "أضف طعامك الخاص",
   "addFoodPageSubtitle": "شارك أطباقك المنزلية المميزة مع مجتمعنا واكسب النقاط. فرصتك لعرض مهاراتك الطهوية!",

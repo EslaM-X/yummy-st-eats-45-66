@@ -57,7 +57,7 @@ const CoreTeamPage: React.FC = () => {
                       {t('interests')}
                     </h3>
                     <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                      {['programming', 'blockchain', 'ai', 'web3', 'web5', 'innovation'].map((skill) => (
+                      {['programming', 'blockchain', 'ai', 'web3', 'web5', 'innovation', 'dapp'].map((skill) => (
                         <span
                           key={skill}
                           className="px-3 py-1 rounded-full text-sm font-medium bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200 transition-transform hover:scale-110"

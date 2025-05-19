@@ -305,6 +305,7 @@
   "submissionSuccess": "Submission Successful",
   "restaurantRegistered": "Your restaurant has been successfully registered",
   
+  "coreTeam": "Core Team",
   "coreTeamTitle": "Core Team",
   "founderImageAlt": "Eslam Hesham - Founder of ST Eat",
   "founderName": "Mr. Eslam Hesham",
@@ -316,5 +317,6 @@
   "skillAi": "Artificial Intelligence",
   "skillWeb3": "Web 3.0",
   "skillWeb5": "Web 5.0",
-  "skillInnovation": "Innovation"
+  "skillInnovation": "Innovation",
+  "skillDapp": "Decentralized applications (Dapp)"
 }
