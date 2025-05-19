@@ -127,15 +127,10 @@ const CoreTeamPage: React.FC = () => {
 
                   {/* Modified text under ST Pizza Logo */}
                   <div className="text-gray-700 dark:text-gray-300 mb-6 text-center">
-                    <p>مؤسس ورئيس قسم التكنولوجيا ومطور في 🔗</p>
-                    <a 
-                      href={t('ctoCompanyLink')} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-teal-600 dark:text-teal-400 hover:underline"
-                    >
-                      salla-shop.com
-                    </a>
+                    <p>مؤسس ورئيس قسم التكنولوجيا ومطور في</p>
+                    <span className="text-teal-600 dark:text-teal-400">
+                      سلة- شوب
+                    </span>
                   </div>
                   
                   {/* External Link */}
