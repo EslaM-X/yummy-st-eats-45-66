@@ -13,8 +13,8 @@ interface OrderSummaryProps {
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({ 
-  cartItems, 
-  amount, 
+  cartItems = [], 
+  amount = 0, 
   orderId,
   onRefundClick,
   paymentComplete = false 
