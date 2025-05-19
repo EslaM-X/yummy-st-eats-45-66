@@ -16,7 +16,7 @@ const AdminFooter: React.FC = () => {
           <Link to="/terms-conditions" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
             الشروط والأحكام
           </Link>
-          <Link to="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
+          <Link to="/" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
             المساعدة
           </Link>
         </div>

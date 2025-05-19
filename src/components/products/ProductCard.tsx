@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Star, Heart, Award, Tag, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -52,9 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toast({
-      title: `${product.isFavorite ? t('removedFromFavorites') : t('addedToFavorites')} ${product.name} ${product.isFavorite ? t('from') : t('to')} ${t('favorite')}`,
-    });
+    toast(`${product.isFavorite ? t('removedFromFavorites') : t('addedToFavorites')} ${product.name} ${product.isFavorite ? t('from') : t('to')} ${t('favorite')}`);
   };
 
   return (

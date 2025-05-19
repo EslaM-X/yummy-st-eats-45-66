@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTheme } from '@/components/theme-provider';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCart } from '@/contexts/CartContext'; // Add this import
 import LoginModal from './LoginModal';
 import Logo from './header/Logo';
 import DesktopNavigation from './header/DesktopNavigation';
@@ -12,7 +13,7 @@ import HeaderActionButtons from './header/HeaderActionButtons';
 const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
-  const [cartCount, setCartCount] = useState(3);
+  const { totalItems } = useCart(); // Get total items from cart context
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const location = useLocation();
@@ -61,7 +62,7 @@ const Header: React.FC = () => {
 
           {/* Action Buttons */}
           <HeaderActionButtons 
-            cartCount={cartCount}
+            cartCount={totalItems}
             theme={theme}
             isActive={isActive}
             toggleTheme={toggleTheme}
