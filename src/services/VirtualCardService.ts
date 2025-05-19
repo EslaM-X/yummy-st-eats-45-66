@@ -34,21 +34,17 @@ export interface ApiErrorResponse {
   };
 }
 
-// رابط API الافتراضي - يمكن تغييره حسب البيئة
-const API_BASE_URL = 'https://salla-shop.com/salla-developer';
-const API_KEY = 'demo-api-key'; // في الإنتاج، هذا سيأتي من التكوين الآمن
+// رابط API الافتراضي
+const API_BASE_URL = 'https://api.salla-shop.com';
+// الحصول على API Key من متغيرات البيئة
+const API_KEY = import.meta.env.VITE_ST_VPC_API_KEY || process.env.ST_VPC_API_KEY || 'demo-api-key';
 
 /**
  * خدمة للتعامل مع عمليات البطاقة الافتراضية ST
  */
 export class VirtualCardService {
-  private static headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': API_KEY,
-  };
-
   /**
-   * إرسال طلب إلى API
+   * إرسال طلب إلى API مع إضافة مفتاح API في الهيدر
    */
   private static async sendRequest<T>(
     endpoint: string,
@@ -58,44 +54,36 @@ export class VirtualCardService {
     try {
       console.log(`إرسال طلب ${method} إلى ${endpoint}`, data);
       
-      // محاكاة طلب API - في الحالة الفعلية، سيتم استبدال هذا بطلب fetch حقيقي
-      // سنحاكي استجابة ناجحة لجعل عملية الدفع والاسترداد فعالة للعرض التجريبي
-      await new Promise(resolve => setTimeout(resolve, 1800)); // محاكاة تأخير الشبكة
-      
-      // إعداد استجابة محاكاة بناءً على نوع الطلب والبيانات
-      let mockResponse: any;
-      
-      if (endpoint.includes('transaction')) {
-        // استجابة معاملة دفع
-        mockResponse = {
-          transaction_id: Math.floor(Math.random() * 100000) + 1000,
-          status: 'success',
-          amount: data.amount,
-          currency: 'ST',
-          timestamp: new Date().toISOString(),
-        };
-      } else if (endpoint.includes('refund')) {
-        // استجابة معاملة استرداد
-        mockResponse = {
-          status: 'success',
-          refund_txn_id: Math.floor(Math.random() * 100000) + 1000,
-          new_wallet_bal: 1250.75 - data.amount,
-          new_card_bal: 75.5,
-          refunded_amount: data.amount,
-          timestamp: new Date().toISOString(),
-        };
-      } else {
-        throw new Error('نوع طلب غير معروف');
+      // في وضع التطوير، نستخدم بيانات محاكاة
+      if (import.meta.env.DEV || !API_KEY || API_KEY === 'demo-api-key') {
+        return await this.sendMockRequest<T>(endpoint, method, data);
       }
       
-      // محاكاة فشل عشوائي في حوالي 10% من الحالات
-      if (Math.random() < 0.1) {
-        throw new Error('فشل التواصل مع خادم API. يرجى المحاولة مرة أخرى.');
+      // إعداد هيدر المصادقة مع مفتاح API
+      const headers = {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+      };
+      
+      // إرسال طلب حقيقي إلى API
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method,
+        headers,
+        body: JSON.stringify(data),
+      });
+      
+      // التحقق من نجاح الطلب
+      if (!response.ok) {
+        const errorData: ApiErrorResponse = await response.json();
+        throw new Error(errorData.message || 'حدث خطأ أثناء معالجة الطلب');
       }
       
-      return mockResponse as T;
+      // تحويل البيانات المستلمة إلى كائن JSON
+      const responseData = await response.json();
+      return responseData as T;
     } catch (error) {
       console.error('خطأ في معالجة طلب API:', error);
+      
       // توجيه رسالة خطأ للمستخدم
       const errorMessage = error instanceof Error ? 
         error.message : 
@@ -106,8 +94,56 @@ export class VirtualCardService {
         description: errorMessage,
         variant: 'destructive',
       });
+      
       throw error;
     }
+  }
+
+  /**
+   * إرسال طلب محاكاة للتطوير والاختبار
+   */
+  private static async sendMockRequest<T>(
+    endpoint: string,
+    method: string,
+    data: any
+  ): Promise<T> {
+    console.log('استخدام بيانات محاكاة للطلب:', {endpoint, method, data});
+    
+    // محاكاة تأخير الشبكة
+    await new Promise(resolve => setTimeout(resolve, 1800));
+    
+    // إعداد استجابة محاكاة بناءً على نوع الطلب والبيانات
+    let mockResponse: any;
+    
+    if (endpoint.includes('transaction')) {
+      // استجابة معاملة دفع
+      mockResponse = {
+        transaction_id: Math.floor(Math.random() * 100000) + 1000,
+        status: 'success',
+        amount: data.amount,
+        currency: 'ST',
+        timestamp: new Date().toISOString(),
+      };
+    } else if (endpoint.includes('refund')) {
+      // استجابة معاملة استرداد
+      mockResponse = {
+        status: 'success',
+        refund_txn_id: Math.floor(Math.random() * 100000) + 1000,
+        new_wallet_bal: 1250.75 - data.amount,
+        new_card_bal: 75.5,
+        refunded_amount: data.amount,
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      throw new Error('نوع طلب غير معروف');
+    }
+    
+    // محاكاة فشل عشوائي في حوالي 10% من الحالات
+    if (Math.random() < 0.1) {
+      throw new Error('فشل التواصل مع خادم API. يرجى المحاولة مرة أخرى.');
+    }
+    
+    return mockResponse as T;
   }
 
   /**

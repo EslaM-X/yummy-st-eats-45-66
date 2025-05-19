@@ -3,6 +3,7 @@
   "orderIdRequired": "Order ID is required",
   "amountGreaterThanZero": "Amount must be greater than 0",
   "precisionRequired": "Required precision is 5 decimal places",
+  "amountCannotExceedTotal": "Amount cannot exceed the total amount",
   "invalidData": "Invalid Data",
   "checkOrderIdAmount": "Please ensure order ID and amount are entered correctly",
   "refundSuccess": "Refund Successful",
@@ -12,5 +13,10 @@
   "refundDescription": "Enter the amount to refund for this order. It will be refunded to your ST virtual card.",
   "amountST": "Amount (ST)",
   "cancel": "Cancel",
-  "confirmRefund": "Confirm Refund"
+  "confirmRefund": "Confirm Refund",
+  "amount": "Amount",
+  "refundId": "Refund ID",
+  "refunded": "Refunded",
+  "processed": "Processed",
+  "refundStatus": "Refund Status"
 }
