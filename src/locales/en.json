@@ -152,7 +152,7 @@
   "resetFiltersButton": "Reset",
   "cuisineFilterLabel": "Cuisine",
   "allCuisinesOption": "All Cuisines",
-  "ratingFilterLabel": "Rating: {{ratingValue}}",
+  "ratingFilterLabel": "Rating",
   "ratingFilterAll": "All",
   "sortByFilterLabel": "Sort By",
   "sortByOptionRecommended": "Most Popular",
@@ -166,9 +166,9 @@
   "showAllRestaurantsButtonRList": "Show All Restaurants",
 
   "restaurantCardKmUnit": "km",
-  "restaurantCardDistance": "{{distance}} {{unit}}",
-  "restaurantCardMinOrder": "Min order {{value}} ST",
-  "restaurantCardSelectedToast": "Selected {{restaurantName}}",
+  "restaurantCardDistance": "1.2 km",
+  "restaurantCardMinOrder": "Min order 20 ST",
+  "restaurantCardSelectedToast": "Selected restaurant",
 
   "productsPageTitle": "Most Delicious Dishes and Products",
   "productsPageSubtitle": "Discover a variety of tasty dishes carefully prepared by the best restaurants in the city, with quick delivery options",

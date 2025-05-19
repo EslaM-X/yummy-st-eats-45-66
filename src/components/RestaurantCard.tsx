@@ -3,16 +3,16 @@ import React from 'react';
 import { Restaurant } from '@/types';
 import { useNavigate } from 'react-router-dom';
 import { Star, Clock, ArrowRight, MapPin, Coffee } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast'; // Changed from '@/hooks/use-toast' to a more common pattern
+import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) => {
   const navigate = useNavigate();
   const { t, isRTL } = useLanguage();
-  const { toast } = useToast(); // Corrected hook usage
+  const { toast } = useToast();
 
   const handleOrderNowClick = () => {
-    navigate(`/products?restaurant=${restaurant.id}`); // Assuming you want to filter products by restaurant ID
+    navigate(`/products?restaurant=${restaurant.id}`);
     toast({
       title: t('restaurantCardSelectedToast'),
       variant: "default",
@@ -37,7 +37,6 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
           loading="lazy"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            // Fallback image can also be localized if needed, or use a generic one
             target.src = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80&txt=Restaurant+Image";
           }}
         />

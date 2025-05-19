@@ -152,7 +152,7 @@
   "resetFiltersButton": "إعادة ضبط",
   "cuisineFilterLabel": "المطبخ",
   "allCuisinesOption": "جميع المطابخ",
-  "ratingFilterLabel": "التقييم: {{ratingValue}}",
+  "ratingFilterLabel": "التقييم",
   "ratingFilterAll": "الكل",
   "sortByFilterLabel": "ترتيب حسب",
   "sortByOptionRecommended": "الأكثر رواجاً",
@@ -166,9 +166,9 @@
   "showAllRestaurantsButtonRList": "عرض كل المطاعم",
 
   "restaurantCardKmUnit": "كم",
-  "restaurantCardDistance": "{{distance}} {{unit}}",
-  "restaurantCardMinOrder": "الحد الأدنى للطلب {{value}} ST",
-  "restaurantCardSelectedToast": "تم اختيار {{restaurantName}}",
+  "restaurantCardDistance": "١.٢ كم",
+  "restaurantCardMinOrder": "الحد الأدنى للطلب ٢٠ ST",
+  "restaurantCardSelectedToast": "تم اختيار المطعم",
   
   "productsPageTitle": "أشهى الأطباق والمنتجات",
   "productsPageSubtitle": "اكتشف مجموعة متنوعة من الأطباق الشهية المحضرة بعناية من أفضل المطاعم في المدينة، مع خيارات توصيل سريعة",
