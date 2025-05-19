@@ -11,7 +11,7 @@ interface TierCardProps {
 }
 
 const TierCard: React.FC<TierCardProps> = ({ tier, isCurrentTier }) => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   const renderTierIcon = (iconName: string) => {
     if (iconName === 'award') {

@@ -221,5 +221,11 @@
   "pointsUnit": "points",
   "toReach": "points left to reach",
   "congratsMaxTier": "Congratulations! You've reached the highest tier in the rewards program.",
-  "currentTierPerks": "Your current tier's benefits:"
+  "currentTierPerks": "Your current tier's benefits:",
+
+  "expiryLabel": "Expires",
+  "redeemButton": "Redeem",
+  "notEnoughPoints": "Not enough points",
+  "pointsHistoryTitle": "Points History",
+  "pointsHistoryDescription": "Earned and redeemed points history"
 }

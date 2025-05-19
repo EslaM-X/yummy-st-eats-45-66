@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Clock, Gift, Utensils, Award } from "lucide-react";
 import { UserReward } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RewardCardProps {
   reward: UserReward;
@@ -12,6 +13,8 @@ interface RewardCardProps {
 }
 
 const RewardCard: React.FC<RewardCardProps> = ({ reward, canRedeem, onRedeem }) => {
+  const { t, language } = useLanguage();
+
   const getRewardTypeIcon = (type: string) => {
     switch (type) {
       case 'discount':
@@ -29,7 +32,7 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward, canRedeem, onRedeem }) 
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <div className="h-48 overflow-hidden">
+      <div className="h-48 overflow-hidden relative">
         <img 
           src={reward.imageUrl} 
           alt={reward.name} 
@@ -38,7 +41,7 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward, canRedeem, onRedeem }) 
         <div className="absolute top-3 right-3">
           <span className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold shadow-sm flex items-center">
             {getRewardTypeIcon(reward.type)}
-            <span className="mr-1">{reward.points} نقطة</span>
+            <span className="mr-1">{reward.points} {t('pointsUnit')}</span>
           </span>
         </div>
       </div>
@@ -49,7 +52,7 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward, canRedeem, onRedeem }) 
       <CardFooter className="flex justify-between items-center">
         <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
           <Clock className="h-4 w-4 mr-1" />
-          ينتهي: {reward.expiryDate}
+          {t('expiryLabel')}: {reward.expiryDate}
         </div>
         <Button 
           variant={canRedeem ? "default" : "outline"}
@@ -59,7 +62,7 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward, canRedeem, onRedeem }) 
             "bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800" : 
             ""}
         >
-          {canRedeem ? "استبدال" : "نقاط غير كافية"}
+          {canRedeem ? t("redeemButton") : t("notEnoughPoints")}
         </Button>
       </CardFooter>
     </Card>

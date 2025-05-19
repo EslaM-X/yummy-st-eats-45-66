@@ -36,7 +36,7 @@ const UserPointsCard: React.FC<UserPointsCardProps> = ({
           <div>
             <CardTitle className="text-2xl mb-2 flex items-center">
               {renderTierIcon(userPoints.tier.icon)}
-              <span className="mr-2">{userPoints.tier.name}</span>
+              <span className="mr-2">{t(userPoints.tier.name)}</span>
             </CardTitle>
             <CardDescription>
               {t('enjoyCurrentTierPerks')}
@@ -54,12 +54,12 @@ const UserPointsCard: React.FC<UserPointsCardProps> = ({
         {nextTier ? (
           <div className="mb-6">
             <div className="flex justify-between text-sm mb-2">
-              <span>{userPoints.tier.name}</span>
-              <span>{nextTier.name}</span>
+              <span>{t(userPoints.tier.name)}</span>
+              <span>{t(nextTier.name)}</span>
             </div>
             <Progress value={progressPercentage} className="h-2" />
             <p className="text-sm text-center mt-2 text-gray-600 dark:text-gray-400">
-              {pointsToNextTier} {t('pointsUnit')} {t('toReach')} {nextTier.name}
+              {pointsToNextTier} {t('pointsUnit')} {t('toReach')} {t(nextTier.name)}
             </p>
           </div>
         ) : (
@@ -81,7 +81,7 @@ const UserPointsCard: React.FC<UserPointsCardProps> = ({
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                 </div>
-                {benefit}
+                {t(benefit)}
               </li>
             ))}
           </ul>

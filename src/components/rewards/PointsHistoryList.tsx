@@ -3,17 +3,20 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, Gift } from "lucide-react";
 import { PointTransaction } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PointsHistoryListProps {
   transactions: PointTransaction[];
 }
 
 const PointsHistoryList: React.FC<PointsHistoryListProps> = ({ transactions }) => {
+  const { t } = useLanguage();
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>سجل النقاط</CardTitle>
-        <CardDescription>تاريخ كسب واستبدال النقاط</CardDescription>
+        <CardTitle>{t("pointsHistoryTitle")}</CardTitle>
+        <CardDescription>{t("pointsHistoryDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -43,7 +46,7 @@ const PointsHistoryList: React.FC<PointsHistoryListProps> = ({ transactions }) =
                   'text-green-600 dark:text-green-400' : 
                   'text-amber-600 dark:text-amber-400'
               }`}>
-                {transaction.type === 'earned' ? '+' : ''}{transaction.points} نقطة
+                {transaction.type === 'earned' ? '+' : ''}{transaction.points} {t("pointsUnit")}
               </div>
             </div>
           ))}

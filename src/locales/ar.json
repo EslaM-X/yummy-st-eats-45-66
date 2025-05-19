@@ -219,5 +219,11 @@
   "rewardTierPlatinumBenefit4": "أولوية قصوى في خدمة العملاء",
   "rewardTierPlatinumBenefit5": "هدية عيد ميلاد سنوية",
   "rewardTierPlatinumBenefit6": "دعوات لفعاليات حصرية",
-  "currentTierLabel": "مستواك الحالي"
+  "currentTierLabel": "مستواك الحالي",
+  
+  "expiryLabel": "ينتهي",
+  "redeemButton": "استبدال",
+  "notEnoughPoints": "نقاط غير كافية",
+  "pointsHistoryTitle": "سجل النقاط",
+  "pointsHistoryDescription": "تاريخ كسب واستبدال النقاط"
 }
