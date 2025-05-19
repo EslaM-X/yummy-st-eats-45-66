@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { useFormContext, Controller } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import * as z from "zod";
 import {
   FormControl,
@@ -18,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FoodCategory {
   value: string;
@@ -26,13 +26,11 @@ interface FoodCategory {
 
 interface FoodFormFieldsProps {
   foodCategories: FoodCategory[];
-  // Zod schema type is complex to pass directly if not inferred,
-  // react-hook-form's control object is sufficient.
-  // We assume the schema fields (name, category etc.) exist on the form.
 }
 
 const FoodFormFields: React.FC<FoodFormFieldsProps> = ({ foodCategories }) => {
-  const { control } = useFormContext(); // Use useFormContext to get control
+  const { control } = useFormContext();
+  const { t } = useLanguage();
 
   return (
     <>
@@ -42,9 +40,9 @@ const FoodFormFields: React.FC<FoodFormFieldsProps> = ({ foodCategories }) => {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>اسم الطبق</FormLabel>
+              <FormLabel>{t('dishNameLabel')}</FormLabel>
               <FormControl>
-                <Input placeholder="مثال: كبسة دجاج منزلية" {...field} />
+                <Input placeholder={t('dishNamePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -56,14 +54,15 @@ const FoodFormFields: React.FC<FoodFormFieldsProps> = ({ foodCategories }) => {
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>التصنيف</FormLabel>
+              <FormLabel>{t('categoryLabel')}</FormLabel>
               <Select 
                 onValueChange={field.onChange} 
                 defaultValue={field.value}
+                dir={document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr'}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="اختر تصنيف الطبق" />
+                    <SelectValue placeholder={t('categoryPlaceholder')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -85,10 +84,10 @@ const FoodFormFields: React.FC<FoodFormFieldsProps> = ({ foodCategories }) => {
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>وصف الطبق</FormLabel>
+            <FormLabel>{t('descriptionLabel')}</FormLabel>
             <FormControl>
               <Textarea 
-                placeholder="اشرح طبقك بشكل مفصل، وما يميزه عن غيره..." 
+                placeholder={t('descriptionPlaceholder')} 
                 className="min-h-[100px]"
                 {...field} 
               />
@@ -104,9 +103,9 @@ const FoodFormFields: React.FC<FoodFormFieldsProps> = ({ foodCategories }) => {
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>السعر المقترح (ST)</FormLabel>
+              <FormLabel>{t('priceLabel')}</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="35" {...field} />
+                <Input type="number" placeholder={t('pricePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -118,9 +117,9 @@ const FoodFormFields: React.FC<FoodFormFieldsProps> = ({ foodCategories }) => {
           name="preparationTime"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>وقت التحضير (بالدقائق)</FormLabel>
+              <FormLabel>{t('prepTimeLabel')}</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="45" {...field} />
+                <Input type="number" placeholder={t('prepTimePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -133,10 +132,10 @@ const FoodFormFields: React.FC<FoodFormFieldsProps> = ({ foodCategories }) => {
         name="ingredients"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>المكونات</FormLabel>
+            <FormLabel>{t('ingredientsLabel')}</FormLabel>
             <FormControl>
               <Textarea 
-                placeholder="اذكر المكونات مفصولة بفواصل..."
+                placeholder={t('ingredientsPlaceholder')}
                 className="min-h-[100px]"
                 {...field} 
               />

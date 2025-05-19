@@ -1,16 +1,16 @@
-
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, FormProvider } from "react-hook-form"; // Import FormProvider
+import { useForm, FormProvider } from "react-hook-form";
 import * as z from "zod";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Utensils, ChevronLeft } from "lucide-react";
-import { Form } from "@/components/ui/form"; // Form component from shadcn/ui
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Import new components
 import FoodFormFields from '@/components/add-food/FoodFormFields';
@@ -85,10 +85,14 @@ const successStories = [
 
 const AddFoodPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t, language } = useLanguage(); // Added language for Zod messages if needed later
   const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
 
-  const methods = useForm<z.infer<typeof foodFormSchema>>({ // Renamed form to methods for FormProvider
+  // TODO: For Zod error messages, a more advanced setup using `setErrorMap` globally
+  // or passing a custom errorMap to zodResolver is needed for full i18n.
+  // For now, Zod messages will remain in their original language from the schema.
+  const methods = useForm<z.infer<typeof foodFormSchema>>({ 
     resolver: zodResolver(foodFormSchema),
     defaultValues: {
       name: "",
@@ -99,6 +103,17 @@ const AddFoodPage: React.FC = () => {
       ingredients: "",
     },
   });
+
+  const foodCategories = React.useMemo(() => [
+    { value: "main", label: t('foodCategoryMain') },
+    { value: "appetizer", label: t('foodCategoryAppetizer') },
+    { value: "dessert", label: t('foodCategoryDessert') },
+    { value: "drink", label: t('foodCategoryDrink') },
+    { value: "side", label: t('foodCategorySide') },
+    { value: "breakfast", label: t('foodCategoryBreakfast') },
+    { value: "healthy", label: t('foodCategoryHealthy') },
+    { value: "fast-food", label: t('foodCategoryFastFood') },
+  ], [t]);
 
   function onSubmit(data: z.infer<typeof foodFormSchema>) {
     console.log("Form data:", data);
@@ -124,7 +139,6 @@ const AddFoodPage: React.FC = () => {
   const handleDeleteImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
-    // Reset file input if needed, though it's hidden and controlled by label click
     const fileInput = document.getElementById('dropzone-file') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = "";
@@ -142,15 +156,15 @@ const AddFoodPage: React.FC = () => {
               className="mb-4" 
               onClick={() => navigate(-1)}
             >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              العودة
+              <ChevronLeft className="h-4 w-4 ml-1 rtl:mr-1 rtl:ml-0" />
+              {t('backButton')}
             </Button>
             <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4 relative inline-block">
-              <span className="relative z-10">أضف طعامك الخاص</span>
+              <span className="relative z-10">{t('addFoodPageTitle')}</span>
               <span className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300/30 dark:bg-yellow-800/30 -z-0 transform -rotate-1"></span>
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              شارك أطباقك المنزلية المميزة مع مجتمعنا واكسب النقاط. فرصتك لعرض مهاراتك الطهوية!
+              {t('addFoodPageSubtitle')}
             </p>
           </div>
 
@@ -158,8 +172,8 @@ const AddFoodPage: React.FC = () => {
             <div className="lg:col-span-2 order-2 lg:order-1">
               <Card className="shadow-md">
                 <CardContent className="pt-6">
-                  <FormProvider {...methods}> {/* Use FormProvider */}
-                    <Form {...methods}> {/* Pass methods to Form for consistency if it uses context internally or for future use */}
+                  <FormProvider {...methods}>
+                    <Form {...methods}>
                       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
                         <FoodFormFields foodCategories={foodCategories} />
                         <ImageUploadArea 
@@ -171,8 +185,8 @@ const AddFoodPage: React.FC = () => {
                           type="submit" 
                           className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 py-6 text-lg shadow-md hover:shadow-lg transform transition-all hover:-translate-y-0.5 duration-200"
                         >
-                          <Utensils className="mr-2 h-5 w-5" />
-                          إضافة الطبق
+                          <Utensils className="mr-2 rtl:ml-2 rtl:mr-0 h-5 w-5" />
+                          {t('addDishButton')}
                         </Button>
                       </form>
                     </Form>
