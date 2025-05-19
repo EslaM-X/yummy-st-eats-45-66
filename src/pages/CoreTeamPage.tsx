@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/Header';
@@ -126,9 +125,9 @@ const CoreTeamPage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Added text under ST Pizza Logo */}
+                  {/* Modified text under ST Pizza Logo */}
                   <div className="text-gray-700 dark:text-gray-300 mb-6 text-center">
-                    <p>ST🍕 Eat مؤسس ورئيس قسم التكنولوجيا ومطور في 🔗</p>
+                    <p>مؤسس ورئيس قسم التكنولوجيا ومطور في 🔗</p>
                     <a 
                       href={t('ctoCompanyLink')} 
                       target="_blank" 
@@ -184,4 +183,3 @@ const CoreTeamPage: React.FC = () => {
 };
 
 export default CoreTeamPage;
-
