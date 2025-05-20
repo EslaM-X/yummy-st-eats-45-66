@@ -37,7 +37,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
             className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white hover:from-yellow-600 hover:to-amber-700 border-none transition-all duration-300"
           >
             <ChefHat className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
-            {t('navigation:addFood')}
+            {t('addFood')}
           </Button>
         </Link>
         
@@ -70,7 +70,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           className="mx-4 bg-yellow-800 hover:bg-yellow-900 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-center shadow-sm hover:shadow-md flex items-center justify-center"
         >
           <LogIn className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
-          {t('navigation:login')}
+          {t('login')}
         </button>
       </nav>
     </div>

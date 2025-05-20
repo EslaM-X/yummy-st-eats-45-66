@@ -9,11 +9,11 @@ const DesktopNavigation = () => {
   const { user, signOut } = useAuth();
   
   const navItems = [
-    { name: t('navigation:home'), href: '/' },
-    { name: t('navigation:restaurants'), href: '/restaurants' },
-    { name: t('navigation:products'), href: '/products' },
-    { name: t('navigation:addFood'), href: '/add-food' },
-    { name: t('navigation:rewards'), href: '/rewards' },
+    { name: t('home'), href: '/' },
+    { name: t('restaurants'), href: '/restaurants' },
+    { name: t('products'), href: '/products' },
+    { name: t('addFood'), href: '/add-food' },
+    { name: t('rewards'), href: '/rewards' },
   ];
 
   return (
@@ -32,14 +32,14 @@ const DesktopNavigation = () => {
           onClick={() => signOut()}
           className="text-sm font-semibold text-red-600 hover:text-red-900 dark:text-red-300 dark:hover:text-red-500 transition-colors duration-200"
         >
-          {t('navigation:logout')}
+          {t('logout')}
         </button>
       ) : (
         <Link
           to="/login"
           className="text-sm font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors duration-200"
         >
-          {t('navigation:login')}
+          {t('login')}
         </Link>
       )}
     </nav>

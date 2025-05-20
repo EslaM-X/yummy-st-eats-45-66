@@ -51,10 +51,10 @@ const Header: React.FC = () => {
         <MobileNavigation 
           isOpen={mobileMenuOpen}
           navItems={[
-            { title: t('navigation:home'), path: "/" },
-            { title: t('navigation:restaurants'), path: "/restaurants" },
-            { title: t('navigation:products'), path: "/products" },
-            { title: t('navigation:rewards'), path: "/rewards" }
+            { title: t('home'), path: "/" },
+            { title: t('restaurants'), path: "/restaurants" },
+            { title: t('products'), path: "/products" },
+            { title: t('rewards'), path: "/rewards" }
           ]}
           isActive={(path) => location.pathname === path}
           onItemClick={() => setMobileMenuOpen(false)}
