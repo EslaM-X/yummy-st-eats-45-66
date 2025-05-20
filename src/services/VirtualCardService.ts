@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { PaymentRequest, RefundRequest } from './card/apiTypes';
 
@@ -224,19 +223,22 @@ export class VirtualCardService {
       }
       
       // Format transactions for admin dashboard
-      return data.map(transaction => ({
-        id: transaction.id,
-        transaction_id: transaction.transaction_id,
-        order_id: transaction.order_id,
-        user: transaction.profiles?.name || 'Unknown',
-        email: transaction.profiles?.email || 'No email',
-        card_last_four: transaction.card_last_four || '****',
-        amount: Number(transaction.amount),
-        type: transaction.transaction_type,
-        status: transaction.status,
-        created_at: transaction.created_at,
-        formatted_date: new Date(transaction.created_at).toLocaleString('ar-SA')
-      }));
+      return data.map(transaction => {
+        const profile = transaction.profiles || {};
+        return {
+          id: transaction.id,
+          transaction_id: transaction.transaction_id,
+          order_id: transaction.order_id,
+          user: profile.name || 'Unknown',
+          email: profile.email || 'No email',
+          card_last_four: transaction.card_last_four || '****',
+          amount: Number(transaction.amount),
+          type: transaction.transaction_type,
+          status: transaction.status,
+          created_at: transaction.created_at,
+          formatted_date: new Date(transaction.created_at).toLocaleString('ar-SA')
+        };
+      });
     } catch (error) {
       console.error('Error getting admin transactions:', error);
       return [];

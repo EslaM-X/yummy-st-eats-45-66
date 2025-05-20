@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +18,14 @@ import {
 } from "@/components/ui/dialog";
 import { RefreshCcw, CreditCard, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+
+interface RefundDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  orderId: number;
+  amount: number;
+  onSuccess?: () => void;
+}
 
 const RefundDialog: React.FC<RefundDialogProps> = ({
   open,
@@ -234,13 +241,5 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
     </Dialog>
   );
 };
-
-interface RefundDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  orderId: number;
-  amount: number;
-  onSuccess?: () => void;
-}
 
 export default RefundDialog;

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StatCard from './dashboard/StatCard';
@@ -12,6 +12,31 @@ import TransactionStats from './dashboard/TransactionStats';
 import { Users, ShoppingBag, TrendingUp, AlertCircle } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {
+  // Sample data for charts
+  const [salesData, setSalesData] = useState([
+    { day: 'الأحد', amount: 1200 },
+    { day: 'الإثنين', amount: 1800 },
+    { day: 'الثلاثاء', amount: 1400 },
+    { day: 'الأربعاء', amount: 2200 },
+    { day: 'الخميس', amount: 1600 },
+    { day: 'الجمعة', amount: 2400 },
+    { day: 'السبت', amount: 3000 },
+  ]);
+
+  const [topRestaurants, setTopRestaurants] = useState([
+    { name: "مطعم الشرق", orders: 142, rating: 4.8 },
+    { name: "برجر كينج", orders: 115, rating: 4.5 },
+    { name: "بيتزا هت", orders: 98, rating: 4.3 },
+    { name: "مندي الرياض", orders: 87, rating: 4.7 },
+    { name: "شاورما المدينة", orders: 76, rating: 4.2 }
+  ]);
+
+  const [systemAlerts, setSystemAlerts] = useState([
+    { type: 'warning', title: 'تحديث النظام', message: 'سيتم إجراء صيانة للموقع غداً الساعة 2 صباحاً' },
+    { type: 'error', title: 'خطأ في API', message: 'واجهة برمجة المدفوعات غير متاحة حالياً' },
+    { type: 'info', title: 'طلبات جديدة', message: 'لديك 15 طلب جديد بحاجة للمراجعة' }
+  ]);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -23,39 +48,34 @@ const AdminDashboard: React.FC = () => {
         <StatCard
           title="المستخدمين"
           value="2,451"
-          percentageChange={12}
-          trend="up"
-          description="مستخدم نشط"
+          trend="نمو بنسبة 12% مقارنة بالشهر الماضي"
           icon={<Users className="h-5 w-5" />}
-          color="blue"
+          iconBgColor="bg-blue-100 dark:bg-blue-900/30"
+          iconTextColor="text-blue-700 dark:text-blue-400"
         />
         <StatCard
           title="الطلبات"
           value="845"
-          percentageChange={-3.5}
-          trend="down"
-          description="طلب هذا الشهر"
+          trend="انخفاض بنسبة 3.5% عن الشهر الماضي"
           icon={<ShoppingBag className="h-5 w-5" />}
-          color="amber"
+          iconBgColor="bg-amber-100 dark:bg-amber-900/30"
+          iconTextColor="text-amber-700 dark:text-amber-400"
         />
         <StatCard
           title="المبيعات"
-          value="13,249"
-          suffix="ريال"
-          percentageChange={8.3}
-          trend="up"
-          description="إجمالي المبيعات"
+          value="13,249 ريال"
+          trend="نمو بنسبة 8.3% مقارنة بالشهر الماضي"
           icon={<TrendingUp className="h-5 w-5" />}
-          color="green"
+          iconBgColor="bg-green-100 dark:bg-green-900/30"
+          iconTextColor="text-green-700 dark:text-green-400"
         />
         <StatCard
           title="التنبيهات"
           value="5"
-          percentageChange={0}
-          trend="neutral"
-          description="تنبيهات نشطة"
+          trend="تنبيهات نشطة تحتاج للمراجعة"
           icon={<AlertCircle className="h-5 w-5" />}
-          color="red"
+          iconBgColor="bg-red-100 dark:bg-red-900/30"
+          iconTextColor="text-red-700 dark:text-red-400"
         />
       </div>
       
@@ -93,7 +113,7 @@ const AdminDashboard: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <SalesChart />
+                <SalesChart data={salesData} maxValue={3000} />
               </CardContent>
             </Card>
           </div>
@@ -107,7 +127,7 @@ const AdminDashboard: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <TopRestaurants />
+                <TopRestaurants restaurants={topRestaurants} />
               </CardContent>
             </Card>
             
@@ -119,7 +139,7 @@ const AdminDashboard: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <SystemAlerts />
+                <SystemAlerts alerts={systemAlerts} />
               </CardContent>
             </Card>
           </div>
