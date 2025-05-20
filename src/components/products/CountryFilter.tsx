@@ -54,7 +54,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
             )}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="max-h-[40vh]">
+        <SelectContent className="max-h-[40vh] text-black dark:text-white">
           <SelectItem value="all" className="font-medium text-xs sm:text-sm">
             {t('allCountriesOption') || 'كل الدول'}
           </SelectItem>

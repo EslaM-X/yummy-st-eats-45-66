@@ -65,7 +65,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
             <input 
               type="text" 
               placeholder={t('searchCountries') || 'بحث الدول...'}
-              className="w-full p-1.5 sm:p-2 mb-2 rounded-md border border-input text-xs sm:text-sm pr-6"
+              className="w-full p-1.5 sm:p-2 mb-2 rounded-md border border-input text-xs sm:text-sm pr-6 text-black dark:text-white"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

@@ -131,7 +131,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                   <input 
                     type="text" 
                     placeholder={t('searchCountries') || 'بحث الدول...'}
-                    className="w-full p-1.5 rounded-md border border-input text-xs pr-6"
+                    className="w-full p-1.5 rounded-md border border-input text-xs pr-6 text-black dark:text-white"
                     value={countrySearchQuery}
                     onChange={(e) => setCountrySearchQuery(e.target.value)}
                   />
