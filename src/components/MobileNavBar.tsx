@@ -8,7 +8,8 @@ import {
   Gift, 
   User, 
   Menu, 
-  X, 
+  Moon, // Added import for Moon
+  Sun, // Added import for Sun
   Settings,
   LogOut,
   LogIn,
@@ -31,7 +32,7 @@ export function MobileNavBar() {
   const location = useLocation();
   const { t, language, setLanguage, toggleLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
-  const { isAuthenticated, logout } = useAuth();
+  const { user, signOut } = useAuth(); // Updated to use 'user' and 'signOut' instead of 'isAuthenticated' and 'logout'
   const { cartItems } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   
@@ -110,7 +111,7 @@ export function MobileNavBar() {
                 {item.path === '/profile' && 
                   <div className="relative">
                     <item.icon className="h-5 w-5 mb-1" />
-                    {isAuthenticated && (
+                    {user && ( // Changed from isAuthenticated to user
                       <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 h-2 w-2 bg-green-500 rounded-full"></span>
                     )}
                   </div>
@@ -204,11 +205,11 @@ export function MobileNavBar() {
               </div>
 
               <div className="mt-auto border-t pt-4">
-                {isAuthenticated ? (
+                {user ? ( // Changed from isAuthenticated to user
                   <Button 
                     variant="outline" 
                     className="w-full justify-start"
-                    onClick={logout}
+                    onClick={signOut} // Changed from logout to signOut
                   >
                     <LogOut className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
                     {t('navigation:logout')}
