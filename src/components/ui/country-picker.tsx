@@ -47,10 +47,10 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
         setFavoritesVisible(true);
       }, 200);
     } else if (inputRef.current) {
-      // Focus search input when opened
+      // Focus search input when opened with longer delay for mobile
       setTimeout(() => {
         inputRef.current?.focus();
-      }, 100);
+      }, 400);
     }
   }, [open]);
 
@@ -77,6 +77,12 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
       setFavoritesVisible(true);
     }
   }, [searchQuery]);
+
+  // منع إغلاق القائمة المنسدلة عند الكتابة في حقل البحث
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    setSearchQuery(e.target.value);
+  };
   
   return (
     <Select
@@ -100,17 +106,25 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
       </SelectTrigger>
       
       <SelectContent 
-        className="max-h-[80vh] bg-white dark:bg-gray-800 shadow-xl border-primary/20 rounded-xl overflow-hidden p-3 animate-scale-in z-50"
+        className="max-h-[80vh] bg-white dark:bg-gray-800 shadow-xl border-primary/20 border-0 rounded-xl overflow-hidden p-3 animate-scale-in z-[1000]"
         position="popper"
         sideOffset={4}
+        // منع إغلاق القائمة المنسدلة عند النقر على حقل البحث
+        onInteractOutside={(e) => {
+          if (inputRef.current && inputRef.current.contains(e.target as Node)) {
+            e.preventDefault();
+          }
+        }}
       >
-        {/* Search header - sticky */}
-        <div className="sticky top-0 bg-white dark:bg-gray-800 z-50 mb-3">
+        {/* حقل البحث - ثابت في الأعلى */}
+        <div className="sticky top-0 bg-white dark:bg-gray-800 z-[1001] mb-3 pb-2">
           <div className="relative">
             <Input
               placeholder={t('searchCountries')}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchInput}
+              onClick={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
               className="pl-8 pr-3 py-2 w-full border-gray-200 dark:border-gray-700 rounded-lg 
                         bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm
                         text-black dark:text-white"
@@ -119,12 +133,14 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
               autoCapitalize="off"
               autoCorrect="off"
               spellCheck="false"
+              inputMode="search"
+              enterKeyHint="search"
             />
             <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
         </div>
         
-        {/* Favorites section */}
+        {/* المفضلة */}
         {favoritesVisible && (
           <div className="mb-3 animate-fade-in">
             <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 px-2">
@@ -152,7 +168,7 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
           </div>
         )}
         
-        {/* Main country list */}
+        {/* قائمة الدول الرئيسية */}
         <ScrollArea className="h-[50vh]">
           <div className="grid grid-cols-1 gap-1 pr-1">
             {filteredCountries.map((country) => (

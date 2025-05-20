@@ -31,12 +31,12 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   useEffect(() => {
     if (countryMenuOpen) {
       setAnimateIn(true);
-      // Focus the search input when the menu opens
+      // Focus the search input when the menu opens - important for mobile
       setTimeout(() => {
         if (searchInputRef) {
           searchInputRef.focus();
         }
-      }, 300);
+      }, isMobile ? 400 : 300);
     } else {
       setAnimateIn(false);
       // Reset search when closed
@@ -44,7 +44,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
         if (!countryMenuOpen) setCountrySearchQuery('');
       }, 300);
     }
-  }, [countryMenuOpen, searchInputRef]);
+  }, [countryMenuOpen, searchInputRef, isMobile]);
 
   const filteredCountries = countrySearchQuery.trim() === ''
     ? countries
@@ -59,6 +59,11 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
 
   // Popular/favorite countries
   const favoriteCountries = countries.slice(0, 8);
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    setCountrySearchQuery(e.target.value);
+  };
 
   return (
     <div className="px-3 py-2 mb-2">
@@ -103,14 +108,18 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
               type="text" 
               placeholder={t('searchCountries') || 'بحث الدول...'}
               className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm pl-9 pr-3 
-                       text-black dark:text-white bg-gray-50 dark:bg-gray-900"
+                       text-black dark:text-white bg-gray-50 dark:bg-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               value={countrySearchQuery}
-              onChange={(e) => setCountrySearchQuery(e.target.value)}
+              onChange={handleSearchInputChange}
+              onClick={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
               ref={(ref) => setSearchInputRef(ref)}
               autoComplete="off"
               autoCapitalize="off"
               autoCorrect="off"
               spellCheck="false"
+              inputMode="search"
+              enterKeyHint="search"
               style={{ WebkitAppearance: 'none' }}
             />
             <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
