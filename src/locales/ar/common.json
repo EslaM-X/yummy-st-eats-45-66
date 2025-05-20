@@ -25,5 +25,9 @@
   "success": "نجاح",
   "toggleTheme": "تبديل وضع السمة",
   "changeLanguage": "تغيير اللغة",
-  "cart": "عربة التسوق"
+  "cart": "عربة التسوق",
+  "darkModeEnabled": "تم تفعيل الوضع الليلي",
+  "lightModeEnabled": "تم تفعيل الوضع النهاري",
+  "enjoyDarkMode": "استمتع بالتصفح في الوضع الليلي",
+  "enjoyLightMode": "استمتع بالتصفح في الوضع النهاري"
 }

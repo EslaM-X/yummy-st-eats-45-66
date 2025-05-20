@@ -15,5 +15,7 @@
   "admin": "Admin Panel",
   "privacyPolicy": "Privacy Policy",
   "termsConditions": "Terms & Conditions",
-  "cookiePolicy": "Cookie Policy"
+  "cookiePolicy": "Cookie Policy",
+  "menu": "Menu",
+  "language": "Language"
 }

@@ -25,5 +25,9 @@
   "success": "Success",
   "toggleTheme": "Toggle theme",
   "changeLanguage": "Change language",
-  "cart": "Shopping cart"
+  "cart": "Shopping cart",
+  "darkModeEnabled": "Dark mode enabled",
+  "lightModeEnabled": "Light mode enabled",
+  "enjoyDarkMode": "Enjoy browsing in dark mode",
+  "enjoyLightMode": "Enjoy browsing in light mode"
 }
