@@ -1,8 +1,1 @@
-
 project_id = "ioikeckohhxlchmlpgxp"
-
-[functions.st-payment]
-verify_jwt = true
-
-[functions.st-refund]
-verify_jwt = true
