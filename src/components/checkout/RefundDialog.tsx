@@ -18,6 +18,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { RefreshCcw, CreditCard, CheckCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const RefundDialog: React.FC<RefundDialogProps> = ({
   open,
@@ -62,6 +63,14 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
 
     setLoading(true);
     try {
+      // Check if user is authenticated
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      
+      if (!session) {
+        throw new Error('Authentication required for refund');
+      }
+      
       // Format data for API
       const refundData = {
         order_id: values.order_id,
@@ -76,7 +85,10 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
       // Use template literals for string interpolation
       toast({
         title: t('refundSuccess'),
-        description: `${t('amount')}: ${values.amount} ST, ${t('refundId')}: REF-${response.refund_txn_id}`,
+        description: t('refundSuccessDetail', {
+          amount: values.amount,
+          id: `REF-${response.refund_txn_id}`
+        }),
       });
       
       // Wait a moment before closing dialog and triggering success

@@ -14,6 +14,7 @@ import { z } from "zod";
 import CardNumberInput from './CardNumberInput';
 import CvvInput from './CvvInput';
 import SubmitPaymentButton from './SubmitPaymentButton';
+import { supabase } from '@/integrations/supabase/client';
 
 // Payment form validation schema
 const paymentSchema = z.object({
@@ -65,6 +66,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     setLoading(true);
     
     try {
+      // Check if user is authenticated
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      
       // Prepare payment data
       const paymentData = {
         card_number: values.cardNumber.replace(/\s+/g, ''),
@@ -84,6 +89,15 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       
       // Clear the cart
       clearCart();
+      
+      // Store the order information in localStorage for persistence
+      localStorage.setItem('lastCompletedOrder', JSON.stringify({
+        orderId,
+        amount,
+        date: new Date().toISOString(),
+        items: cartItems,
+        transactionId: response.transaction_id
+      }));
       
       // Handle success flow
       if (onSuccess) {

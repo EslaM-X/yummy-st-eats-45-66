@@ -333,6 +333,51 @@ export type Database = {
         }
         Relationships: []
       }
+      st_virtual_card_transactions: {
+        Row: {
+          amount: number
+          card_last_four: string | null
+          card_number: string | null
+          created_at: string
+          cvv: string | null
+          id: string
+          order_id: string
+          status: string
+          transaction_id: string
+          transaction_type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          card_last_four?: string | null
+          card_number?: string | null
+          created_at?: string
+          cvv?: string | null
+          id?: string
+          order_id: string
+          status?: string
+          transaction_id: string
+          transaction_type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          card_last_four?: string | null
+          card_number?: string | null
+          created_at?: string
+          cvv?: string | null
+          id?: string
+          order_id?: string
+          status?: string
+          transaction_id?: string
+          transaction_type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
