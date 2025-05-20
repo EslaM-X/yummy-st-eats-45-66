@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { countries } from '@/components/ui/country-picker';
+import { countries } from '@/components/ui/country-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CountryDisplay } from '@/components/ui/country-display';
 
 interface CountryFilterProps {
   selectedCountry: string | undefined;
@@ -36,17 +37,10 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
         <SelectTrigger className="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 h-9 sm:h-10">
           <SelectValue>
             {selectedCountry ? (
-              <div className="flex items-center gap-1 sm:gap-2">
-                <span className="text-base sm:text-lg">
-                  {countries.find(c => c.code === selectedCountry)?.flagEmoji}
-                </span>
-                <span className="text-xs sm:text-sm truncate max-w-[80px] sm:max-w-full">
-                  {language === 'ar'
-                    ? countries.find(c => c.code === selectedCountry)?.nameAr
-                    : countries.find(c => c.code === selectedCountry)?.name
-                  }
-                </span>
-              </div>
+              <CountryDisplay 
+                country={countries.find(c => c.code === selectedCountry)}
+                showName={true} 
+              />
             ) : (
               <span className="text-xs sm:text-sm">
                 {t('allCountriesOption') || 'كل الدول'}
@@ -61,10 +55,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
           
           {countries.map((country) => (
             <SelectItem key={country.code} value={country.code} className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-              <div className="flex items-center gap-1 sm:gap-2">
-                <span className="text-base sm:text-lg">{country.flagEmoji}</span>
-                <span className="truncate">{language === 'ar' ? country.nameAr : country.name}</span>
-              </div>
+              <CountryDisplay country={country} showName={true} />
             </SelectItem>
           ))}
         </SelectContent>

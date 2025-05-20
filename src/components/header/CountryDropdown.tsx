@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { countries } from '@/components/ui/country-picker';
+import { countries } from '@/components/ui/country-data';
+import { CountryDisplay } from '@/components/ui/country-display';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,8 +83,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
                 setSearchQuery('');
               }}
             >
-              <span className="text-base sm:text-lg">{country.flagEmoji}</span>
-              <span className="truncate">{language === 'ar' ? country.nameAr : country.name}</span>
+              <CountryDisplay country={country} showName={true} />
             </DropdownMenuItem>
           ))}
         </div>
