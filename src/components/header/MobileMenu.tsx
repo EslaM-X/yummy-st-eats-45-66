@@ -9,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Import refactored components
 import MobileMenuHeader from './mobile-menu/MobileMenuHeader';
@@ -59,31 +60,33 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
         className="w-[96vw] max-w-[320px] rounded-2xl p-1.5 mt-2 bg-white/95 dark:bg-gray-900/95 border-none shadow-2xl ring-2 ring-primary/10 animate-scale-in z-[1000]"
         sideOffset={8}
       >
-        <div className="flex flex-col gap-0.5">
-          {/* Mini header */}
-          <MobileMenuHeader />
+        <ScrollArea className="max-h-[80vh] overflow-y-auto">
+          <div className="flex flex-col gap-0.5">
+            {/* Mini header */}
+            <MobileMenuHeader />
 
-          {/* Country selection */}
-          <CountrySelector 
-            selectedCountry={selectedCountry}
-            handleCountryChange={handleCountryChange}
-            countryMenuOpen={countryMenuOpen}
-            setCountryMenuOpen={setCountryMenuOpen}
-          />
+            {/* Country selection */}
+            <CountrySelector 
+              selectedCountry={selectedCountry}
+              handleCountryChange={handleCountryChange}
+              countryMenuOpen={countryMenuOpen}
+              setCountryMenuOpen={setCountryMenuOpen}
+            />
 
-          {/* Main menu items */}
-          <NavigationLinks closeMenu={closeMenu} />
+            {/* Main menu items */}
+            <NavigationLinks closeMenu={closeMenu} />
 
-          {/* Control buttons: theme, language, cart */}
-          <ControlButtons 
-            theme={theme}
-            toggleTheme={toggleTheme}
-            toggleLanguage={toggleLanguage}
-            navigateToCart={navigateToCart}
-            closeMenu={closeMenu}
-            cartItemsCount={cartItemsCount}
-          />
-        </div>
+            {/* Control buttons: theme, language, cart */}
+            <ControlButtons 
+              theme={theme}
+              toggleTheme={toggleTheme}
+              toggleLanguage={toggleLanguage}
+              navigateToCart={navigateToCart}
+              closeMenu={closeMenu}
+              cartItemsCount={cartItemsCount}
+            />
+          </div>
+        </ScrollArea>
       </DropdownMenuContent>
     </DropdownMenu>
   );
