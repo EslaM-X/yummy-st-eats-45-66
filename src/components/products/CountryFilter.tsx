@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CountryDisplay } from '@/components/ui/country-display';
 import { Search, Globe } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface CountryFilterProps {
   selectedCountry: string | undefined;
@@ -161,27 +162,29 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
           )}
           
           {/* Main country list */}
-          <div className="grid grid-cols-1 gap-1 max-h-[40vh] overflow-y-auto pr-1 -mr-1">
-            {filteredCountries.map((country) => (
-              <SelectItem 
-                key={country.code} 
-                value={country.code} 
-                className="cursor-pointer hover:bg-primary/10 rounded-md py-2 
-                         text-black dark:text-white data-[state=checked]:bg-primary/15"
-              >
-                <CountryDisplay country={country} showName={true} />
-              </SelectItem>
-            ))}
-            
-            {filteredCountries.length === 0 && (
-              <div className="py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
-                <div className="inline-block p-2 bg-gray-100 dark:bg-gray-700 rounded-full mb-2">
-                  <Search className="h-5 w-5 opacity-70" />
+          <ScrollArea className="h-[40vh]">
+            <div className="grid grid-cols-1 gap-1 pr-1">
+              {filteredCountries.map((country) => (
+                <SelectItem 
+                  key={country.code} 
+                  value={country.code} 
+                  className="cursor-pointer hover:bg-primary/10 rounded-md py-2 
+                           text-black dark:text-white data-[state=checked]:bg-primary/15"
+                >
+                  <CountryDisplay country={country} showName={true} />
+                </SelectItem>
+              ))}
+              
+              {filteredCountries.length === 0 && (
+                <div className="py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+                  <div className="inline-block p-2 bg-gray-100 dark:bg-gray-700 rounded-full mb-2">
+                    <Search className="h-5 w-5 opacity-70" />
+                  </div>
+                  <p>{t('noCountriesFound') || 'لا توجد دول مطابقة'}</p>
                 </div>
-                <p>{t('noCountriesFound') || 'لا توجد دول مطابقة'}</p>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          </ScrollArea>
         </SelectContent>
       </Select>
     </div>

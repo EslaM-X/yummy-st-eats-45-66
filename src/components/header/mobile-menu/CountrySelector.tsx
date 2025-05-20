@@ -5,6 +5,8 @@ import { Search } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-picker';
 import { CountryDisplay } from '@/components/ui/country-display';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CountrySelectorProps {
   selectedCountry: string;
@@ -22,6 +24,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   const { t, language } = useLanguage();
   const [countrySearchQuery, setCountrySearchQuery] = useState('');
   const [animateIn, setAnimateIn] = useState(false);
+  const isMobile = useIsMobile();
   
   // Trigger animation when menu opens
   useEffect(() => {
@@ -102,23 +105,25 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
           </div>
           
           {filteredCountries.length > 0 ? (
-            <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 max-h-[200px] overflow-y-auto p-1">
-              {filteredCountries.map((country) => (
-                <Button
-                  key={country.code}
-                  variant="ghost"
-                  size="icon"
-                  className={`rounded-full w-10 h-10 bg-gray-50 dark:bg-gray-800 
-                    ${selectedCountry === country.code ? 
-                      'ring-2 ring-primary shadow-md scale-110 bg-primary/10' : 
-                      'hover:bg-primary/5 hover:scale-105'}`}
-                  onClick={() => handleCountryChange(country.code)}
-                  title={language === 'ar' ? country.nameAr : country.name}
-                >
-                  <span className="text-lg">{country.flagEmoji}</span>
-                </Button>
-              ))}
-            </div>
+            <ScrollArea className="h-[200px] pr-1">
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 p-1">
+                {filteredCountries.map((country) => (
+                  <Button
+                    key={country.code}
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-full w-10 h-10 bg-gray-50 dark:bg-gray-800 
+                      ${selectedCountry === country.code ? 
+                        'ring-2 ring-primary shadow-md scale-110 bg-primary/10' : 
+                        'hover:bg-primary/5 hover:scale-105'}`}
+                    onClick={() => handleCountryChange(country.code)}
+                    title={language === 'ar' ? country.nameAr : country.name}
+                  >
+                    <span className="text-lg">{country.flagEmoji}</span>
+                  </Button>
+                ))}
+              </div>
+            </ScrollArea>
           ) : (
             <div className="text-center py-4 text-gray-500 dark:text-gray-400">
               {t('noCountriesFound') || 'لا توجد دول مطابقة'}

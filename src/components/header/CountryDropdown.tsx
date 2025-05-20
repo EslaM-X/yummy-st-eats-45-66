@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-data';
 import { CountryDisplay } from '@/components/ui/country-display';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CountryDropdownProps {
   selectedCountry: string;
@@ -110,27 +111,29 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
             </div>
           )}
           
-          <div className="h-[300px] overflow-y-auto pr-1 -mr-1">
-            <div className="grid grid-cols-1 gap-1">
-              {filteredCountries.map((country) => (
-                <Button
-                  key={country.code}
-                  variant="ghost"
-                  className={`justify-start cursor-pointer h-10 px-3 hover:bg-primary/10 rounded-lg transition-all duration-200 text-black dark:text-white
-                    ${selectedCountry === country.code ? 'bg-primary/15' : ''}`}
-                  onClick={() => handleCountryChange(country.code)}
-                >
-                  <CountryDisplay country={country} showName={true} />
-                </Button>
-              ))}
-              
-              {filteredCountries.length === 0 && (
-                <div className="py-8 text-center text-gray-500 dark:text-gray-400 text-sm">
-                  {t('noCountriesFound') || 'لا توجد دول مطابقة'}
-                </div>
-              )}
+          <ScrollArea className="h-[300px]">
+            <div className="pr-2">
+              <div className="grid grid-cols-1 gap-1">
+                {filteredCountries.map((country) => (
+                  <Button
+                    key={country.code}
+                    variant="ghost"
+                    className={`justify-start cursor-pointer h-10 px-3 hover:bg-primary/10 rounded-lg transition-all duration-200 text-black dark:text-white
+                      ${selectedCountry === country.code ? 'bg-primary/15' : ''}`}
+                    onClick={() => handleCountryChange(country.code)}
+                  >
+                    <CountryDisplay country={country} showName={true} />
+                  </Button>
+                ))}
+                
+                {filteredCountries.length === 0 && (
+                  <div className="py-8 text-center text-gray-500 dark:text-gray-400 text-sm">
+                    {t('noCountriesFound') || 'لا توجد دول مطابقة'}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          </ScrollArea>
         </div>
       </PopoverContent>
     </Popover>
