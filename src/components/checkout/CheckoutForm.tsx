@@ -1,11 +1,6 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard } from 'lucide-react';
 import { VirtualCardService } from '@/services/VirtualCardService';
@@ -13,6 +8,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { formatCardNumber } from '@/services/card/cardValidation';
 
 const paymentSchema = z.object({
   cardNumber: z.string()
@@ -48,7 +49,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { t, language } = useLanguage();
-  const { clearCart } = useCart(); // Add clearCart from useCart hook
+  const { clearCart } = useCart();
   
   const form = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
@@ -57,23 +58,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       cvv: '',
     },
   });
-
-  const formatCardNumber = (value: string): string => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
-    const parts = [];
-    
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-    
-    if (parts.length) {
-      return parts.join(' ');
-    } else {
-      return value;
-    }
-  };
 
   const handleCardNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCardNumber(event.target.value);
