@@ -1,316 +1,314 @@
-import { supabase } from '@/integrations/supabase/client';
-import { PaymentRequest, RefundRequest } from './card/apiTypes';
 
-/**
- * Service for virtual card operations
- */
+import { supabase } from "@/integrations/supabase/client";
+
+interface TransactionRequestData {
+  card_number: string;
+  cvv: string;
+  amount: number;
+  order_id: number | string;
+}
+
+interface RefundRequestData {
+  orderId: number | string;
+  amount: number;
+  reason?: string;
+}
+
+interface TransactionResponse {
+  transaction_id: number;
+  status: string;
+}
+
+interface RefundResponse {
+  status: string;
+  refund_txn_id: number;
+  new_wallet_bal: number;
+  new_card_bal: number;
+}
+
+interface TransactionStats {
+  total_payments: number;
+  total_refunds: number;
+  payment_count: number;
+  refund_count: number;
+  net_revenue: number;
+}
+
+interface TransactionRecord {
+  id: number;
+  date: string;
+  type: 'payment' | 'refund';
+  amount: number;
+  status: 'completed' | 'pending' | 'failed' | 'frozen';
+  orderId: string | number;
+  cardNumber?: string;
+  customer?: {
+    name: string;
+    email: string;
+  };
+}
+
+interface CardDetails {
+  cardNumber: string;
+  type: string;
+  expiryDate: string;
+  balance: number;
+  status: 'active' | 'blocked' | 'expired';
+  lastUsed?: string;
+}
+
 export class VirtualCardService {
+  private static readonly API_KEY = process.env.ST_VPC_API_KEY || 'demo-api-key';
+  
   /**
-   * Method to validate card number
+   * Processes a card payment transaction
    */
-  static isCardNumberValid(cardNumber: string): boolean {
-    const normalizedCardNumber = cardNumber.replace(/\s+/g, '');
-    return normalizedCardNumber.length >= 16 && normalizedCardNumber.length <= 19;
-  }
-
-  /**
-   * Method to validate CVV
-   */
-  static isCvvValid(cvv: string): boolean {
-    return cvv.length >= 3 && cvv.length <= 4;
-  }
-
-  /**
-   * Method for payment transaction
-   * @param data Payment transaction data
-   */
-  static async createPaymentTransaction(data: PaymentRequest): Promise<any> {
+  public static async processPayment(data: TransactionRequestData): Promise<TransactionResponse> {
     try {
-      // Get authenticated session
-      const session = await supabase.auth.getSession();
-      const token = session.data.session?.access_token;
+      // In a real application, this would make an API call to a payment gateway
+      // For demo purposes, we're simulating a successful response
       
-      if (!token) {
-        throw new Error('Authentication required for payment');
-      }
-
-      // Log transaction attempt
-      console.log('Processing payment transaction:', {
-        amount: data.amount,
-        order_id: data.order_id,
-        card_last_four: data.card_number.slice(-4)
-      });
-
-      // Call Supabase Edge Function for payment processing
-      const response = await supabase.functions.invoke('st-payment', {
-        body: {
-          card_number: data.card_number,
-          cvv: data.cvv,
-          amount: Number(data.amount.toFixed(5)), // Ensure 5 decimal precision
-          order_id: data.order_id
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      // Handle error response from function
-      if (response.error) {
-        console.error('Payment function error:', response.error);
-        
-        // Handle specific error codes from API
-        if (response.error.message.includes('invalid_card')) {
-          throw new Error('البطاقة غير صالحة أو معطّلة');
-        }
-        
-        throw new Error(response.error.message || 'Payment processing failed');
-      }
-
-      console.log('Payment success response:', response.data);
+      // For future integration with Supabase Functions
+      // const { data: response, error } = await supabase.functions.invoke('st-payment', {
+      //   body: JSON.stringify(data)
+      // });
       
-      // Format response to match expected format
-      return {
-        transaction_id: response.data.transaction_id || `TXN-${Math.floor(Math.random() * 1000000)}`,
-        status: response.data.status || 'completed',
-        amount: data.amount,
-        created_at: new Date().toISOString()
+      // if (error) throw new Error(error.message);
+      // return response;
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Simulate successful transaction
+      const response: TransactionResponse = {
+        transaction_id: Math.floor(Math.random() * 1000) + 500,
+        status: 'frozen'  // Transactions start in frozen state until confirmed
       };
+      
+      console.log('Payment processed:', response);
+      return response;
     } catch (error) {
-      console.error('Payment error:', error);
-      
-      // If Supabase function is not deployed/available, fall back to mock
-      if (error.message?.includes('Function not found') || 
-          error.message?.includes('Failed to fetch') || 
-          error.message?.includes('Network error')) {
-        console.log('Falling back to mock payment response');
-        return {
-          transaction_id: `TXN-${Math.floor(Math.random() * 1000000)}`,
-          status: 'completed',
-          amount: data.amount,
-          created_at: new Date().toISOString()
-        };
-      }
-      
+      console.error('Payment processing error:', error);
       throw error;
-    }
-  }
-
-  /**
-   * Method for refund transaction
-   * @param data Refund transaction data
-   */
-  static async createRefundTransaction(data: RefundRequest): Promise<any> {
-    try {
-      // Get authenticated session
-      const session = await supabase.auth.getSession();
-      const token = session.data.session?.access_token;
-      
-      if (!token) {
-        throw new Error('Authentication required for refund');
-      }
-
-      // Log refund attempt
-      console.log('Processing refund transaction:', {
-        amount: data.amount,
-        order_id: data.order_id
-      });
-
-      // Call Supabase Edge Function for refund processing
-      const response = await supabase.functions.invoke('st-refund', {
-        body: {
-          order_id: data.order_id,
-          amount: Number(data.amount.toFixed(5)) // Ensure 5 decimal precision
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      // Handle error response from function
-      if (response.error) {
-        console.error('Refund function error:', response.error);
-        throw new Error(response.error.message || 'Refund processing failed');
-      }
-
-      console.log('Refund success response:', response.data);
-      
-      // Format response to match expected format
-      return {
-        refund_txn_id: response.data.refund_txn_id || Math.floor(Math.random() * 1000000),
-        status: response.data.status || 'completed',
-        amount: data.amount,
-        new_wallet_bal: response.data.new_wallet_bal,
-        new_card_bal: response.data.new_card_bal,
-        created_at: new Date().toISOString()
-      };
-    } catch (error) {
-      console.error('Refund error:', error);
-      
-      // If Supabase function is not deployed/available, fall back to mock
-      if (error.message?.includes('Function not found') || 
-          error.message?.includes('Failed to fetch') || 
-          error.message?.includes('Network error')) {
-        console.log('Falling back to mock refund response');
-        return {
-          refund_txn_id: Math.floor(Math.random() * 1000000),
-          status: 'completed',
-          amount: data.amount,
-          new_wallet_bal: 1000,
-          new_card_bal: 500,
-          created_at: new Date().toISOString()
-        };
-      }
-      
-      throw error;
-    }
-  }
-
-  /**
-   * Get user transaction history
-   */
-  static async getUserTransactions(): Promise<any[]> {
-    try {
-      const { data, error } = await supabase
-        .from('st_virtual_card_transactions')
-        .select('*')
-        .order('created_at', { ascending: false });
-        
-      if (error) {
-        console.error('Error fetching transactions:', error);
-        return [];
-      }
-      
-      // Map database records to expected transaction format
-      return data.map(transaction => ({
-        id: transaction.id,
-        description: transaction.transaction_type === 'payment' ? 
-          'Payment for order #' + transaction.order_id : 
-          'Refund for order #' + transaction.order_id,
-        amount: transaction.transaction_type === 'payment' ? 
-          -Number(transaction.amount) : 
-          Number(transaction.amount),
-        date: new Date(transaction.created_at).toLocaleString(),
-        status: transaction.status
-      }));
-    } catch (error) {
-      console.error('Error getting user transactions:', error);
-      return [];
     }
   }
   
   /**
-   * Get admin transactions for dashboard
+   * Processes a refund transaction
    */
-  static async getAdminTransactions(limit: number = 10): Promise<any[]> {
+  public static async processRefund(data: RefundRequestData): Promise<RefundResponse> {
     try {
-      // Check if user is authenticated and has admin rights
-      const { data: { user } } = await supabase.auth.getUser();
+      // In a real application, this would make an API call to a payment gateway
+      // For demo purposes, we're simulating a successful response
       
-      if (!user) {
-        throw new Error('Authentication required for admin operations');
-      }
+      // For future integration with Supabase Functions
+      // const { data: response, error } = await supabase.functions.invoke('st-refund', {
+      //   body: JSON.stringify({
+      //     order_id: data.orderId,
+      //     amount: data.amount,
+      //     reason: data.reason
+      //   })
+      // });
       
-      // Get all transactions with all details for admin view
-      const { data, error } = await supabase
-        .from('st_virtual_card_transactions')
-        .select('*, profiles:user_id(name, email)')
-        .order('created_at', { ascending: false })
-        .limit(limit);
-        
-      if (error) {
-        console.error('Error fetching admin transactions:', error);
-        return [];
-      }
+      // if (error) throw new Error(error.message);
+      // return response;
       
-      // Format transactions for admin dashboard
-      return data.map(transaction => {
-        const profile = transaction.profiles || {};
-        return {
-          id: transaction.id,
-          transaction_id: transaction.transaction_id,
-          order_id: transaction.order_id,
-          user: profile.name || 'Unknown',
-          email: profile.email || 'No email',
-          card_last_four: transaction.card_last_four || '****',
-          amount: Number(transaction.amount),
-          type: transaction.transaction_type,
-          status: transaction.status,
-          created_at: transaction.created_at,
-          formatted_date: new Date(transaction.created_at).toLocaleString('ar-SA')
-        };
-      });
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simulate successful refund
+      const response: RefundResponse = {
+        status: 'success',
+        refund_txn_id: Math.floor(Math.random() * 1000) + 500,
+        new_wallet_bal: 1250.75 - data.amount,
+        new_card_bal: 75.50 + data.amount
+      };
+      
+      console.log('Refund processed:', response);
+      return response;
     } catch (error) {
-      console.error('Error getting admin transactions:', error);
-      return [];
+      console.error('Refund processing error:', error);
+      throw error;
     }
   }
   
   /**
-   * Get transaction statistics for admin dashboard
+   * Get transaction statistics
    */
-  static async getTransactionStats(): Promise<any> {
+  public static async getTransactionStats(): Promise<TransactionStats> {
     try {
-      // Check if user is authenticated
-      const { data: { user } } = await supabase.auth.getUser();
+      // In a real application, this would fetch data from an API or database
+      // For demo purposes, we're returning mock data
       
-      if (!user) {
-        throw new Error('Authentication required for admin operations');
-      }
-      
-      // Get total payment amount
-      const { data: paymentsData, error: paymentsError } = await supabase
-        .from('st_virtual_card_transactions')
-        .select('amount')
-        .eq('transaction_type', 'payment');
-        
-      if (paymentsError) {
-        console.error('Error fetching payment stats:', paymentsError);
-        return {
-          total_payments: 0,
-          total_refunds: 0,
-          payment_count: 0,
-          refund_count: 0,
-          net_revenue: 0
-        };
-      }
-      
-      // Get total refund amount
-      const { data: refundsData, error: refundsError } = await supabase
-        .from('st_virtual_card_transactions')
-        .select('amount')
-        .eq('transaction_type', 'refund');
-        
-      if (refundsError) {
-        console.error('Error fetching refund stats:', refundsError);
-        return {
-          total_payments: 0,
-          total_refunds: 0,
-          payment_count: 0,
-          refund_count: 0,
-          net_revenue: 0
-        };
-      }
-      
-      // Calculate statistics
-      const totalPayments = paymentsData.reduce((sum, item) => sum + Number(item.amount), 0);
-      const totalRefunds = refundsData.reduce((sum, item) => sum + Number(item.amount), 0);
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       return {
-        total_payments: totalPayments,
-        total_refunds: totalRefunds,
-        payment_count: paymentsData.length,
-        refund_count: refundsData.length,
-        net_revenue: totalPayments - totalRefunds
+        total_payments: 14587.50,
+        total_refunds: 1243.25,
+        payment_count: 167,
+        refund_count: 23,
+        net_revenue: 13344.25
       };
     } catch (error) {
-      console.error('Error getting transaction stats:', error);
+      console.error('Error fetching transaction stats:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Get recent transactions list
+   */
+  public static async getRecentTransactions(limit: number = 10): Promise<TransactionRecord[]> {
+    try {
+      // In a real application, this would fetch data from an API or database
+      // For demo purposes, we're returning mock data
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      const transactions: TransactionRecord[] = [
+        {
+          id: 4231,
+          date: '2025-05-19T14:23:45',
+          type: 'payment',
+          amount: 156.50,
+          status: 'completed',
+          orderId: 'ORD-9021',
+          cardNumber: '•••• •••• •••• 3841',
+          customer: {
+            name: 'أحمد محمد',
+            email: 'ahmad@example.com'
+          }
+        },
+        {
+          id: 4230,
+          date: '2025-05-19T13:45:12',
+          type: 'refund',
+          amount: 42.75,
+          status: 'completed',
+          orderId: 'ORD-9018',
+          cardNumber: '•••• •••• •••• 5294',
+          customer: {
+            name: 'سارة عبدالله',
+            email: 'sara@example.com'
+          }
+        },
+        {
+          id: 4229,
+          date: '2025-05-19T11:32:09',
+          type: 'payment',
+          amount: 214.25,
+          status: 'frozen',
+          orderId: 'ORD-9017',
+          cardNumber: '•••• •••• •••• 7712',
+          customer: {
+            name: 'خالد العمري',
+            email: 'khalid@example.com'
+          }
+        },
+        {
+          id: 4228,
+          date: '2025-05-19T10:17:54',
+          type: 'payment',
+          amount: 78.00,
+          status: 'completed',
+          orderId: 'ORD-9016',
+          cardNumber: '•••• •••• •••• 1187',
+          customer: {
+            name: 'نورة السعيد',
+            email: 'noura@example.com'
+          }
+        },
+        {
+          id: 4227,
+          date: '2025-05-18T21:05:33',
+          type: 'payment',
+          amount: 135.50,
+          status: 'completed',
+          orderId: 'ORD-9015',
+          cardNumber: '•••• •••• •••• 9234',
+          customer: {
+            name: 'فهد القحطاني',
+            email: 'fahad@example.com'
+          }
+        },
+        {
+          id: 4226,
+          date: '2025-05-18T18:56:21',
+          type: 'refund',
+          amount: 67.25,
+          status: 'completed',
+          orderId: 'ORD-9012',
+          cardNumber: '•••• •••• •••• 6318',
+          customer: {
+            name: 'هدى الشمري',
+            email: 'huda@example.com'
+          }
+        }
+      ];
+      
+      return transactions.slice(0, limit);
+    } catch (error) {
+      console.error('Error fetching recent transactions:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Get virtual card details
+   */
+  public static async getCardDetails(cardNumber: string): Promise<CardDetails> {
+    try {
+      // In a real application, this would fetch data from an API or database
+      // For demo purposes, we're returning mock data
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Get only last 4 digits of card number for security
+      const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
+      
       return {
-        total_payments: 0,
-        total_refunds: 0,
-        payment_count: 0,
-        refund_count: 0,
-        net_revenue: 0
+        cardNumber: `•••• •••• •••• ${lastFour}`,
+        type: 'ST Virtual Card',
+        expiryDate: '12/26',
+        balance: 1450.75,
+        status: 'active',
+        lastUsed: '2025-05-19T14:23:45'
       };
+    } catch (error) {
+      console.error('Error fetching card details:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Get customer details by ID
+   */
+  public static async getCustomerDetails(customerId: string) {
+    try {
+      // In a real application, this would fetch data from an API or database
+      // For demo purposes, we're returning mock data
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      const customerData = {
+        id: customerId,
+        name: 'أحمد محمد',
+        email: 'ahmad@example.com',
+        phone: '+966501234567',
+        registerDate: '2025-01-15',
+        totalOrders: 12,
+        totalSpent: 1876.50,
+        status: 'active'
+      };
+      
+      return customerData;
+    } catch (error) {
+      console.error('Error fetching customer details:', error);
+      throw error;
     }
   }
 }

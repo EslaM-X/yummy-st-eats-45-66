@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +9,13 @@ import SystemAlerts from './dashboard/SystemAlerts';
 import RecentOrders from './dashboard/RecentOrders';
 import TransactionStats from './dashboard/TransactionStats';
 import { Users, ShoppingBag, TrendingUp, AlertCircle } from 'lucide-react';
+
+// تعريف نوع Alert
+type Alert = {
+  type: "error" | "success" | "warning" | "info";
+  title: string;
+  message: string;
+};
 
 const AdminDashboard: React.FC = () => {
   // Sample data for charts
@@ -31,10 +37,10 @@ const AdminDashboard: React.FC = () => {
     { name: "شاورما المدينة", orders: 76, rating: 4.2 }
   ]);
 
-  const [systemAlerts, setSystemAlerts] = useState([
-    { type: 'warning', title: 'تحديث النظام', message: 'سيتم إجراء صيانة للموقع غداً الساعة 2 صباحاً' },
-    { type: 'error', title: 'خطأ في API', message: 'واجهة برمجة المدفوعات غير متاحة حالياً' },
-    { type: 'info', title: 'طلبات جديدة', message: 'لديك 15 طلب جديد بحاجة للمراجعة' }
+  const [systemAlerts, setSystemAlerts] = useState<Alert[]>([
+    { type: "warning", title: 'تحديث النظام', message: 'سيتم إجراء صيانة للموقع غداً الساعة 2 صباحاً' },
+    { type: "error", title: 'خطأ في API', message: 'واجهة برمجة المدفوعات غير متاحة حالياً' },
+    { type: "info", title: 'طلبات جديدة', message: 'لديك 15 طلب جديد بحاجة للمراجعة' }
   ]);
 
   return (
