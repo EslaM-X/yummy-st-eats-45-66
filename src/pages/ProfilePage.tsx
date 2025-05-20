@@ -14,10 +14,9 @@ import * as z from "zod";
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { VirtualCardService } from '@/services/VirtualCardService';
 import { supabase } from "@/integrations/supabase/client";
-import VirtualCard from '@/components/wallet/VirtualCard';
-import TransactionList, { Transaction } from '@/components/wallet/TransactionList';
+import { VirtualCardService } from '@/services/VirtualCardService';
+import { Transaction } from '@/components/wallet/TransactionList';
 
 // نموذج التحقق لتحديث الملف الشخصي
 const profileSchema = z.object({
@@ -172,12 +171,9 @@ const ProfilePage: React.FC = () => {
           </h1>
           
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger value="profile">
                 {language === 'ar' ? 'الملف الشخصي' : 'Profile'}
-              </TabsTrigger>
-              <TabsTrigger value="wallet">
-                {language === 'ar' ? 'المحفظة' : 'Wallet'}
               </TabsTrigger>
               <TabsTrigger value="transactions">
                 {language === 'ar' ? 'المعاملات' : 'Transactions'}
@@ -266,44 +262,6 @@ const ProfilePage: React.FC = () => {
               </Card>
             </TabsContent>
             
-            <TabsContent value="wallet">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{language === 'ar' ? 'محفظتي' : 'My Wallet'}</CardTitle>
-                  <CardDescription>
-                    {language === 'ar' 
-                      ? 'إدارة بطاقتك الافتراضية ST ورصيد محفظتك'
-                      : 'Manage your ST virtual card and wallet balance'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="mb-6">
-                    <VirtualCard 
-                      cardNumber="4111 1111 1111 1111"
-                      expiryDate="12/25"
-                      cvv="123"
-                      balance={profile?.wallet_balance || 0}
-                      status="active"
-                    />
-                  </div>
-                  
-                  <div className="mt-8">
-                    <h3 className="text-xl font-medium mb-4">
-                      {language === 'ar' ? 'الرصيد الحالي' : 'Current Balance'}
-                    </h3>
-                    <div className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
-                      <span className="text-gray-600 dark:text-gray-400">
-                        {language === 'ar' ? 'رصيد المحفظة' : 'Wallet Balance'}
-                      </span>
-                      <span className="text-2xl font-bold">
-                        {profile?.wallet_balance || 0} ST
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
             <TabsContent value="transactions">
               <Card>
                 <CardHeader>
@@ -323,7 +281,9 @@ const ProfilePage: React.FC = () => {
                       </p>
                     </div>
                   ) : (
-                    <TransactionList transactions={transactions} />
+                    <div className="text-center py-8 text-gray-500">
+                      {language === 'ar' ? 'لا توجد معاملات' : 'No transactions found'}
+                    </div>
                   )}
                 </CardContent>
               </Card>
