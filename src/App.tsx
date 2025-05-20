@@ -20,7 +20,6 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsConditionsPage from './pages/TermsConditionsPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
-import WalletPage from './pages/WalletPage';
 import NotFound from './pages/NotFound';
 
 import ScrollToTop from './components/ScrollToTop';
@@ -54,7 +53,6 @@ function AppContent() {
         <Route path="/add-food" element={<AddFoodPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/wallet" element={<WalletPage />} />
         <Route path="/team" element={<CoreTeamPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/rewards" element={<RewardsPage />} />

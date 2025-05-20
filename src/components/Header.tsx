@@ -11,7 +11,7 @@ import HeaderActionButtons from './header/HeaderActionButtons';
 
 const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const location = useLocation();
@@ -51,10 +51,10 @@ const Header: React.FC = () => {
         <MobileNavigation 
           isOpen={mobileMenuOpen}
           navItems={[
-            { title: 'Home', path: "/" },
-            { title: 'Restaurants', path: "/restaurants" },
-            { title: 'Products', path: "/products" },
-            { title: 'Rewards', path: "/rewards" }
+            { title: t('navigation:home'), path: "/" },
+            { title: t('navigation:restaurants'), path: "/restaurants" },
+            { title: t('navigation:products'), path: "/products" },
+            { title: t('navigation:rewards'), path: "/rewards" }
           ]}
           isActive={(path) => location.pathname === path}
           onItemClick={() => setMobileMenuOpen(false)}

@@ -31,7 +31,7 @@ export function HeaderActionButtons() {
         size="icon" 
         onClick={toggleTheme} 
         className="h-9 w-9"
-        aria-label={language === 'ar' ? 'تبديل وضع السمة' : 'Toggle theme'}
+        aria-label={t('common:toggleTheme')}
       >
         {theme === "light" ? (
           <Moon className="h-5 w-5" />
@@ -45,7 +45,7 @@ export function HeaderActionButtons() {
         size="icon" 
         onClick={toggleLanguage}
         className="h-9 w-9"
-        aria-label={language === 'ar' ? 'تغيير اللغة' : 'Change language'}
+        aria-label={t('common:changeLanguage')}
       >
         <Globe className="h-5 w-5" />
       </Button>
@@ -55,7 +55,7 @@ export function HeaderActionButtons() {
         size="icon" 
         onClick={() => navigate('/cart')}
         className="h-9 w-9 relative"
-        aria-label={language === 'ar' ? 'عربة التسوق' : 'Shopping cart'}
+        aria-label={t('common:cart')}
       >
         <ShoppingCart className="h-5 w-5" />
         {cartItemsCount > 0 && (
