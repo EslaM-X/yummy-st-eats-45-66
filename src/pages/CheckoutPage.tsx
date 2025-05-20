@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -20,7 +19,7 @@ const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const [orderId] = useState(Math.floor(Math.random() * 100000)); // Random order ID for display
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   // Safely extract data from location.state with fallback values
   const { amount = 0, cartItems = [] } = (location.state as LocationState) || {};
@@ -79,7 +78,8 @@ const CheckoutPage: React.FC = () => {
         <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/5 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl"></div>
         
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
+        {/* تعديل البادينج ليكون 0 على الشاشات الصغيرة، والباقي كما هو */}
+        <div className="container mx-auto px-0 sm:px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
           <div className="mb-10 text-center">
             <div className="inline-flex items-center justify-center p-2 bg-primary/10 rounded-full mb-3">
               {paymentComplete ? (
@@ -114,7 +114,9 @@ const CheckoutPage: React.FC = () => {
                   <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 dark:bg-green-900/30">
                     <CheckCircle className="w-10 h-10 text-green-500 dark:text-green-400" />
                   </div>
-                  <h2 className="text-2xl font-semibold text-center mb-6 text-primary">{t('orderDetails')}</h2>
+                  <h2 className="text-2xl font-semibold text-center mb-6 text-primary">
+                    {t('orderDetails')}
+                  </h2>
                   <div className="space-y-4">
                     <div className="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                       <span className="text-gray-600 dark:text-gray-400">{t('orderNumber')}:</span>
@@ -122,6 +124,13 @@ const CheckoutPage: React.FC = () => {
                     </div>
                     <div className="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                       <span className="text-gray-600 dark:text-gray-400">{t('totalAmount')}:</span>
+                      <span className="font-medium text-primary">{amount} ST</span>
+                    </div>
+                    <div className="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
+                      {/* تعديل التسمية لتظهر وفقا للغة: Meal Cards أو بطاقات الطعام */}
+                      <span className="text-gray-600 dark:text-gray-400">
+                        {language === "en" ? "Meal Cards" : "بطاقات الطعام"}:
+                      </span>
                       <span className="font-medium text-primary">{amount} ST</span>
                     </div>
                     <div className="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
