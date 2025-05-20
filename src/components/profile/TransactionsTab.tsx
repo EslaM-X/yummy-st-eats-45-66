@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
 import { VirtualCardService } from '@/services/VirtualCardService';
 import { Transaction } from '@/components/wallet/TransactionList';
+import TransactionListDisplay from './TransactionListDisplay'; // استيراد المكون الجديد
 
 const TransactionsTab: React.FC = () => {
   const { user } = useAuth();
@@ -14,7 +15,6 @@ const TransactionsTab: React.FC = () => {
   const { toast } = useToast();
   const { language } = useLanguage();
 
-  // استرجاع المعاملات
   useEffect(() => {
     const fetchTransactions = async () => {
       if (!user) return;
@@ -23,15 +23,18 @@ const TransactionsTab: React.FC = () => {
       try {
         const userTransactions = await VirtualCardService.getUserTransactions();
         
-        // تحويل البيانات إلى الشكل المطلوب لمكوّن TransactionList
         const formattedTransactions: Transaction[] = userTransactions.map(tx => ({
-          id: tx.transaction_id,
+          id: tx.transaction_id || tx.refund_txn_id || Math.random().toString(), // Ensure ID exists
           description: tx.type === 'payment' 
-            ? language === 'ar' ? 'دفع' : 'Payment' 
-            : language === 'ar' ? 'استرداد' : 'Refund',
-          amount: tx.amount,
-          date: new Date(tx.created_at).toLocaleDateString(),
-          status: tx.status
+            ? language === 'ar' ? `دفع للطلب #${tx.metadata?.order_id || 'N/A'}` : `Payment for Order #${tx.metadata?.order_id || 'N/A'}`
+            : tx.type === 'refund'
+            ? language === 'ar' ? `استرداد للطلب #${tx.metadata?.order_id || 'N/A'}` : `Refund for Order #${tx.metadata?.order_id || 'N/A'}`
+            : language === 'ar' ? 'معاملة غير معروفة' : 'Unknown Transaction',
+          amount: parseFloat(tx.amount) || 0,
+          date: new Date(tx.created_at).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+          }),
+          status: tx.status || 'unknown'
         }));
         
         setTransactions(formattedTransactions);
@@ -63,18 +66,7 @@ const TransactionsTab: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {loadingTransactions ? (
-          <div className="py-10 text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-            <p className="mt-4 text-gray-500">
-              {language === 'ar' ? 'جارٍ تحميل المعاملات...' : 'Loading transactions...'}
-            </p>
-          </div>
-        ) : (
-          <div className="text-center py-8 text-gray-500">
-            {language === 'ar' ? 'لا توجد معاملات' : 'No transactions found'}
-          </div>
-        )}
+        <TransactionListDisplay transactions={transactions} loading={loadingTransactions} />
       </CardContent>
     </Card>
   );
