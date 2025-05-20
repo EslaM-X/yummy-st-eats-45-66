@@ -5,7 +5,7 @@ import { ShoppingCart, Moon, Sun, Globe } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthButtons } from '../auth/AuthButtons';
 import { useToast } from '@/hooks/use-toast';
 import { countries } from '@/components/ui/country-data';
@@ -33,6 +33,7 @@ export function HeaderActionButtons() {
   const { language, setLanguage, t } = useLanguage();
   const { cartItems } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { selectedCountry, setSelectedCountry } = useSelectedCountry();
 
@@ -62,25 +63,37 @@ export function HeaderActionButtons() {
   // Navigate to cart
   const navigateToCart = () => navigate('/cart');
 
-  // Change selected country
+  // Change selected country with improved UI feedback
   const handleCountryChange = (code: string) => {
-    setSelectedCountry(code);
+    if (code === selectedCountry) return; // Skip if same country
     
-    // Display toast notification for country change
-    const country = countries.find(c => c.code === code);
-    toast({
-      title: t('countryChanged') || 'تم تغيير الدولة',
-      description: language === 'ar' ? `تم التغيير إلى ${country?.nameAr}` : `Changed to ${country?.name}`,
-      duration: 1500
-    });
+    // Apply transition effect to the whole page
+    document.body.classList.add('transition-opacity', 'duration-300', 'opacity-50');
     
-    // Redirect to homepage to show filtered content
-    if (window.location.pathname !== '/') {
-      navigate('/');
-    } else {
-      // If already on homepage, force a refresh of the content
+    setTimeout(() => {
+      setSelectedCountry(code);
+      
+      // Display toast notification for country change
+      const country = countries.find(c => c.code === code);
+      toast({
+        title: t('countryChanged') || 'تم تغيير الدولة',
+        description: language === 'ar' ? `تم التغيير إلى ${country?.nameAr}` : `Changed to ${country?.name}`,
+        duration: 1500
+      });
+      
+      // Dispatch event to notify components about country change
       window.dispatchEvent(new CustomEvent('country-changed', { detail: code }));
-    }
+      
+      // If not on homepage, redirect to homepage to show filtered content
+      if (location.pathname !== '/') {
+        navigate('/');
+      }
+      
+      // Remove transition effect
+      setTimeout(() => {
+        document.body.classList.remove('opacity-50');
+      }, 100);
+    }, 200);
   };
 
   useEffect(() => {

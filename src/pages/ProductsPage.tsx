@@ -20,6 +20,7 @@ const ProductsPage: React.FC = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [sortBy, setSortBy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { t } = useLanguage();
   
   // Use the global country selector from the header
@@ -28,7 +29,7 @@ const ProductsPage: React.FC = () => {
   // Extract unique categories
   const categories = getCategories();
 
-  // Filter and sort products
+  // Filter and sort products with visual feedback
   useEffect(() => {
     setIsLoading(true);
     
@@ -40,12 +41,16 @@ const ProductsPage: React.FC = () => {
       .then(filteredProducts => {
         setProducts(filteredProducts);
         setIsLoading(false);
+        setIsUpdating(false);
       });
   }, [searchTerm, selectedCategory, sortBy, selectedCountry, globalSelectedCountry]);
   
-  // Listen for country change events from header
+  // Listen for country change events from header with improved visual feedback
   useEffect(() => {
     const handleCountryChanged = (event: Event) => {
+      // Show loading state
+      setIsUpdating(true);
+      
       // When country changed from header, clear the local filter
       setSelectedCountry(undefined);
     };
@@ -66,7 +71,7 @@ const ProductsPage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
       <Header />
-      <main className="flex-grow py-10">
+      <main className={`flex-grow py-10 transition-opacity duration-300 ${isUpdating ? 'opacity-50' : 'opacity-100'}`}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Hero Section */}
           <div className="text-center mb-12">

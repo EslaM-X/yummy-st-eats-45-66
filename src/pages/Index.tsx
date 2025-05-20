@@ -18,11 +18,20 @@ const Index: React.FC = () => {
   const selectedCountryData = globalSelectedCountry ? 
     countries.find(c => c.code === globalSelectedCountry) : null;
 
-  // Listen for country change events
+  // Listen for country change events with improved reload logic
   useEffect(() => {
     const handleCountryChanged = (event: Event) => {
       // Force a rerender when country changes
-      setSearchQuery(searchQuery => searchQuery);
+      setSearchQuery(prev => prev + ""); // This triggers a re-render without changing the value
+      
+      // Optional: add a visual feedback for country change
+      const content = document.getElementById('page-content');
+      if (content) {
+        content.classList.add('opacity-50');
+        setTimeout(() => {
+          content.classList.remove('opacity-50');
+        }, 300);
+      }
     };
     
     window.addEventListener('country-changed', handleCountryChanged);
@@ -45,7 +54,7 @@ const Index: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       <Header />
-      <main className="flex-grow">
+      <main className="flex-grow transition-all duration-300" id="page-content">
         <section className="bg-gradient-to-br from-yellow-600 via-yellow-700 to-yellow-800 text-white py-20 md:py-32">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="mb-6 flex justify-center">
@@ -71,7 +80,7 @@ const Index: React.FC = () => {
               {t('deliverySlogan')}
               {selectedCountryData && (
                 <span className="block text-2xl sm:text-3xl mt-2 opacity-80">
-                  {t('inCountry') || 'في'} {isRTL ? selectedCountryData.nameAr : selectedCountryData.name}
+                  {isRTL ? selectedCountryData.nameAr : selectedCountryData.name}
                 </span>
               )}
             </h1>

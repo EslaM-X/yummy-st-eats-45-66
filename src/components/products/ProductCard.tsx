@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Star, Heart, Award, Tag, Check } from 'lucide-react';
+import { ShoppingCart, Star, Heart, Award, Tag, Check, Flag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { Product } from '@/types';
@@ -94,12 +94,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </span>
         )}
         
-        {/* Country flag */}
+        {/* Country flag - Enhanced styling */}
         {countryInfo && (
-          <div className="absolute bottom-3 left-3 bg-white/80 dark:bg-black/50 p-1 rounded-full shadow-md backdrop-blur-sm">
-            <span className="text-lg" title={t('language') === 'ar' ? countryInfo.nameAr : countryInfo.name}>
-              {countryInfo.flagEmoji}
-            </span>
+          <div className="absolute bottom-3 left-3 bg-gradient-to-r from-white/90 to-white/80 dark:from-black/70 dark:to-black/60 p-1.5 backdrop-blur-sm rounded-full shadow-lg transform transition-all duration-300 group-hover:scale-110 border border-yellow-500/20 dark:border-blue-500/30">
+            <div className="flex items-center space-x-1 rtl:space-x-reverse">
+              <span 
+                className="text-lg filter drop-shadow-sm" 
+                title={t('language') === 'ar' ? countryInfo.nameAr : countryInfo.name}
+              >
+                {countryInfo.flagEmoji}
+              </span>
+            </div>
           </div>
         )}
         
