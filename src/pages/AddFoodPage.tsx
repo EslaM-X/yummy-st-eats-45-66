@@ -18,7 +18,7 @@ import FoodFormFields from '@/components/add-food/FoodFormFields';
 import ImageUploadArea from '@/components/add-food/ImageUploadArea';
 import SideInfoPanel from '@/components/add-food/SideInfoPanel';
 
-// تعريف نموذج التحقق باستخدام Zod - يبقى كما هو
+// تعريف نموذج التحقق باستخدام Zod
 const foodFormSchema = z.object({
   name: z.string().min(3, {
     message: "يجب أن يكون اسم الطبق 3 أحرف على الأقل",
@@ -37,6 +37,9 @@ const foodFormSchema = z.object({
   }),
   ingredients: z.string().min(5, {
     message: "يرجى إدخال المكونات (5 أحرف على الأقل)",
+  }),
+  country: z.string({
+    required_error: "يرجى اختيار الدولة",
   }),
 });
 
@@ -86,7 +89,7 @@ const successStories = [
 
 const AddFoodPage: React.FC = () => {
   const navigate = useNavigate();
-  const { t, language } = useLanguage(); // Added language for Zod messages if needed later
+  const { t, language } = useLanguage();
   const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
 
@@ -102,6 +105,7 @@ const AddFoodPage: React.FC = () => {
       price: "",
       preparationTime: "",
       ingredients: "",
+      country: "sa", // Default to Saudi Arabia
     },
   });
 

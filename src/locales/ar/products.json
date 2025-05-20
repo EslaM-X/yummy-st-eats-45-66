@@ -26,5 +26,6 @@
   "allCountriesOption": "كل الدول",
   "selectCountry": "اختر الدولة",
   "countryChanged": "تم تغيير الدولة",
-  "countryLabel": "الدولة"
+  "countryLabel": "الدولة",
+  "searchCountries": "بحث الدول..."
 }

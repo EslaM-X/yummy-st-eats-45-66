@@ -15,6 +15,7 @@ const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState<string | undefined>(undefined);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [sortBy, setSortBy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -28,17 +29,18 @@ const ProductsPage: React.FC = () => {
     setIsLoading(true);
     
     // Get filtered products
-    getFilteredProducts(searchTerm, selectedCategory, sortBy)
+    getFilteredProducts(searchTerm, selectedCategory, sortBy, selectedCountry)
       .then(filteredProducts => {
         setProducts(filteredProducts);
         setIsLoading(false);
       });
-  }, [searchTerm, selectedCategory, sortBy]);
+  }, [searchTerm, selectedCategory, sortBy, selectedCountry]);
 
   const handleClearFilters = () => {
     setSearchTerm('');
     setSelectedCategory('');
     setSortBy('');
+    setSelectedCountry(undefined);
   };
 
   return (
@@ -72,6 +74,8 @@ const ProductsPage: React.FC = () => {
                 setSortBy={setSortBy}
                 categories={categories}
                 handleClearFilters={handleClearFilters}
+                selectedCountry={selectedCountry}
+                setSelectedCountry={setSelectedCountry}
               />
             )}
           </div>

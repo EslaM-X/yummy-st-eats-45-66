@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Star, Heart, Award, Tag, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Product } from '@/types';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
+import { countries } from '@/components/ui/country-picker';
 
 interface ProductCardProps {
   product: Product;
@@ -54,6 +56,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     toast(`${product.isFavorite ? t('removedFromFavorites') : t('addedToFavorites')} ${product.name} ${product.isFavorite ? t('from') : t('to')} ${t('favorite')}`);
   };
 
+  // Get country info
+  const countryInfo = product.country ? countries.find(c => c.code === product.country) : null;
+
   return (
     <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative animate-fade-in">
       <div className="relative overflow-hidden h-52">
@@ -87,6 +92,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold py-1 px-2 rounded-full shadow-md flex items-center">
             <Tag className="h-3 w-3 mr-1 rtl:ml-1 rtl:mr-0" /> {t('discount')} {product.discountPercent}%
           </span>
+        )}
+        
+        {/* Country flag */}
+        {countryInfo && (
+          <div className="absolute bottom-3 left-3 bg-white/80 dark:bg-black/50 p-1 rounded-full shadow-md backdrop-blur-sm">
+            <span className="text-lg" title={t('language') === 'ar' ? countryInfo.nameAr : countryInfo.name}>
+              {countryInfo.flagEmoji}
+            </span>
+          </div>
         )}
         
         {/* Add to favorite button */}

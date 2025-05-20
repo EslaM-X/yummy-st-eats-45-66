@@ -40,21 +40,30 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="center" className="min-w-[180px] p-2">
+      <DropdownMenuContent align="center" className="min-w-[240px] max-h-[400px] overflow-y-auto p-2">
         <DropdownMenuLabel className="text-center font-semibold text-primary">
           {t('selectCountry') || 'اختر الدولة'}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {countries.map((country) => (
-          <DropdownMenuItem
-            key={country.code}
-            className={`flex items-center gap-2 cursor-pointer my-1 rounded hover:bg-primary/10 transition-all ${selectedCountry === country.code ? 'bg-primary/20' : ''}`}
-            onClick={() => handleCountryChange(country.code)}
-          >
-            <span className="text-lg">{country.flagEmoji}</span>
-            <span>{language === 'ar' ? country.nameAr : country.name}</span>
-          </DropdownMenuItem>
-        ))}
+        <div className="py-2 px-1">
+          <input 
+            type="text" 
+            placeholder={t('searchCountries') || 'بحث الدول...'}
+            className="w-full p-2 mb-2 rounded-md border border-input text-sm"
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+          {countries.map((country) => (
+            <DropdownMenuItem
+              key={country.code}
+              className={`flex items-center gap-2 cursor-pointer py-2 rounded hover:bg-primary/10 transition-all ${selectedCountry === country.code ? 'bg-primary/20' : ''}`}
+              onClick={() => handleCountryChange(country.code)}
+            >
+              <span className="text-lg">{country.flagEmoji}</span>
+              <span className="text-sm truncate">{language === 'ar' ? country.nameAr : country.name}</span>
+            </DropdownMenuItem>
+          ))}
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

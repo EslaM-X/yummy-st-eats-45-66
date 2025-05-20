@@ -152,7 +152,102 @@ const allProducts: Product[] = [
     category: 'أردني',
     rating: 4.6,
     country: 'jo'
-  }
+  },
+  // منتجات أوروبية وأمريكية
+  { 
+    id: 'p13', 
+    name: 'باستا كاربونارا', 
+    price: '85 ST', 
+    restaurant: 'إل إيطاليانو', 
+    imageUrl: 'https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=800',
+    description: 'باستا إيطالية تقليدية مع صلصة كريمية وقطع من لحم البانشيتا المقدد والبارميزان',
+    category: 'إيطالي',
+    rating: 4.7,
+    country: 'it'
+  },
+  { 
+    id: 'p14', 
+    name: 'كروسان فرنسي', 
+    price: '15 ST', 
+    restaurant: 'باريس كافيه', 
+    imageUrl: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800',
+    description: 'كروسان فرنسي طازج محضر يومياً بالزبدة الفرنسية الأصلية',
+    category: 'فرنسي',
+    rating: 4.8,
+    isNew: true,
+    country: 'fr'
+  },
+  { 
+    id: 'p15', 
+    name: 'فطيرة تفاح أمريكية', 
+    price: '45 ST', 
+    restaurant: 'بيكري هاوس', 
+    imageUrl: 'https://images.unsplash.com/photo-1535920527002-b35e96722eb9?auto=format&fit=crop&w=800',
+    description: 'فطيرة تفاح محلية الصنع بالقرفة والسكر البني والتفاح الطازج',
+    category: 'حلويات',
+    rating: 4.6,
+    country: 'us'
+  },
+  // منتجات آسيوية
+  { 
+    id: 'p16', 
+    name: 'رامن ياباني', 
+    price: '65 ST', 
+    restaurant: 'طوكيو راميني', 
+    imageUrl: 'https://images.unsplash.com/photo-1591814468924-caf88d1232e1?auto=format&fit=crop&w=800',
+    description: 'حساء رامن ياباني تقليدي بمرق العظام والنودلز والبيض واللحم',
+    category: 'ياباني',
+    rating: 4.9,
+    bestseller: true,
+    country: 'jp'
+  },
+  { 
+    id: 'p17', 
+    name: 'دجاج كونغ باو', 
+    price: '75 ST', 
+    restaurant: 'الصين الرائعة', 
+    imageUrl: 'https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=800',
+    description: 'طبق صيني حار من الدجاج مع الفلفل والخضروات والمكسرات',
+    category: 'صيني',
+    rating: 4.5,
+    country: 'cn'
+  },
+  // منتجات من تركيا
+  { 
+    id: 'p18', 
+    name: 'إسكندر كباب', 
+    price: '95 ST', 
+    restaurant: 'اسطنبول التركي', 
+    imageUrl: 'https://images.unsplash.com/photo-1644364935906-792b2245a2c2?auto=format&fit=crop&w=800',
+    description: 'كباب اسكندر التركي الشهير مع صلصة الطماطم والزبادي والخبز التركي',
+    category: 'تركي',
+    rating: 4.7,
+    country: 'tr'
+  },
+  { 
+    id: 'p19', 
+    name: 'بقلاوة تركية', 
+    price: '35 ST', 
+    restaurant: 'حلويات السلطان', 
+    imageUrl: 'https://images.unsplash.com/photo-1519676867240-f03562e64548?auto=format&fit=crop&w=800',
+    description: 'حلوى البقلاوة التركية مع الفستق والعسل المحلي',
+    category: 'حلويات',
+    rating: 4.8,
+    bestseller: true,
+    country: 'tr'
+  },
+  // منتجات إفريقية
+  { 
+    id: 'p20', 
+    name: 'كسكس مغربي', 
+    price: '70 ST', 
+    restaurant: 'مراكش الأصيل', 
+    imageUrl: 'https://images.unsplash.com/photo-1574653853027-5382a3d23a15?auto=format&fit=crop&w=800',
+    description: 'كسكس مغربي تقليدي محضر مع الخضروات واللحم والتوابل المغربية',
+    category: 'مغربي',
+    rating: 4.6,
+    country: 'ma'
+  },
 ];
 
 export const getCategories = (): string[] => {

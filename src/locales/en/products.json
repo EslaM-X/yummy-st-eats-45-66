@@ -26,5 +26,6 @@
   "allCountriesOption": "All Countries",
   "selectCountry": "Select Country",
   "countryChanged": "Country Changed",
-  "countryLabel": "Country"
+  "countryLabel": "Country",
+  "searchCountries": "Search countries..."
 }

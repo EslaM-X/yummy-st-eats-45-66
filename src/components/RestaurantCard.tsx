@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Star, Clock, ArrowRight, MapPin, Coffee } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { countries } from '@/components/ui/country-picker';
 
 const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) => {
   const navigate = useNavigate();
@@ -26,6 +27,9 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
     if (rating >= 3.0) return 'text-orange-500';
     return 'text-red-500';
   };
+
+  // Get country info
+  const countryInfo = restaurant.country ? countries.find(c => c.code === restaurant.country) : null;
 
   return (
     <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1 animate-fade-in">
@@ -49,6 +53,15 @@ const RestaurantCard: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) =>
           <span className={`absolute top-3 ${isRTL ? 'right-3' : 'left-3'} bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm`}>
             {t('discount')} {restaurant.discount}
           </span>
+        )}
+        
+        {/* Country flag */}
+        {countryInfo && (
+          <div className="absolute bottom-3 left-3 bg-white/80 dark:bg-black/50 p-1 rounded-full shadow-md backdrop-blur-sm">
+            <span className="text-lg" title={t('language') === 'ar' ? countryInfo.nameAr : countryInfo.name}>
+              {countryInfo.flagEmoji}
+            </span>
+          </div>
         )}
         
         <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent text-white">

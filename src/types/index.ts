@@ -4,13 +4,11 @@ export interface Restaurant {
   cuisine: string;
   rating: number;
   deliveryTime: string;
-  imageUrl: string;
+  imageUrl?: string;
+  description?: string;
   isNew?: boolean;
   discount?: string;
-  description?: string;
-  location?: string;
-  minOrderPrice?: number;
-  topPicks?: Product[];
+  country?: string;
 }
 
 export interface Product {

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import CountryFilter from './CountryFilter';
 
 interface FilterSectionProps {
   selectedCategory: string;
@@ -10,6 +11,8 @@ interface FilterSectionProps {
   setSortBy: (sortBy: string) => void;
   categories: string[];
   handleClearFilters: () => void;
+  selectedCountry: string | undefined;
+  setSelectedCountry: (country: string | undefined) => void;
 }
 
 const FilterSection: React.FC<FilterSectionProps> = ({
@@ -18,13 +21,15 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   sortBy,
   setSortBy,
   categories,
-  handleClearFilters
+  handleClearFilters,
+  selectedCountry,
+  setSelectedCountry
 }) => {
   const { t } = useLanguage();
   
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow-md mb-6 animate-fade-in">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t('categoryFilterLabel')}
@@ -56,6 +61,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             <option value="name-asc">{t('sortByOptionNameAsc')}</option>
           </select>
         </div>
+        
+        <CountryFilter 
+          selectedCountry={selectedCountry}
+          onCountryChange={setSelectedCountry}
+        />
         
         <div className="flex items-end">
           <Button 
