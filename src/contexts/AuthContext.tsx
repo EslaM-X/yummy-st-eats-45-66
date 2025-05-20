@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
 import { cleanupAuthState } from '@/components/auth/AuthUtils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface AuthContextType {
   user: User | null;
@@ -31,6 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const { language } = useLanguage();
   
   useEffect(() => {
     // Initial auth state check
@@ -129,15 +131,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await fetchUserProfile(data.user.id);
         
         toast({
-          title: "تم تسجيل الدخول بنجاح",
-          description: "مرحباً بك في تطبيق ST🍕 Eat",
+          title: language === 'ar' ? "تم تسجيل الدخول بنجاح" : "Successfully signed in",
+          description: language === 'ar' ? "مرحباً بك في تطبيق ST🍕 Eat" : "Welcome to ST🍕 Eat",
         });
       }
     } catch (error: any) {
       console.error('Login failed:', error);
       toast({
-        title: "فشل تسجيل الدخول",
-        description: error.message || "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+        title: language === 'ar' ? "فشل تسجيل الدخول" : "Login Failed",
+        description: error.message || (language === 'ar' ? "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى." : "An error occurred during login. Please try again."),
         variant: "destructive",
       });
       throw error;
@@ -157,14 +159,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       cleanupAuthState();
       
       toast({
-        title: "تم تسجيل الخروج",
-        description: "تم تسجيل خروجك بنجاح",
+        title: language === 'ar' ? "تم تسجيل الخروج" : "Signed Out",
+        description: language === 'ar' ? "تم تسجيل خروجك بنجاح" : "You have successfully signed out",
       });
     } catch (error: any) {
       console.error('Sign out error:', error);
       toast({
-        title: "خطأ في تسجيل الخروج",
-        description: error.message || "حدث خطأ أثناء تسجيل الخروج",
+        title: language === 'ar' ? "خطأ في تسجيل الخروج" : "Sign Out Error",
+        description: error.message || (language === 'ar' ? "حدث خطأ أثناء تسجيل الخروج" : "An error occurred during sign out"),
         variant: "destructive",
       });
     }

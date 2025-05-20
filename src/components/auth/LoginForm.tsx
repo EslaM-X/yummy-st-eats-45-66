@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Login form schema
 const loginSchema = z.object({
@@ -24,6 +25,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const { language } = useLanguage();
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -33,65 +36,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     }
   });
 
-  // دالة تنظيف حالة المصادقة
-  const cleanupAuthState = () => {
-    // إزالة توكنات المصادقة القياسية
-    localStorage.removeItem('supabase.auth.token');
-    
-    // إزالة جميع مفاتيح Supabase من localStorage
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        localStorage.removeItem(key);
-      }
-    });
-    
-    // إزالة من sessionStorage إذا كان قيد الاستخدام
-    Object.keys(sessionStorage || {}).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        sessionStorage.removeItem(key);
-      }
-    });
-  };
-
   // معالجة تسجيل الدخول
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setLoading(true);
     try {
-      // تنظيف حالة المصادقة أولاً
-      cleanupAuthState();
+      await signIn(values.email, values.password);
       
-      // محاولة تسجيل الخروج الشامل
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        // استمر حتى لو فشلت هذه العملية
-      }
-      
-      // تسجيل الدخول بالبريد الإلكتروني وكلمة المرور
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password,
-      });
-      
-      if (error) throw error;
-      
-      toast({
-        title: "تم تسجيل الدخول بنجاح",
-        description: "مرحباً بك في تطبيق ST🍕 Eat",
-      });
-      
-      // إعادة تحميل الصفحة كاملة
-      window.location.href = '/';
+      // التوجيه إلى الصفحة الرئيسية
+      navigate('/');
       
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error: any) {
-      toast({
-        title: "فشل تسجيل الدخول",
-        description: error.message || "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.",
-        variant: "destructive",
-      });
+    } catch (error) {
+      // تم التعامل مع الخطأ في وظيفة تسجيل الدخول
     } finally {
       setLoading(false);
     }
