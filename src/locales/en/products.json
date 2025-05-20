@@ -20,5 +20,11 @@
   "toCart": "to cart",
   "favorite": "Favorites",
   "addedToFavorites": "Added",
-  "removedFromFavorites": "Removed"
+  "removedFromFavorites": "Removed",
+  
+  "countryFilterLabel": "Filter by Country",
+  "allCountriesOption": "All Countries",
+  "selectCountry": "Select Country",
+  "countryChanged": "Country Changed",
+  "countryLabel": "Country"
 }

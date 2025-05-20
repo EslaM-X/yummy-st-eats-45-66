@@ -1,4 +1,3 @@
-
 export interface Restaurant {
   id: string;
   name: string;
@@ -18,16 +17,17 @@ export interface Product {
   id: string;
   name: string;
   price: string;
+  oldPrice?: string;
   restaurant: string;
   imageUrl: string;
   description: string;
   category: string;
   rating?: number;
-  bestseller?: boolean;
   discountPercent?: number;
-  oldPrice?: string;
+  bestseller?: boolean;
   isNew?: boolean;
   isFavorite?: boolean;
+  country?: string; // رمز الدولة (sa, ae, etc.)
 }
 
 export interface UserReward {

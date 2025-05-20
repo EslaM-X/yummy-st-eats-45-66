@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useFormContext } from "react-hook-form";
 import * as z from "zod";
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from '@/contexts/LanguageContext';
+import CountryPicker from '@/components/ui/country-picker';
 
 interface FoodCategory {
   value: string;
@@ -78,6 +80,24 @@ const FoodFormFields: React.FC<FoodFormFieldsProps> = ({ foodCategories }) => {
           )}
         />
       </div>
+
+      <FormField
+        control={control}
+        name="country"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t('countryLabel') || 'الدولة'}</FormLabel>
+            <FormControl>
+              <CountryPicker 
+                value={field.value} 
+                onValueChange={field.onChange} 
+                className="w-full"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       <FormField
         control={control}

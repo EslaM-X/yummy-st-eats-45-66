@@ -1,7 +1,8 @@
 
 import { Product } from '@/types';
+import { countries } from '@/components/ui/country-picker';
 
-// Product data with enhanced information
+// بيانات المنتجات المحسنة مع معلومات البلد
 const allProducts: Product[] = [
   { 
     id: 'p1', 
@@ -14,7 +15,8 @@ const allProducts: Product[] = [
     category: 'بيتزا',
     rating: 4.7,
     discountPercent: 25,
-    bestseller: true
+    bestseller: true,
+    country: 'sa'
   },
   { 
     id: 'p2', 
@@ -25,7 +27,8 @@ const allProducts: Product[] = [
     description: 'شاورما دجاج طازجة مع صلصة الثوم والخضروات وبطاطس مقلية',
     category: 'شرقي',
     rating: 4.5,
-    isFavorite: true
+    isFavorite: true,
+    country: 'ae'
   },
   { 
     id: 'p3', 
@@ -37,7 +40,8 @@ const allProducts: Product[] = [
     category: 'آسيوي',
     rating: 4.9,
     isNew: true,
-    bestseller: true
+    bestseller: true,
+    country: 'kw'
   },
   { 
     id: 'p4', 
@@ -49,7 +53,8 @@ const allProducts: Product[] = [
     description: 'برجر لحم مشوي مع جبن شيدر وصلصة خاصة وخضروات طازجة',
     category: 'برجر',
     rating: 4.3,
-    discountPercent: 15
+    discountPercent: 15,
+    country: 'qa'
   },
   { 
     id: 'p5', 
@@ -59,7 +64,8 @@ const allProducts: Product[] = [
     imageUrl: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&w=800',
     description: 'سلطة خضراء طازجة مع دجاج مشوي وصلصة سيزر وقطع من الخبز المحمص',
     category: 'سلطات',
-    rating: 4.2
+    rating: 4.2,
+    country: 'ae'
   },
   { 
     id: 'p6', 
@@ -70,7 +76,8 @@ const allProducts: Product[] = [
     description: 'بيتزا مع تشكيلة من الخضروات الطازجة والجبن والفطر وصلصة طماطم طازجة',
     category: 'بيتزا',
     rating: 4.4,
-    isNew: true
+    isNew: true,
+    country: 'sa'
   },
   { 
     id: 'p7', 
@@ -82,7 +89,8 @@ const allProducts: Product[] = [
     category: 'برجر',
     rating: 4.6,
     bestseller: true,
-    isFavorite: true
+    isFavorite: true,
+    country: 'bh'
   },
   { 
     id: 'p8', 
@@ -94,24 +102,78 @@ const allProducts: Product[] = [
     description: 'تشكيلة من المأكولات البحرية المشوية والمقلية مع صلصة طرطار وليمون',
     category: 'بحري',
     rating: 4.8,
-    discountPercent: 12.5
+    discountPercent: 12.5,
+    country: 'om'
   },
+  // منتجات مصرية
+  { 
+    id: 'p9', 
+    name: 'كشري مصري', 
+    price: '35 ST', 
+    restaurant: 'مطعم النيل', 
+    imageUrl: 'https://images.unsplash.com/photo-1624370745825-3c9ea0dfadb7?auto=format&fit=crop&w=800',
+    description: 'طبق كشري مصري أصيل مع العدس والأرز والمكرونة وصلصة طماطم حارة',
+    category: 'مصري',
+    rating: 4.9,
+    bestseller: true,
+    country: 'eg'
+  },
+  { 
+    id: 'p10', 
+    name: 'فلافل مصرية', 
+    price: '25 ST', 
+    restaurant: 'مطعم النيل', 
+    imageUrl: 'https://images.unsplash.com/photo-1593001872095-7d5b3868e468?auto=format&fit=crop&w=800',
+    description: 'فلافل مصرية تقليدية مقرمشة مع صلصة طحينة وخبز بلدي',
+    category: 'مصري',
+    rating: 4.7,
+    country: 'eg'
+  },
+  // منتجات أردنية
+  { 
+    id: 'p11', 
+    name: 'منسف أردني', 
+    price: '95 ST', 
+    restaurant: 'بيت الأردن', 
+    imageUrl: 'https://images.unsplash.com/photo-1541518763669-27fef9b37428?auto=format&fit=crop&w=800',
+    description: 'طبق المنسف الأردني التقليدي مع لحم الضأن واللبن واللوز والأرز',
+    category: 'أردني',
+    rating: 4.8,
+    bestseller: true,
+    country: 'jo'
+  },
+  { 
+    id: 'p12', 
+    name: 'مقلوبة فلسطينية', 
+    price: '70 ST', 
+    restaurant: 'بيت الأردن', 
+    imageUrl: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=800',
+    description: 'طبق المقلوبة التقليدي مع الدجاج والباذنجان والأرز والصنوبر',
+    category: 'أردني',
+    rating: 4.6,
+    country: 'jo'
+  }
 ];
 
 export const getCategories = (): string[] => {
   return [...new Set(allProducts.map(p => p.category))];
 };
 
+export const getCountries = (): string[] => {
+  return [...new Set(allProducts.map(p => p.country).filter(Boolean) as string[])];
+};
+
 export const getFilteredProducts = (
   searchTerm: string,
   selectedCategory: string,
-  sortBy: string
+  sortBy: string,
+  selectedCountry?: string
 ): Promise<Product[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       let filtered = allProducts;
       
-      // Apply search filter
+      // تطبيق فلتر البحث
       if (searchTerm) {
         filtered = filtered.filter(p => 
           p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -120,12 +182,17 @@ export const getFilteredProducts = (
         );
       }
       
-      // Apply category filter
+      // تطبيق فلتر التصنيف
       if (selectedCategory) {
         filtered = filtered.filter(p => p.category === selectedCategory);
       }
+
+      // تطبيق فلتر الدولة
+      if (selectedCountry) {
+        filtered = filtered.filter(p => p.country === selectedCountry);
+      }
       
-      // Apply sorting
+      // تطبيق الترتيب
       if (sortBy) {
         if (sortBy === 'price-asc') {
           filtered = [...filtered].sort((a, b) => 
@@ -149,11 +216,12 @@ export const getFilteredProducts = (
       }
       
       resolve(filtered);
-    }, 500); // Simulate API delay
+    }, 500); // محاكاة تأخير API
   });
 };
 
 export default {
   getCategories,
+  getCountries,
   getFilteredProducts,
 };

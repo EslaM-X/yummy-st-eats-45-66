@@ -15,18 +15,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { formatCardNumber } from '@/services/card/cardValidation';
 
+// Improved schema with more descriptive validation messages
 const paymentSchema = z.object({
   cardNumber: z.string()
     .min(16, { message: 'Card number must be at least 16 digits' })
     .max(19, { message: 'Card number must not exceed 19 digits' })
     .refine(val => VirtualCardService.isCardNumberValid(val), {
-      message: 'Invalid card number',
+      message: 'Invalid card number format or checksum',
     }),
   cvv: z.string()
     .min(3, { message: 'CVV must be at least 3 digits' })
     .max(4, { message: 'CVV must not exceed 4 digits' })
     .refine(val => VirtualCardService.isCvvValid(val), {
-      message: 'Invalid CVV',
+      message: 'Invalid CVV format',
     }),
 });
 
@@ -59,16 +60,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     },
   });
 
+  // Improved card number formatting
   const handleCardNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCardNumber(event.target.value);
     form.setValue('cardNumber', formattedValue);
   };
 
+  // Handle form submission with better error handling
   const handleSubmit = async (values: PaymentFormValues) => {
     setLoading(true);
     
     try {
-      // Send payment request
+      // Prepare payment data
       const paymentData = {
         card_number: values.cardNumber.replace(/\s+/g, ''),
         cvv: values.cvv,
@@ -76,26 +79,29 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         order_id: orderId
       };
       
+      // Process payment
       const response = await VirtualCardService.createPaymentTransaction(paymentData);
       
+      // Show success message
       toast({
         title: t('paymentSuccessful'),
         description: `${t('transactionId')}: ${response.transaction_id}`,
       });
       
-      // Clear the cart after successful payment
+      // Clear the cart
       clearCart();
       
-      // Call success function if it exists
+      // Handle success flow
       if (onSuccess) {
         onSuccess();
       } else {
-        // Wait a moment before redirecting
+        // Redirect after successful payment with slight delay for UX
         setTimeout(() => {
           navigate('/', { replace: true });
         }, 2000);
       }
     } catch (error) {
+      // Improved error handling with more descriptive messages
       toast({
         title: t('paymentFailed'),
         description: error instanceof Error ? error.message : t('paymentProcessError'),
@@ -152,6 +158,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                         onChange={handleCardNumberChange}
                         maxLength={19}
                         className="pl-10 bg-white dark:bg-gray-950 border-2 h-12 transition-all duration-200 focus-visible:ring-primary/30"
+                        inputMode="numeric"
+                        autoComplete="cc-number"
                       />
                     </FormControl>
                     <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -174,6 +182,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                         {...field}
                         maxLength={4}
                         type="password"
+                        inputMode="numeric"
+                        autoComplete="cc-csc"
                         className="pl-10 bg-white dark:bg-gray-950 border-2 h-12 transition-all duration-200 focus-visible:ring-primary/30"
                       />
                     </FormControl>
@@ -191,7 +201,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 disabled={loading}
               >
                 {loading ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center gap-2">
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -201,7 +211,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 ) : (
                   <>
                     <span className="relative z-10">{`${t('completePayment')} - ${amount} ST`}</span>
-                    <span className="absolute inset-0 bg-white/20 transform translate-y-full transition-transform group-hover:translate-y-0 duration-300 ease-in-out"></span>
+                    <span className="absolute inset-0 bg-white/20 transform translate-y-full transition-transform hover:translate-y-0 duration-300 ease-in-out"></span>
                   </>
                 )}
               </Button>

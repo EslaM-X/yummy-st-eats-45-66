@@ -1,6 +1,7 @@
+
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Moon, Sun, Globe, Menu, Home, UtensilsCrossed, ShoppingBag, Gift, Users, FileText, ShieldCheck, Cookie } from "lucide-react";
+import { ShoppingCart, Moon, Sun, Globe, Menu, Home, UtensilsCrossed, ShoppingBag, Gift, Users, FileText, ShieldCheck, Cookie, Flag } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
@@ -16,7 +17,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { countries } from '@/components/ui/country-picker';
 
+// تعريف أيقونات التنقل
 const navIcons: { [key: string]: React.ReactNode } = {
   home: <Home className="h-4 w-4 mr-2" />,
   restaurants: <UtensilsCrossed className="h-4 w-4 mr-2" />,
@@ -37,7 +40,10 @@ export function HeaderActionButtons() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [countryMenuOpen, setCountryMenuOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string>('sa');
 
+  // تبديل السمة (وضع النهار/الليل)
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -52,11 +58,30 @@ export function HeaderActionButtons() {
     });
   };
 
+  // تبديل اللغة (العربية/الإنجليزية)
   const toggleLanguage = () => {
     setLanguage(language === 'ar' ? 'en' : 'ar');
   };
 
+  // عدد العناصر في سلة التسوق
   const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+  // تغيير البلد المحدد
+  const handleCountryChange = (code: string) => {
+    setSelectedCountry(code);
+    setCountryMenuOpen(false);
+    
+    // عرض رسالة تفيد بتغيير البلد
+    const country = countries.find(c => c.code === code);
+    toast({
+      title: t('countryChanged') || 'تم تغيير الدولة',
+      description: language === 'ar' ? `تم التغيير إلى ${country?.nameAr}` : `Changed to ${country?.name}`,
+      duration: 1500
+    });
+    
+    // هنا يمكن إضافة منطق إضافي مثل تحديث المنتجات المعروضة بناءً على البلد المحدد
+    // على سبيل المثال: navigate(`/products?country=${code}`);
+  };
 
   useEffect(() => {
     const root = document.documentElement;
@@ -70,7 +95,7 @@ export function HeaderActionButtons() {
     };
   }, []);
 
-  // قائمة الروابط
+  // قائمة الروابط التنقلية
   const navigationLinks = [
     { key: "home",        title: t('home'), path: "/" },
     { key: "restaurants", title: t('restaurants'), path: "/restaurants" },
@@ -83,7 +108,7 @@ export function HeaderActionButtons() {
     { key: "cookiePolicy", title: t('cookiePolicy'), path: "/cookie-policy" },
   ];
 
-  // قائمة منسدلة للهاتف المحمول بتصميم جذاب وتفاعلي للغاية
+  // قائمة منسدلة للهاتف المحمول
   const MobileMenu = () => (
     <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
       <DropdownMenuTrigger asChild>
@@ -102,16 +127,58 @@ export function HeaderActionButtons() {
         sideOffset={8}
       >
         <div className="flex flex-col gap-0.5">
-          {/* Header مصغر بدون كلمة navigation */}
+          {/* Header مصغر */}
           <div className="w-full pb-1 mb-1 border-b border-yellow-100 dark:border-gray-800 flex items-center justify-center">
             <span className="text-lg font-extrabold tracking-widest text-yellow-600 dark:text-yellow-300 flex items-center gap-2 animate-fade-in">
               <Menu className="h-5 w-5 inline-block" />
-              {/* شيفون متحرك صغير بدل النص لتزيين القائمة */}
               <span className="h-2 w-2 rounded-full bg-yellow-400 animate-pulse inline-block"></span>
             </span>
           </div>
 
-          {/* عناصر القائمة بتأثيرات تفاعلية */}
+          {/* إضافة قائمة اختيار البلد */}
+          <div className="px-3 py-2 mb-2">
+            <div className="flex justify-center">
+              {countries.slice(0, 4).map((country) => (
+                <Button
+                  key={country.code}
+                  variant="ghost"
+                  size="icon"
+                  className={`rounded-full w-8 h-8 mx-1 ${selectedCountry === country.code ? 'bg-primary/20 ring-2 ring-primary' : ''}`}
+                  onClick={() => handleCountryChange(country.code)}
+                >
+                  <span className="text-lg">{country.flagEmoji}</span>
+                </Button>
+              ))}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full w-8 h-8 mx-1"
+                onClick={() => setCountryMenuOpen(!countryMenuOpen)}
+              >
+                <Flag className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            {/* قائمة مفصلة للدول */}
+            {countryMenuOpen && (
+              <div className="grid grid-cols-4 gap-2 mt-2 animate-fade-in">
+                {countries.map((country) => (
+                  <Button
+                    key={country.code}
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-full w-8 h-8 ${selectedCountry === country.code ? 'bg-primary/20 ring-2 ring-primary' : ''}`}
+                    onClick={() => handleCountryChange(country.code)}
+                    title={language === 'ar' ? country.nameAr : country.name}
+                  >
+                    <span className="text-lg">{country.flagEmoji}</span>
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* عناصر القائمة الرئيسية */}
           <div className="flex flex-col gap-1">
             {navigationLinks.map(link => (
               <DropdownMenuItem
@@ -138,7 +205,7 @@ export function HeaderActionButtons() {
             ))}
           </div>
 
-          {/* عناصر التحكم: الثيم، اللغة، سلة الشراء (أكثر تفاعلية) */}
+          {/* عناصر التحكم: الثيم، اللغة، سلة الشراء */}
           <div className="flex gap-2 mt-3 justify-center px-1">
             <Button
               size="icon"
@@ -182,12 +249,51 @@ export function HeaderActionButtons() {
     </DropdownMenu>
   );
 
+  // قائمة البلدان للشاشات الكبيرة
+  const CountryDropdown = () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden sm:flex h-9 w-9 rounded-full hover:scale-110 hover:bg-primary/20 transition-all duration-300 relative"
+          aria-label={t('selectCountry') || 'اختر الدولة'}
+        >
+          <div className="flex items-center justify-center">
+            <span className="text-lg">
+              {countries.find(c => c.code === selectedCountry)?.flagEmoji}
+            </span>
+          </div>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="center" className="min-w-[180px] p-2">
+        <DropdownMenuLabel className="text-center font-semibold text-primary">
+          {t('selectCountry') || 'اختر الدولة'}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {countries.map((country) => (
+          <DropdownMenuItem
+            key={country.code}
+            className={`flex items-center gap-2 cursor-pointer my-1 rounded hover:bg-primary/10 transition-all ${selectedCountry === country.code ? 'bg-primary/20' : ''}`}
+            onClick={() => handleCountryChange(country.code)}
+          >
+            <span className="text-lg">{country.flagEmoji}</span>
+            <span>{language === 'ar' ? country.nameAr : country.name}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <div className="flex items-center gap-2">
-      {/* القائمة المنسدلة للأجهزة المحمولة - تصميم مبتكر */}
+      {/* القائمة المنسدلة للأجهزة المحمولة */}
       <MobileMenu />
 
-      {/* أزرار التبديل للشاشات الكبيرة - لا تغيير */}
+      {/* قائمة البلدان للشاشات الكبيرة */}
+      <CountryDropdown />
+      
+      {/* أزرار التبديل للشاشات الكبيرة */}
       <Button
         variant="ghost"
         size="icon"
