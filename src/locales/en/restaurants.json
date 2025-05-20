@@ -35,5 +35,9 @@
   "restaurantCardKmUnit": "km",
   "restaurantCardDistance": "1.2 km",
   "restaurantCardMinOrder": "Min order 20 ST",
-  "restaurantCardSelectedToast": "Selected restaurant"
+  "restaurantCardSelectedToast": "Selected restaurant",
+  "restaurantsInCountry": "Restaurants in",
+  "countryRestaurantsSubtitle": "Discover the best restaurants and delicious meals in",
+  "allCountriesOption": "All Countries",
+  "countryFilterLabel": "Filter by Country"
 }

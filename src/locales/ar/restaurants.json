@@ -35,5 +35,9 @@
   "restaurantCardKmUnit": "كم",
   "restaurantCardDistance": "١.٢ كم",
   "restaurantCardMinOrder": "الحد الأدنى للطلب ٢٠ ST",
-  "restaurantCardSelectedToast": "تم اختيار المطعم"
+  "restaurantCardSelectedToast": "تم اختيار المطعم",
+  "restaurantsInCountry": "مطاعم في",
+  "countryRestaurantsSubtitle": "اكتشف أفضل المطاعم والوجبات اللذيذة في",
+  "allCountriesOption": "كل الدول",
+  "countryFilterLabel": "تصفية حسب الدولة"
 }
