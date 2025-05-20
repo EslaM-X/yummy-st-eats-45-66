@@ -1,8 +1,12 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Session, User } from '@supabase/supabase-js';
+import { useToast } from '@/hooks/use-toast';
+import { cleanupAuthState } from '@/components/auth/AuthUtils';
 
 export interface AuthContextType {
-  user: any | null;
+  user: User | null;
   profile: any | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
@@ -22,41 +26,72 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-
+  const { toast } = useToast();
+  
   useEffect(() => {
-    // Check if the user is already logged in
-    const savedUser = localStorage.getItem('st-eats-user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-      // استرجاع بيانات الملف الشخصي
-      fetchUserProfile(JSON.parse(savedUser).id);
-    }
-    setLoading(false);
-    setIsLoading(false);
+    // Initial auth state check
+    const checkSession = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          setUser(data.session.user);
+          await fetchUserProfile(data.session.user.id);
+        }
+      } catch (error) {
+        console.error('Session check error:', error);
+      } finally {
+        setLoading(false);
+        setIsLoading(false);
+      }
+    };
+    
+    checkSession();
+    
+    // Setup auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          setUser(session.user);
+          await fetchUserProfile(session.user.id);
+        } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+          setUser(null);
+          setProfile(null);
+        } else if (event === 'USER_UPDATED' && session) {
+          setUser(session.user);
+          await fetchUserProfile(session.user.id);
+        }
+      }
+    );
+    
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      // محاكاة API
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Get user profile data from Supabase
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
       
-      // بيانات وهمية للملف الشخصي
-      const mockProfile = {
-        id: userId,
-        full_name: 'مستخدم تجريبي',
-        username: 'demo_user',
-        avatar_url: null,
-        phone: '+9665xxxxxxxx',
-        address: 'الرياض، المملكة العربية السعودية',
-        wallet_balance: 500,
-        user_type: 'customer',
-      };
+      if (error) {
+        throw error;
+      }
       
-      setProfile(mockProfile);
+      if (data) {
+        setProfile(data);
+      } else {
+        // If no profile exists, we might want to create one
+        console.log('No profile found for user:', userId);
+      }
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
     }
@@ -69,29 +104,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
-    // Mock authentication for demo purposes
     setLoading(true);
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Clean up any existing auth state first
+      cleanupAuthState();
       
-      // Mock user data
-      const userData = {
-        id: '1',
-        name: 'Demo User',
+      // Try global sign out first to avoid conflicts
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        role: 'user',
-      };
+        password,
+      });
       
-      // Save to local storage
-      localStorage.setItem('st-eats-user', JSON.stringify(userData));
-      setUser(userData);
+      if (error) throw error;
       
-      // استرجاع بيانات الملف الشخصي
-      await fetchUserProfile(userData.id);
-    } catch (error) {
+      if (data.user) {
+        setUser(data.user);
+        await fetchUserProfile(data.user.id);
+        
+        toast({
+          title: "تم تسجيل الدخول بنجاح",
+          description: "مرحباً بك في تطبيق ST🍕 Eat",
+        });
+      }
+    } catch (error: any) {
       console.error('Login failed:', error);
+      toast({
+        title: "فشل تسجيل الدخول",
+        description: error.message || "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
       throw error;
     } finally {
       setLoading(false);
@@ -99,11 +147,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signOut = () => {
-    // Remove user data from storage
-    localStorage.removeItem('st-eats-user');
-    setUser(null);
-    setProfile(null);
+  const signOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setProfile(null);
+      
+      // Clean up auth state after sign out
+      cleanupAuthState();
+      
+      toast({
+        title: "تم تسجيل الخروج",
+        description: "تم تسجيل خروجك بنجاح",
+      });
+    } catch (error: any) {
+      console.error('Sign out error:', error);
+      toast({
+        title: "خطأ في تسجيل الخروج",
+        description: error.message || "حدث خطأ أثناء تسجيل الخروج",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
