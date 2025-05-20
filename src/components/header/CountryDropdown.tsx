@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Search, Globe } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -20,6 +20,8 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
   const { language, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [showFavorites, setShowFavorites] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   
   const filteredCountries = searchQuery.trim() === ''
     ? countries
@@ -34,9 +36,25 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
       
   const favoriteCountries = countries.slice(0, 8);
   const selectedCountryData = countries.find(c => c.code === selectedCountry);
+  
+  // Reset search and focus input when opened
+  useEffect(() => {
+    if (isOpen) {
+      // Focus the search input with a slight delay
+      setTimeout(() => {
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+        }
+      }, 100);
+    } else {
+      // Clear search when closed
+      setSearchQuery('');
+      setShowFavorites(true);
+    }
+  }, [isOpen]);
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -58,7 +76,8 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
       </PopoverTrigger>
       <PopoverContent 
         align="center" 
-        className="w-[300px] sm:w-[350px] max-h-[70vh] overflow-hidden p-0 rounded-xl shadow-xl border border-primary/10"
+        className="w-[300px] sm:w-[350px] max-h-[70vh] overflow-hidden p-0 rounded-xl shadow-xl border border-primary/10 z-50 bg-white dark:bg-gray-800"
+        sideOffset={8}
       >
         <div className="bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-3 border-b border-primary/10 sticky top-0 z-10">
           <h3 className="text-center font-bold text-primary dark:text-primary/90 mb-3">
@@ -79,6 +98,11 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
                   setShowFavorites(true);
                 }
               }}
+              ref={searchInputRef}
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck="false"
             />
             <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>

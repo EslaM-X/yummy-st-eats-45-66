@@ -100,11 +100,12 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
       </SelectTrigger>
       
       <SelectContent 
-        className="max-h-[80vh] bg-white dark:bg-gray-800 shadow-xl border-primary/20 rounded-xl overflow-hidden p-3 animate-scale-in"
+        className="max-h-[80vh] bg-white dark:bg-gray-800 shadow-xl border-primary/20 rounded-xl overflow-hidden p-3 animate-scale-in z-50"
         position="popper"
+        sideOffset={4}
       >
         {/* Search header - sticky */}
-        <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 mb-3">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 z-50 mb-3">
           <div className="relative">
             <Input
               placeholder={t('searchCountries')}
@@ -114,6 +115,10 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
                         bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm
                         text-black dark:text-white"
               ref={inputRef}
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck="false"
             />
             <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>

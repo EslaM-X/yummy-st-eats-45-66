@@ -25,11 +25,18 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   const [countrySearchQuery, setCountrySearchQuery] = useState('');
   const [animateIn, setAnimateIn] = useState(false);
   const isMobile = useIsMobile();
+  const [searchInputRef, setSearchInputRef] = useState<HTMLInputElement | null>(null);
   
   // Trigger animation when menu opens
   useEffect(() => {
     if (countryMenuOpen) {
       setAnimateIn(true);
+      // Focus the search input when the menu opens
+      setTimeout(() => {
+        if (searchInputRef) {
+          searchInputRef.focus();
+        }
+      }, 300);
     } else {
       setAnimateIn(false);
       // Reset search when closed
@@ -37,7 +44,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
         if (!countryMenuOpen) setCountrySearchQuery('');
       }, 300);
     }
-  }, [countryMenuOpen]);
+  }, [countryMenuOpen, searchInputRef]);
 
   const filteredCountries = countrySearchQuery.trim() === ''
     ? countries
@@ -99,7 +106,12 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
                        text-black dark:text-white bg-gray-50 dark:bg-gray-900"
               value={countrySearchQuery}
               onChange={(e) => setCountrySearchQuery(e.target.value)}
-              autoFocus={countryMenuOpen}
+              ref={(ref) => setSearchInputRef(ref)}
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck="false"
+              style={{ WebkitAppearance: 'none' }}
             />
             <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>

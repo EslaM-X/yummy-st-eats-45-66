@@ -7,6 +7,7 @@ import { CountryDisplay } from '@/components/ui/country-display';
 import { Search, Globe } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CountryFilterProps {
   selectedCountry: string | undefined;
@@ -22,6 +23,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [favoritesVisible, setFavoritesVisible] = useState(true);
+  const isMobile = useIsMobile();
   
   // Reset search and show favorites when dropdown closes
   useEffect(() => {
@@ -31,10 +33,12 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
         setFavoritesVisible(true);
       }, 200);
     } else if (inputRef.current) {
-      // Focus search input when opened
+      // Focus search input when opened with a slight delay
       setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 150);
     }
   }, [open]);
 
@@ -100,11 +104,12 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
           </SelectValue>
         </SelectTrigger>
         <SelectContent 
-          className="max-h-[80vh] bg-white dark:bg-gray-800 shadow-xl rounded-xl p-3 animate-scale-in"
+          className="max-h-[80vh] bg-white dark:bg-gray-800 shadow-xl rounded-xl p-3 animate-scale-in z-50"
           position="popper"
+          sideOffset={4}
         >
           {/* Search header - sticky */}
-          <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 mb-3">
+          <div className="sticky top-0 bg-white dark:bg-gray-800 z-50 mb-3">
             <div className="relative">
               <Input
                 placeholder={t('searchCountries')}
@@ -114,6 +119,10 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
                           bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm
                           text-black dark:text-white"
                 ref={inputRef}
+                autoComplete="off"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck="false"
               />
               <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
             </div>
