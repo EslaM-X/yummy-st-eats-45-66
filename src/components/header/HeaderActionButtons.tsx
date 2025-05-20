@@ -1,129 +1,69 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Moon, Menu, X, Award, Globe, ChefHat } from "lucide-react";
+import { ShoppingCart, Moon, Sun, Globe } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { cn } from '@/lib/utils';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useCart } from '@/contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
+import { AuthButtons } from '../auth/AuthButtons';
 
-interface HeaderActionButtonsProps {
-  cartCount: number;
-  theme: string;
-  isActive: (path: string) => boolean;
-  toggleTheme: () => void;
-  toggleMobileMenu: () => void;
-  isMobileMenuOpen: boolean;
-}
+export function HeaderActionButtons() {
+  const { setTheme, theme } = useTheme();
+  const { language, toggleLanguage } = useLanguage();
+  const { cartItems } = useCart();
+  const navigate = useNavigate();
 
-const HeaderActionButtons: React.FC<HeaderActionButtonsProps> = ({
-  cartCount,
-  theme,
-  isActive,
-  toggleTheme,
-  toggleMobileMenu,
-  isMobileMenuOpen
-}) => {
-  const { t, language, setLanguage, isRTL } = useLanguage();
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
+  const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4 rtl:space-x-reverse">
-      {/* Add Food Button */}
-      <Link to="/add-food">
-        <Button 
-          variant="outline" 
-          size="sm"
-          className={cn(
-            "hidden sm:flex items-center text-sm font-medium bg-gradient-to-r from-yellow-500 to-amber-600 text-white hover:from-yellow-600 hover:to-amber-700 border-none transition-all duration-300 shadow-md hover:shadow-lg",
-            isActive('/add-food') && "bg-yellow-700"
-          )}
-        >
-          <ChefHat className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
-          {t('addYourFood')}
-        </Button>
-      </Link>
-    
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="relative text-gray-600 dark:text-gray-300 hover:text-yellow-800 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 h-8 w-8"
-            aria-label={t('language')}
-          >
-            <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align={isRTL ? "end" : "start"}>
-          <DropdownMenuItem onClick={() => setLanguage('ar')} className={language === 'ar' ? 'bg-yellow-50 dark:bg-yellow-900/20' : ''}>
-            العربية
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setLanguage('en')} className={language === 'en' ? 'bg-yellow-50 dark:bg-yellow-900/20' : ''}>
-            English
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
+    <div className="flex items-center gap-2">
       <Button 
         variant="ghost" 
         size="icon" 
-        className="relative text-gray-600 dark:text-gray-300 hover:text-yellow-800 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 h-8 w-8" 
-        onClick={toggleTheme}
-        aria-label={theme === 'dark' ? t('lightMode') : t('darkMode')}
+        onClick={toggleTheme} 
+        className="h-9 w-9"
+        aria-label={language === 'ar' ? 'تبديل وضع السمة' : 'Toggle theme'}
       >
-        <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
+        {theme === "light" ? (
+          <Moon className="h-5 w-5" />
+        ) : (
+          <Sun className="h-5 w-5" />
+        )}
       </Button>
       
-      <Link to="/rewards">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className={cn(
-            "relative text-gray-600 dark:text-gray-300 hover:text-yellow-800 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 h-8 w-8",
-            isActive('/rewards') && "bg-yellow-50 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-500"
-          )}
-          aria-label={t('rewards')}
-        >
-          <Award className="h-4 w-4 sm:h-5 sm:w-5" />
-        </Button>
-      </Link>
-      
-      <Link to="/cart">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className={cn(
-            "relative text-gray-600 dark:text-gray-300 hover:text-yellow-800 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 h-8 w-8",
-            isActive('/cart') && "bg-yellow-50 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-500"
-          )}
-          aria-label={t('cart')}
-        >
-          <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 text-xs bg-red-500 text-white rounded-full flex items-center justify-center animate-pulse">
-              {cartCount}
-            </span>
-          )}
-        </Button>
-      </Link>
-
-      {/* Mobile menu button */}
       <Button 
         variant="ghost" 
         size="icon" 
-        className="md:hidden text-gray-600 dark:text-gray-300 hover:text-yellow-800 dark:hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 h-8 w-8"
-        onClick={toggleMobileMenu}
-        aria-label={isMobileMenuOpen ? t('closeMenu') : t('openMenu')}
+        onClick={toggleLanguage}
+        className="h-9 w-9"
+        aria-label={language === 'ar' ? 'تغيير اللغة' : 'Change language'}
       >
-        {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        <Globe className="h-5 w-5" />
       </Button>
+      
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={() => navigate('/cart')}
+        className="h-9 w-9 relative"
+        aria-label={language === 'ar' ? 'عربة التسوق' : 'Shopping cart'}
+      >
+        <ShoppingCart className="h-5 w-5" />
+        {cartItemsCount > 0 && (
+          <span className="absolute top-0 right-0 h-5 w-5 rounded-full bg-primary text-[11px] font-medium flex items-center justify-center text-primary-foreground">
+            {cartItemsCount}
+          </span>
+        )}
+      </Button>
+      
+      <AuthButtons />
     </div>
   );
-};
+}
 
 export default HeaderActionButtons;
