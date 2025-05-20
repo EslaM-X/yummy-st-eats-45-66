@@ -33,12 +33,12 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
         setFavoritesVisible(true);
       }, 200);
     } else if (inputRef.current) {
-      // تأخير أطول للهاتف المحمول لضمان فتح القائمة المنسدلة تمامًا قبل التركيز
+      // Focus search input when opened with increased delay for mobile
       setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
         }
-      }, isMobile ? 400 : 150);
+      }, isMobile ? 500 : 200);
     }
   }, [open, isMobile]);
 
@@ -74,7 +74,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
     }
   }, [searchQuery]);
 
-  // منع إغلاق القائمة المنسدلة عند الكتابة في حقل البحث
+  // Handle search input to prevent dropdown from closing
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     setSearchQuery(e.target.value);
@@ -110,25 +110,25 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
           </SelectValue>
         </SelectTrigger>
         <SelectContent 
-          className="max-h-[80vh] bg-white dark:bg-gray-800 shadow-xl border-0 rounded-xl p-3 animate-scale-in z-[1000]"
+          className="max-h-[80vh] bg-white dark:bg-gray-800 shadow-xl rounded-xl p-3 animate-scale-in z-[100]"
           position="popper"
           sideOffset={4}
           align="start"
-          // منع إغلاق القائمة المنسدلة عند النقر على حقل البحث
-          onInteractOutside={(e) => {
-            if (inputRef.current && inputRef.current.contains(e.target as Node)) {
-              e.preventDefault();
-            }
-          }}
         >
-          {/* حقل البحث - ثابت في الأعلى */}
-          <div className="sticky top-0 bg-white dark:bg-gray-800 z-[1001] mb-3 pb-2">
+          {/* Search header - sticky */}
+          <div className="sticky top-0 bg-white dark:bg-gray-800 z-[101] mb-3 pb-2">
             <div className="relative">
               <Input
                 placeholder={t('searchCountries')}
                 value={searchQuery}
                 onChange={handleSearchInput}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Prevent closing of dropdown when clicking on input
+                  if (e.target === inputRef.current) {
+                    e.preventDefault();
+                  }
+                }}
                 onTouchStart={(e) => e.stopPropagation()}
                 className="pl-8 pr-3 py-2 w-full border-gray-200 dark:border-gray-700 rounded-lg 
                           bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm
@@ -138,7 +138,6 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
                 autoCapitalize="off"
                 autoCorrect="off"
                 spellCheck="false"
-                // تحسينات للأجهزة المحمولة
                 inputMode="search"
                 enterKeyHint="search"
               />
