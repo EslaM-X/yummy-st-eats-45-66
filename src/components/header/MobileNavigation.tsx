@@ -5,7 +5,6 @@ import { ChefHat } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Button } from "@/components/ui/button";
-import { AuthButtons } from '../auth/AuthButtons';
 
 interface MobileNavigationProps {
   isOpen: boolean;
@@ -64,11 +63,6 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           >
             {language === 'ar' ? 'English' : 'العربية'}
           </button>
-        </div>
-        
-        {/* زر تسجيل الدخول الموحد */}
-        <div className="px-4 py-2">
-          <AuthButtons />
         </div>
       </nav>
     </div>
