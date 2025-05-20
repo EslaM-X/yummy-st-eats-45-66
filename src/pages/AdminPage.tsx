@@ -11,29 +11,47 @@ import AdminFooter from '@/components/admin/AdminFooter';
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(false);
   const { isAuthenticated, handleLogout } = useAdminAuth();
   const { toast } = useToast();
 
-  // Check if screen size changes
+  // Check screen size on mount and when it changes
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth < 768) {
+    const checkScreenSize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      
+      // Auto-collapse sidebar on small screens
+      if (mobile && !sidebarCollapsed) {
         setSidebarCollapsed(true);
       }
     };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    
+    // Initial check
+    checkScreenSize();
+    
+    // Add event listener
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, [sidebarCollapsed]);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    toast({
-      title: "قسم جديد",
-      description: `تم الانتقال إلى ${getTabTitle(value)}`,
-    });
+    
+    // On mobile, show notification
+    if (isMobile) {
+      toast({
+        title: "قسم جديد",
+        description: `تم الانتقال إلى ${getTabTitle(value)}`,
+      });
+    }
+    
+    // Auto-collapse sidebar on mobile when changing tabs
+    if (isMobile && !sidebarCollapsed) {
+      setSidebarCollapsed(true);
+    }
   };
 
   const getTabTitle = (tab: string) => {
@@ -53,23 +71,31 @@ const AdminPage: React.FC = () => {
 
   return (
     <SidebarProvider>
-      <AdminLayout
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        sidebarCollapsed={sidebarCollapsed}
-        setSidebarCollapsed={setSidebarCollapsed}
-        isMobile={isMobile}
-      >
-        <AdminHeader 
-          activeTab={activeTab}
-          handleLogout={handleLogout}
-        />
-        <AdminContent 
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full">
+        <AdminLayout
           activeTab={activeTab}
           onTabChange={handleTabChange}
-        />
-        <AdminFooter />
-      </AdminLayout>
+          sidebarCollapsed={sidebarCollapsed}
+          setSidebarCollapsed={setSidebarCollapsed}
+          isMobile={isMobile}
+        >
+          <div className="flex flex-col min-h-screen">
+            <AdminHeader 
+              activeTab={activeTab}
+              handleLogout={handleLogout}
+            />
+            
+            <div className="flex-grow">
+              <AdminContent 
+                activeTab={activeTab}
+                onTabChange={handleTabChange}
+              />
+            </div>
+            
+            <AdminFooter />
+          </div>
+        </AdminLayout>
+      </div>
     </SidebarProvider>
   );
 };
