@@ -1,13 +1,22 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Moon, Sun, Globe } from "lucide-react";
+import { ShoppingCart, Moon, Sun, Globe, Menu } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { AuthButtons } from '../auth/AuthButtons';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function HeaderActionButtons() {
   const { setTheme, theme } = useTheme();
@@ -15,6 +24,8 @@ export function HeaderActionButtons() {
   const { cartItems } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -55,13 +66,87 @@ export function HeaderActionButtons() {
     };
   }, []);
 
+  // قائمة الروابط للتنقل
+  const navigationLinks = [
+    { title: t('navigation:home'), path: "/" },
+    { title: t('navigation:restaurants'), path: "/restaurants" },
+    { title: t('navigation:products'), path: "/products" },
+    { title: t('navigation:rewards'), path: "/rewards" },
+    { title: t('navigation:addFood'), path: "/add-food" },
+    { title: t('navigation:team'), path: "/team" },
+    { title: t('navigation:privacyPolicy'), path: "/privacy-policy" },
+    { title: t('navigation:termsConditions'), path: "/terms-conditions" },
+    { title: t('navigation:cookiePolicy'), path: "/cookie-policy" },
+  ];
+
+  // قائمة منسدلة للهاتف المحمول
+  const MobileMenu = () => (
+    <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="lg:hidden h-9 w-9 rounded-full hover:bg-primary/20 transition-all duration-300"
+          aria-label={t('navigation:menu')}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent 
+        align={language === 'ar' ? "end" : "start"}
+        className="w-56 mt-2 bg-background border-border"
+      >
+        <DropdownMenuLabel className="text-center">
+          {t('navigation:menu')}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        
+        {navigationLinks.map((link) => (
+          <DropdownMenuItem 
+            key={link.path} 
+            className="cursor-pointer" 
+            onClick={() => {
+              navigate(link.path);
+              setIsMenuOpen(false);
+            }}
+          >
+            {link.title}
+          </DropdownMenuItem>
+        ))}
+        
+        <DropdownMenuSeparator />
+        <DropdownMenuItem 
+          className="cursor-pointer flex items-center justify-between" 
+          onClick={toggleTheme}
+        >
+          {t('common:theme')}
+          {theme === "light" ? (
+            <Moon className="h-4 w-4" />
+          ) : (
+            <Sun className="h-4 w-4" />
+          )}
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          className="cursor-pointer" 
+          onClick={toggleLanguage}
+        >
+          {language === 'ar' ? 'English' : 'العربية'}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <div className="flex items-center gap-2">
+      {/* القائمة المنسدلة للأجهزة المحمولة */}
+      <MobileMenu />
+      
+      {/* أزرار التبديل للشاشات الكبيرة */}
       <Button 
         variant="ghost" 
         size="icon" 
         onClick={toggleTheme} 
-        className="h-9 w-9 rounded-full bg-opacity-20 hover:scale-110 hover:bg-primary/20 transition-all duration-300 relative overflow-hidden group"
+        className="hidden sm:flex h-9 w-9 rounded-full bg-opacity-20 hover:scale-110 hover:bg-primary/20 transition-all duration-300 relative overflow-hidden group"
         aria-label={t('common:toggleTheme')}
       >
         {theme === "light" ? (
@@ -76,7 +161,7 @@ export function HeaderActionButtons() {
         variant="ghost" 
         size="icon" 
         onClick={toggleLanguage}
-        className="h-9 w-9 rounded-full hover:scale-110 hover:bg-primary/20 transition-all duration-300"
+        className="hidden sm:flex h-9 w-9 rounded-full hover:scale-110 hover:bg-primary/20 transition-all duration-300"
         aria-label={t('common:changeLanguage')}
       >
         <Globe className="h-5 w-5" />
