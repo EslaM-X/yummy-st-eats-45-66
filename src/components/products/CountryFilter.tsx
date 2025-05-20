@@ -33,33 +33,37 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
         onValueChange={handleCountryChange}
         dir={language === 'ar' ? 'rtl' : 'ltr'}
       >
-        <SelectTrigger className="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
+        <SelectTrigger className="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 h-9 sm:h-10">
           <SelectValue>
             {selectedCountry ? (
-              <div className="flex items-center gap-2">
-                <span className="text-lg">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <span className="text-base sm:text-lg">
                   {countries.find(c => c.code === selectedCountry)?.flagEmoji}
                 </span>
-                <span>
+                <span className="text-xs sm:text-sm truncate max-w-[80px] sm:max-w-full">
                   {language === 'ar'
                     ? countries.find(c => c.code === selectedCountry)?.nameAr
                     : countries.find(c => c.code === selectedCountry)?.name
                   }
                 </span>
               </div>
-            ) : t('allCountriesOption') || 'كل الدول'}
+            ) : (
+              <span className="text-xs sm:text-sm">
+                {t('allCountriesOption') || 'كل الدول'}
+              </span>
+            )}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="max-h-[300px]">
-          <SelectItem value="all" className="font-medium">
+        <SelectContent className="max-h-[40vh]">
+          <SelectItem value="all" className="font-medium text-xs sm:text-sm">
             {t('allCountriesOption') || 'كل الدول'}
           </SelectItem>
           
           {countries.map((country) => (
-            <SelectItem key={country.code} value={country.code} className="flex items-center gap-2">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{country.flagEmoji}</span>
-                <span>{language === 'ar' ? country.nameAr : country.name}</span>
+            <SelectItem key={country.code} value={country.code} className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <span className="text-base sm:text-lg">{country.flagEmoji}</span>
+                <span className="truncate">{language === 'ar' ? country.nameAr : country.name}</span>
               </div>
             </SelectItem>
           ))}

@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Flag } from "lucide-react";
+import { Search } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-picker';
 import {
@@ -23,7 +23,19 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
   handleCountryChange
 }) => {
   const { language, t } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState('');
   
+  const filteredCountries = searchQuery.trim() === ''
+    ? countries
+    : countries.filter(country => {
+        const query = searchQuery.toLowerCase();
+        return (
+          country.name.toLowerCase().includes(query) ||
+          country.nameAr.toLowerCase().includes(query) ||
+          country.code.toLowerCase().includes(query)
+        );
+      });
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -40,27 +52,38 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="center" className="min-w-[240px] max-h-[400px] overflow-y-auto p-2">
+      <DropdownMenuContent 
+        align="center" 
+        className="w-[240px] sm:w-[280px] max-h-[60vh] overflow-y-auto p-2"
+      >
         <DropdownMenuLabel className="text-center font-semibold text-primary">
           {t('selectCountry') || 'اختر الدولة'}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="py-2 px-1">
-          <input 
-            type="text" 
-            placeholder={t('searchCountries') || 'بحث الدول...'}
-            className="w-full p-2 mb-2 rounded-md border border-input text-sm"
-          />
+          <div className="relative">
+            <input 
+              type="text" 
+              placeholder={t('searchCountries') || 'بحث الدول...'}
+              className="w-full p-1.5 sm:p-2 mb-2 rounded-md border border-input text-xs sm:text-sm pr-6"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search className="absolute top-1.5 right-2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-          {countries.map((country) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-0.5">
+          {filteredCountries.map((country) => (
             <DropdownMenuItem
               key={country.code}
-              className={`flex items-center gap-2 cursor-pointer py-2 rounded hover:bg-primary/10 transition-all ${selectedCountry === country.code ? 'bg-primary/20' : ''}`}
-              onClick={() => handleCountryChange(country.code)}
+              className={`flex items-center gap-1.5 cursor-pointer py-1.5 rounded hover:bg-primary/10 transition-all text-xs sm:text-sm ${selectedCountry === country.code ? 'bg-primary/20' : ''}`}
+              onClick={() => {
+                handleCountryChange(country.code);
+                setSearchQuery('');
+              }}
             >
-              <span className="text-lg">{country.flagEmoji}</span>
-              <span className="text-sm truncate">{language === 'ar' ? country.nameAr : country.name}</span>
+              <span className="text-base sm:text-lg">{country.flagEmoji}</span>
+              <span className="truncate">{language === 'ar' ? country.nameAr : country.name}</span>
             </DropdownMenuItem>
           ))}
         </div>
