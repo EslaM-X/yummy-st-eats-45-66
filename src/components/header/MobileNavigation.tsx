@@ -1,17 +1,17 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { LogIn, ChefHat } from "lucide-react";
+import { ChefHat } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Button } from "@/components/ui/button";
+import { AuthButtons } from '../auth/AuthButtons';
 
 interface MobileNavigationProps {
   isOpen: boolean;
   navItems: Array<{ title: string; path: string }>;
   isActive: (path: string) => boolean;
   onItemClick: () => void;
-  onLoginClick: () => void;
   onLanguageToggle: () => void;
 }
 
@@ -20,7 +20,6 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
   navItems, 
   isActive, 
   onItemClick, 
-  onLoginClick, 
   onLanguageToggle 
 }) => {
   const { t, language } = useLanguage();
@@ -30,14 +29,15 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
   return (
     <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
       <nav className="flex flex-col space-y-3">
-        {/* Add Food Button - Mobile */}
+        {/* زر إضافة طعام مميز وجذاب - للموبايل */}
         <Link to="/add-food" onClick={onItemClick}>
           <Button 
             variant="outline" 
-            className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white hover:from-yellow-600 hover:to-amber-700 border-none transition-all duration-300"
+            className="w-full bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white border-none transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl overflow-hidden relative group"
           >
-            <ChefHat className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
-            {t('addFood')}
+            <span className="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 translate-x-full group-hover:translate-x-0 transition-transform duration-500"></span>
+            <ChefHat className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0 animate-pulse" />
+            <span className="font-bold">{t('addFood')}</span>
           </Button>
         </Link>
         
@@ -65,13 +65,11 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
             {language === 'ar' ? 'English' : 'العربية'}
           </button>
         </div>
-        <button 
-          onClick={onLoginClick}
-          className="mx-4 bg-yellow-800 hover:bg-yellow-900 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-center shadow-sm hover:shadow-md flex items-center justify-center"
-        >
-          <LogIn className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
-          {t('login')}
-        </button>
+        
+        {/* زر تسجيل الدخول الموحد */}
+        <div className="px-4 py-2">
+          <AuthButtons />
+        </div>
       </nav>
     </div>
   );

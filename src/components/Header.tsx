@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTheme } from '@/components/theme-provider';
 import { useLanguage } from '@/contexts/LanguageContext';
-import LoginModal from './LoginModal';
 import Logo from './header/Logo';
 import DesktopNavigation from './header/DesktopNavigation';
 import MobileNavigation from './header/MobileNavigation';
@@ -13,7 +12,6 @@ const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const location = useLocation();
 
   const toggleMobileMenu = () => {
@@ -26,11 +24,6 @@ const Header: React.FC = () => {
 
   const toggleLanguage = () => {
     setLanguage(language === 'ar' ? 'en' : 'ar');
-  };
-
-  const openLoginModal = () => {
-    setIsLoginModalOpen(true);
-    setMobileMenuOpen(false);
   };
 
   return (
@@ -58,15 +51,9 @@ const Header: React.FC = () => {
           ]}
           isActive={(path) => location.pathname === path}
           onItemClick={() => setMobileMenuOpen(false)}
-          onLoginClick={openLoginModal}
           onLanguageToggle={toggleLanguage}
         />
       </div>
-      
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
-      />
     </header>
   );
 };
