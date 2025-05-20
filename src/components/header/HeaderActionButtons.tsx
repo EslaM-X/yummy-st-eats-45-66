@@ -98,13 +98,12 @@ export function HeaderActionButtons() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={language === 'ar' ? "end" : "start"}
-        className="w-[92vw] max-w-xs rounded-2xl p-2 mt-3 bg-white/95 dark:bg-gray-900/95 border-none shadow-2xl ring-2 ring-primary/10 animate-scale-in z-[1000]"
-        sideOffset={10}
+        className="w-[96vw] max-w-[320px] rounded-2xl p-1.5 mt-2 bg-white/95 dark:bg-gray-900/95 border-none shadow-2xl ring-2 ring-primary/10 animate-scale-in z-[1000]"
+        sideOffset={8}
       >
-        <div className="flex flex-col gap-1">
-
+        <div className="flex flex-col gap-0.5">
           {/* Header مصغر بدون كلمة navigation */}
-          <div className="w-full pb-2 mb-2 border-b border-yellow-100 dark:border-gray-800 flex items-center justify-center">
+          <div className="w-full pb-1 mb-1 border-b border-yellow-100 dark:border-gray-800 flex items-center justify-center">
             <span className="text-lg font-extrabold tracking-widest text-yellow-600 dark:text-yellow-300 flex items-center gap-2 animate-fade-in">
               <Menu className="h-5 w-5 inline-block" />
               {/* شيفون متحرك صغير بدل النص لتزيين القائمة */}
@@ -113,17 +112,17 @@ export function HeaderActionButtons() {
           </div>
 
           {/* عناصر القائمة بتأثيرات تفاعلية */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {navigationLinks.map(link => (
               <DropdownMenuItem
                 key={link.path}
                 className={`
-                  group cursor-pointer flex items-center gap-3 rounded-xl px-4 py-3 font-semibold
-                  transition-all duration-200 ease-in-out shadow-none relative
+                  group cursor-pointer flex items-center gap-2 rounded-lg px-3 py-2
+                  font-semibold transition-all duration-150 ease-in-out shadow-none relative
                   focus:bg-yellow-50 focus:text-yellow-900 dark:focus:bg-yellow-900/20 dark:focus:text-yellow-100
-                  hover:scale-[1.04] hover:bg-gradient-to-tr hover:from-yellow-400 hover:to-amber-500/80 hover:text-white dark:hover:from-yellow-700 dark:hover:to-yellow-900/80 dark:hover:text-yellow-100
-                  active:scale-[1.02] active:ring-2 active:ring-yellow-400
-                  ${link.key === "addFood" ? "bg-gradient-to-tr from-yellow-300 via-yellow-200 to-amber-200 dark:from-yellow-700 dark:to-yellow-900/60 text-amber-700 dark:text-yellow-200 font-bold scale-[1.04] shadow hover:scale-[1.07] my-[6px]" : ""}
+                  hover:scale-[1.03] hover:bg-gradient-to-tr hover:from-yellow-400 hover:to-amber-500/80 hover:text-white dark:hover:from-yellow-700 dark:hover:to-yellow-900/80 dark:hover:text-yellow-100
+                  active:scale-[1.01] active:ring-2 active:ring-yellow-400
+                  ${link.key === "addFood" ? "bg-gradient-to-tr from-yellow-300 via-yellow-200 to-amber-200 dark:from-yellow-700 dark:to-yellow-900/60 text-amber-700 dark:text-yellow-200 font-bold scale-[1.04] shadow hover:scale-[1.07] my-[3px]" : ""}
                 `}
                 onClick={() => {
                   navigate(link.path);
@@ -131,23 +130,21 @@ export function HeaderActionButtons() {
                 }}
                 style={{ fontWeight: link.key === "addFood" ? 700 : undefined }}
               >
-                <span className="flex items-center justify-center bg-yellow-50 dark:bg-yellow-800 rounded-full p-2 group-hover:bg-white/20 transition-all duration-300 shadow-md ring-1 ring-yellow-200 dark:ring-yellow-900">
+                <span className="flex items-center justify-center bg-yellow-50 dark:bg-yellow-800 rounded-full p-1.5 group-hover:bg-white/20 transition-all duration-200 shadow ring-1 ring-yellow-200 dark:ring-yellow-900">
                   {navIcons[link.key] ?? <span className="h-4 w-4 mr-2"></span>}
                 </span>
                 <span className="text-base font-cairo truncate">{link.title}</span>
-                {/* خيط متحرك على يمين كل عنصر لتأكيد التفاعل */}
-                <span className="ml-auto h-2 w-2 rounded-full bg-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></span>
               </DropdownMenuItem>
             ))}
           </div>
 
           {/* عناصر التحكم: الثيم، اللغة، سلة الشراء (أكثر تفاعلية) */}
-          <div className="flex gap-3 mt-4 justify-center px-1">
+          <div className="flex gap-2 mt-3 justify-center px-1">
             <Button
               size="icon"
               variant="ghost"
               onClick={toggleTheme}
-              className="rounded-full !w-12 !h-12 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-blue-900 dark:to-yellow-900/10 border-none shadow-md hover:scale-110 transition-transform duration-300"
+              className="rounded-full !w-10 !h-10 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-blue-900 dark:to-yellow-900/10 border-none shadow-md hover:scale-110 transition-transform duration-300"
             >
               {theme === "light" ? (
                 <Moon className="h-5 w-5 text-blue-800" />
@@ -159,7 +156,7 @@ export function HeaderActionButtons() {
               size="icon"
               variant="ghost"
               onClick={toggleLanguage}
-              className="rounded-full !w-12 !h-12 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-950 border-none shadow-md hover:scale-110 transition-transform duration-300"
+              className="rounded-full !w-10 !h-10 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-950 border-none shadow-md hover:scale-110 transition-transform duration-300"
             >
               <Globe className="h-5 w-5 text-yellow-700 dark:text-yellow-300" />
             </Button>
@@ -170,7 +167,7 @@ export function HeaderActionButtons() {
                 navigate('/cart');
                 setIsMenuOpen(false);
               }}
-              className="relative rounded-full !w-12 !h-12 bg-gradient-to-br from-yellow-300 to-yellow-500 dark:from-yellow-900 dark:to-yellow-700 border-none shadow-md hover:scale-110 transition-transform duration-300"
+              className="relative rounded-full !w-10 !h-10 bg-gradient-to-br from-yellow-300 to-yellow-500 dark:from-yellow-900 dark:to-yellow-700 border-none shadow-md hover:scale-110 transition-transform duration-300"
             >
               <ShoppingCart className="h-5 w-5 text-white" />
               {cartItemsCount > 0 && (
