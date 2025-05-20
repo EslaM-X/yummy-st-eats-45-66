@@ -38,6 +38,7 @@ interface LanguageContextType {
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
   isRTL: boolean;
+  toggleLanguage: () => void;
 }
 
 // Merge all English translations
@@ -85,6 +86,7 @@ export const LanguageContext = createContext<LanguageContextType>({
   setLanguage: () => {},
   t: (key: string) => key,
   isRTL: true,
+  toggleLanguage: () => {},
 });
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -116,8 +118,12 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return translation || key;
   };
 
+  const toggleLanguage = () => {
+    setLanguage(language === 'ar' ? 'en' : 'ar');
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, isRTL }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, isRTL, toggleLanguage }}>
       {children}
     </LanguageContext.Provider>
   );

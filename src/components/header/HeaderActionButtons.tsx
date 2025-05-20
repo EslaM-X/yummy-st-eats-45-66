@@ -10,12 +10,16 @@ import { AuthButtons } from '../auth/AuthButtons';
 
 export function HeaderActionButtons() {
   const { setTheme, theme } = useTheme();
-  const { language, toggleLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { cartItems } = useCart();
   const navigate = useNavigate();
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'ar' ? 'en' : 'ar');
   };
 
   const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
