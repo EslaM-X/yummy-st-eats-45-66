@@ -18,6 +18,12 @@ export const CountryList: React.FC<CountryListProps> = ({
 }) => {
   const { t } = useLanguage();
 
+  // إيقاف انتشار الأحداث لمنع فقدان التركيز من مربع البحث
+  const handleItemInteraction = (e: React.MouseEvent | React.TouchEvent) => {
+    // نسمح للنقر على العناصر نفسها بالعمل، ولكن نمنع انتشار الحدث
+    e.stopPropagation();
+  };
+
   return (
     <ScrollArea className={`h-[${maxHeight}]`}>
       <div className="grid grid-cols-1 gap-1 pr-1">
@@ -27,6 +33,8 @@ export const CountryList: React.FC<CountryListProps> = ({
             value={country.code}
             className="cursor-pointer hover:bg-primary/10 rounded-md transition-all duration-200 py-2 
                      text-black dark:text-white data-[state=checked]:bg-primary/15"
+            onTouchStart={handleItemInteraction}
+            onClick={handleItemInteraction}
           >
             <CountryDisplay country={country} showName={true} />
           </SelectItem>

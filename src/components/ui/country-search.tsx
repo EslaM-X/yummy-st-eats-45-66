@@ -18,9 +18,22 @@ export const CountrySearch: React.FC<CountrySearchProps> = ({
   const { t } = useLanguage();
   const inputRef = useRef<HTMLInputElement>(null);
   
+  // إصلاح للهواتف المحمولة: إيقاف انتشار الأحداث
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     e.stopPropagation();
     setSearchQuery(e.target.value);
+  };
+
+  // منع فقدان التركيز وإيقاف انتشار جميع الأحداث المرتبطة باللمس والنقر
+  const handleInteraction = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // التأكد من أن حقل الإدخال لا يزال في التركيز
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   return (
@@ -30,8 +43,10 @@ export const CountrySearch: React.FC<CountrySearchProps> = ({
           placeholder={t('searchCountries') || 'بحث عن دولة...'}
           value={searchQuery}
           onChange={handleSearchInput}
-          onClick={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
+          onClick={handleInteraction}
+          onTouchStart={handleInteraction}
+          onTouchMove={(e) => e.stopPropagation()}
+          onTouchEnd={handleInteraction}
           className="pl-8 pr-3 py-2 w-full border-gray-200 dark:border-gray-700 rounded-lg 
                     bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm
                     text-black dark:text-white"

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,6 +9,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { CountrySearch } from '@/components/ui/country-search';
 import { CountryFavorites } from '@/components/ui/country-favorites';
 import { CountryList } from '@/components/ui/country-list';
+import { Input } from '@/components/ui/input';
 
 interface CountryFilterProps {
   selectedCountry: string | undefined;
@@ -24,6 +25,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
   const [open, setOpen] = useState(false);
   const [favoritesVisible, setFavoritesVisible] = useState(true);
   const isMobile = useIsMobile();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Reset search and show favorites when dropdown closes
   useEffect(() => {
@@ -32,8 +34,15 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
         setSearchQuery('');
         setFavoritesVisible(true);
       }, 200);
+    } else if (isMobile) {
+      // على الأجهزة المحمولة، نتأخر قليلاً لضمان أن القائمة مفتوحة تماماً قبل محاولة التركيز
+      setTimeout(() => {
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+        }
+      }, 300);
     }
-  }, [open]);
+  }, [open, isMobile]);
 
   // Favorite/popular countries
   const favoriteCountries = countries.slice(0, 6);
@@ -73,6 +82,15 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
     }
   }, [searchQuery]);
 
+  // إيقاف انتشار الأحداث لمنع فقدان التركيز
+  const handleSearchInteraction = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -108,12 +126,35 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
           sideOffset={4}
           align="start"
         >
-          {/* Search input */}
-          <CountrySearch 
-            searchQuery={searchQuery} 
-            setSearchQuery={setSearchQuery} 
-            autoFocus={isMobile ? false : true}
-          />
+          {/* حقل البحث محسن للجوال */}
+          <div className="sticky top-0 bg-white dark:bg-gray-800 z-[101] mb-3 pb-2">
+            <div className="relative">
+              <Input
+                placeholder={t('searchCountries') || 'بحث عن دولة...'}
+                value={searchQuery}
+                onChange={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSearchQuery(e.target.value);
+                }}
+                onClick={handleSearchInteraction}
+                onTouchStart={handleSearchInteraction}
+                onTouchMove={(e) => e.stopPropagation()}
+                onTouchEnd={handleSearchInteraction}
+                className="pl-8 pr-3 py-2 w-full border-gray-200 dark:border-gray-700 rounded-lg 
+                        bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm
+                        text-black dark:text-white"
+                ref={searchInputRef}
+                autoComplete="off"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck="false"
+                inputMode="search"
+                enterKeyHint="search"
+              />
+              <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+            </div>
+          </div>
           
           {/* "كل الدول" خيار */}
           <SelectItem 

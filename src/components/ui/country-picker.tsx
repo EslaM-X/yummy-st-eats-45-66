@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import {
   Select,
@@ -40,6 +40,7 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
   const [open, setOpen] = useState(false);
   const [favoritesVisible, setFavoritesVisible] = useState(true);
   const isMobile = useIsMobile();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Reset search and show favorites when dropdown closes
   useEffect(() => {
@@ -48,8 +49,15 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
         setSearchQuery('');
         setFavoritesVisible(true);
       }, 200);
+    } else if (isMobile) {
+      // على الأجهزة المحمولة، نؤخر التركيز قليلاً لضمان فتح القائمة أولاً
+      setTimeout(() => {
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+        }
+      }, 300);
     }
-  }, [open]);
+  }, [open, isMobile]);
 
   // Favorite/popular countries (first 6)
   const favoriteCountries = countries.slice(0, 6);
@@ -101,12 +109,16 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
         position="popper"
         sideOffset={4}
       >
-        {/* Search input */}
-        <CountrySearch 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery} 
-          autoFocus={isMobile ? false : true}
-        />
+        {/* Search input - إضافة مرجع لحل مشكلة الكتابة على الموبايل */}
+        <div className="sticky top-0 bg-white dark:bg-gray-800 z-[101] mb-3 pb-2">
+          <div className="relative">
+            <CountrySearch 
+              searchQuery={searchQuery} 
+              setSearchQuery={setSearchQuery} 
+              autoFocus={isMobile ? false : true} 
+            />
+          </div>
+        </div>
         
         {/* Favorites */}
         {favoritesVisible && (
