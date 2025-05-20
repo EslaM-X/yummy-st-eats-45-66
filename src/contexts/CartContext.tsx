@@ -66,11 +66,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
           return item;
         });
-        toast.success(t('itemQuantityUpdated'));
+        toast({
+          title: t('itemQuantityUpdated')
+        });
         return updatedItems;
       } else {
         // Add new item to cart
-        toast.success(`${t('added')} ${product.name} ${t('toCart')}`);
+        toast({
+          title: `${t('added')} ${product.name} ${t('toCart')}`
+        });
         return [...prevItems, { ...product, quantity: 1 }];
       }
     });
@@ -79,7 +83,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const removeFromCart = (id: number | string) => {
     setCartItems(prevItems => {
       const filtered = prevItems.filter(item => item.id !== id);
-      toast.success(t('itemRemovedFromCart'));
+      toast({
+        title: t('itemRemovedFromCart')
+      });
       return filtered;
     });
   };
@@ -103,7 +109,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearCart = () => {
     setCartItems([]);
-    toast.success(t('cartCleared'));
+    toast({
+      title: t('cartCleared')
+    });
   };
 
   // Calculate total items
