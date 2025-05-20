@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { countries } from '@/components/ui/country-picker';
+import { countries } from '@/components/ui/country-data';
 import { CountryDisplay } from '@/components/ui/country-display';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from '@/hooks/use-mobile';

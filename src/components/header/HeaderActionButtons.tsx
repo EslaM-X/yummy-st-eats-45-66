@@ -8,9 +8,25 @@ import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { AuthButtons } from '../auth/AuthButtons';
 import { useToast } from '@/hooks/use-toast';
-import { countries } from '@/components/ui/country-picker';
+import { countries } from '@/components/ui/country-data';
 import MobileMenu from './MobileMenu';
 import CountryDropdown from './CountryDropdown';
+
+// Create a global country state for use across components
+export const useSelectedCountry = () => {
+  const [globalSelectedCountry, setGlobalSelectedCountry] = useState<string>(() => {
+    // Try to get from localStorage first
+    const saved = localStorage.getItem('selectedCountry');
+    return saved || 'sa'; // Default to Saudi Arabia if not found
+  });
+
+  // Update localStorage when the country changes
+  useEffect(() => {
+    localStorage.setItem('selectedCountry', globalSelectedCountry);
+  }, [globalSelectedCountry]);
+  
+  return { selectedCountry: globalSelectedCountry, setSelectedCountry: setGlobalSelectedCountry };
+};
 
 export function HeaderActionButtons() {
   const { setTheme, theme } = useTheme();
@@ -18,7 +34,7 @@ export function HeaderActionButtons() {
   const { cartItems } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [selectedCountry, setSelectedCountry] = useState<string>('sa');
+  const { selectedCountry, setSelectedCountry } = useSelectedCountry();
 
   // Toggle theme (light/dark mode)
   const toggleTheme = () => {
@@ -58,7 +74,13 @@ export function HeaderActionButtons() {
       duration: 1500
     });
     
-    // Additional logic can be added here, such as updating displayed products based on country
+    // Redirect to homepage to show filtered content
+    if (window.location.pathname !== '/') {
+      navigate('/');
+    } else {
+      // If already on homepage, force a refresh of the content
+      window.dispatchEvent(new CustomEvent('country-changed', { detail: code }));
+    }
   };
 
   useEffect(() => {

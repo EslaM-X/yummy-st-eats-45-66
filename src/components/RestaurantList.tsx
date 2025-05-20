@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Restaurant } from '@/types';
 import RestaurantCard from './RestaurantCard';
@@ -7,17 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { 
   Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription 
+  CardContent
 } from "@/components/ui/card";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { countries } from '@/components/ui/country-picker';
+import { countries } from '@/components/ui/country-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CountryDisplay } from '@/components/ui/country-display';
+import { useSelectedCountry } from './header/HeaderActionButtons';
 
-const mockRestaurants: Restaurant[] = [
+// Mock restaurants with country data
+const mockRestaurants: (Restaurant & { country?: string })[] = [
   {
     id: '1',
     name: 'مطعم الأصيل',
@@ -26,7 +26,8 @@ const mockRestaurants: Restaurant[] = [
     deliveryTime: '25-35 دقيقة',
     imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800', 
     isNew: true,
-    description: 'تخصص في المأكولات الشرقية التقليدية والمشويات الطازجة مع أفضل التوابل'
+    description: 'تخصص في المأكولات الشرقية التقليدية والمشويات الطازجة مع أفضل التوابل',
+    country: 'sa'
   },
   {
     id: '2',
@@ -36,7 +37,8 @@ const mockRestaurants: Restaurant[] = [
     deliveryTime: '30-40 دقيقة',
     imageUrl: 'https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=800',
     discount: '15%',
-    description: 'بيتزا إيطالية أصلية بعجينة طازجة وخبز في الفرن الحجري'
+    description: 'بيتزا إيطالية أصلية بعجينة طازجة وخبز في الفرن الحجري',
+    country: 'ae'
   },
   {
     id: '3',
@@ -45,7 +47,8 @@ const mockRestaurants: Restaurant[] = [
     rating: 4.8,
     deliveryTime: '35-45 دقيقة',
     imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800',
-    description: 'أطباق سوشي فاخرة محضرة من قبل طهاة يابانيين محترفين'
+    description: 'أطباق سوشي فاخرة محضرة من قبل طهاة يابانيين محترفين',
+    country: 'kw'
   },
   {
     id: '4',
@@ -55,7 +58,8 @@ const mockRestaurants: Restaurant[] = [
     deliveryTime: '20-30 دقيقة',
     imageUrl: 'https://images.unsplash.com/photo-1555992336-fb0d29498b13?auto=format&fit=crop&w=800',
     discount: '10%',
-    description: 'برجر لحم بقري فاخر طازج 100% مع صلصات خاصة وخبز محضر يومياً'
+    description: 'برجر لحم بقري فاخر طازج 100% مع صلصات خاصة وخبز محضر يومياً',
+    country: 'qa'
   },
   {
     id: '5',
@@ -65,7 +69,8 @@ const mockRestaurants: Restaurant[] = [
     deliveryTime: '30-50 دقيقة',
     imageUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800',
     isNew: true,
-    description: 'أطباق بحرية طازجة يومياً مع توابل خاصة وطرق تحضير مميزة'
+    description: 'أطباق بحرية طازجة يومياً مع توابل خاصة وطرق تحضير مميزة',
+    country: 'eg'
   },
 ];
 
@@ -80,7 +85,10 @@ const RestaurantList: React.FC = () => {
   const [sortBy, setSortBy] = useState('recommended');
   const [countryFilter, setCountryFilter] = useState<string | undefined>(undefined);
   const [searchCountryQuery, setSearchCountryQuery] = useState('');
-  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(mockRestaurants);
+  const [filteredRestaurants, setFilteredRestaurants] = useState<(Restaurant & { country?: string })[]>(mockRestaurants);
+  
+  // Get the global selected country from the header
+  const { selectedCountry: globalSelectedCountry } = useSelectedCountry();
   
   // Get unique cuisines for filter
   const allCuisines = mockRestaurants
@@ -99,7 +107,7 @@ const RestaurantList: React.FC = () => {
         );
       });
   
-  // Apply filters when any filter changes
+  // Apply filters when any filter changes or when the global country changes
   useEffect(() => {
     let filtered = mockRestaurants.filter(restaurant => {
       const nameForSearch = restaurant.name;
@@ -116,10 +124,15 @@ const RestaurantList: React.FC = () => {
       const matchesRating = restaurant.rating >= minRating;
       const matchesNew = !showNewOnly || restaurant.isNew === true;
       const matchesDiscount = !showDiscountOnly || restaurant.discount !== undefined;
-      // In a real application, restaurants would have country data. For now, we'll assume all match
-      const matchesCountry = !countryFilter || true; 
       
-      return matchesSearch && matchesCuisine && matchesRating && matchesNew && matchesDiscount && matchesCountry;
+      // Check if restaurant matches the global country filter from header
+      const matchesGlobalCountry = !globalSelectedCountry || restaurant.country === globalSelectedCountry;
+      
+      // Check if restaurant matches the local country filter
+      const matchesLocalCountry = !countryFilter || restaurant.country === countryFilter;
+      
+      return matchesSearch && matchesCuisine && matchesRating && matchesNew && 
+             matchesDiscount && matchesGlobalCountry && matchesLocalCountry;
     });
     
     // Sort the restaurants
@@ -145,7 +158,20 @@ const RestaurantList: React.FC = () => {
     }
     
     setFilteredRestaurants(filtered);
-  }, [searchTerm, cuisineFilter, minRating, showNewOnly, showDiscountOnly, sortBy, isRTL, countryFilter]);
+  }, [searchTerm, cuisineFilter, minRating, showNewOnly, showDiscountOnly, sortBy, isRTL, countryFilter, globalSelectedCountry]);
+  
+  // Listen for country change events from header
+  useEffect(() => {
+    const handleCountryChanged = () => {
+      // Reset local country filter when global country changes
+      setCountryFilter(undefined);
+    };
+    
+    window.addEventListener('country-changed', handleCountryChanged);
+    return () => {
+      window.removeEventListener('country-changed', handleCountryChanged);
+    };
+  }, []);
   
   const resetFilters = () => {
     setSearchTerm('');
@@ -156,8 +182,6 @@ const RestaurantList: React.FC = () => {
     setSortBy('recommended');
     setCountryFilter(undefined);
   };
-
-  const ratingDisplayValue = minRating > 0 ? `${minRating}+` : t('ratingFilterAll');
 
   return (
     <section className="py-6">
@@ -261,7 +285,16 @@ const RestaurantList: React.FC = () => {
                         ) : (
                           <span className="flex items-center gap-2">
                             <Globe className="h-4 w-4" />
-                            <span>{t('allCountriesOption') || 'كل الدول'}</span>
+                            <span>
+                              {globalSelectedCountry ? (
+                                <CountryDisplay 
+                                  country={countries.find(c => c.code === globalSelectedCountry)} 
+                                  showName={true}
+                                />
+                              ) : (
+                                t('allCountriesOption') || 'كل الدول'
+                              )}
+                            </span>
                           </span>
                         )}
                       </SelectValue>

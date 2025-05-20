@@ -10,6 +10,7 @@ import { getCategories, getFilteredProducts } from '@/services/ProductService';
 import { Product } from '@/types';
 import AdPlaceholder from '@/components/AdPlaceholder';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSelectedCountry } from '@/components/header/HeaderActionButtons';
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,6 +21,9 @@ const ProductsPage: React.FC = () => {
   const [sortBy, setSortBy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useLanguage();
+  
+  // Use the global country selector from the header
+  const { selectedCountry: globalSelectedCountry } = useSelectedCountry();
 
   // Extract unique categories
   const categories = getCategories();
@@ -28,13 +32,29 @@ const ProductsPage: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
     
+    // Use the local selectedCountry if set, otherwise use the global one
+    const countryToUse = selectedCountry || globalSelectedCountry;
+    
     // Get filtered products
-    getFilteredProducts(searchTerm, selectedCategory, sortBy, selectedCountry)
+    getFilteredProducts(searchTerm, selectedCategory, sortBy, countryToUse)
       .then(filteredProducts => {
         setProducts(filteredProducts);
         setIsLoading(false);
       });
-  }, [searchTerm, selectedCategory, sortBy, selectedCountry]);
+  }, [searchTerm, selectedCategory, sortBy, selectedCountry, globalSelectedCountry]);
+  
+  // Listen for country change events from header
+  useEffect(() => {
+    const handleCountryChanged = (event: Event) => {
+      // When country changed from header, clear the local filter
+      setSelectedCountry(undefined);
+    };
+    
+    window.addEventListener('country-changed', handleCountryChanged);
+    return () => {
+      window.removeEventListener('country-changed', handleCountryChanged);
+    };
+  }, []);
 
   const handleClearFilters = () => {
     setSearchTerm('');

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -6,11 +7,29 @@ import RestaurantList from '@/components/RestaurantList';
 import { Button } from "@/components/ui/button";
 import { useLanguage } from '@/contexts/LanguageContext';
 import AdPlaceholder from '@/components/AdPlaceholder';
+import { useSelectedCountry } from '@/components/header/HeaderActionButtons';
+import { countries } from '@/components/ui/country-data';
 
 const Index: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const { t, isRTL } = useLanguage();
+  const { selectedCountry: globalSelectedCountry } = useSelectedCountry();
+  const selectedCountryData = globalSelectedCountry ? 
+    countries.find(c => c.code === globalSelectedCountry) : null;
+
+  // Listen for country change events
+  useEffect(() => {
+    const handleCountryChanged = (event: Event) => {
+      // Force a rerender when country changes
+      setSearchQuery(searchQuery => searchQuery);
+    };
+    
+    window.addEventListener('country-changed', handleCountryChanged);
+    return () => {
+      window.removeEventListener('country-changed', handleCountryChanged);
+    };
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +55,25 @@ const Index: React.FC = () => {
                 className="h-28 w-28 sm:h-36 sm:w-36 md:h-40 md:w-40 mb-4 animate-pulse"
               />
             </div>
+            
+            {selectedCountryData && (
+              <div className="mb-3 flex justify-center items-center">
+                <div className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full flex items-center gap-2">
+                  <span className="text-2xl">{selectedCountryData.flagEmoji}</span>
+                  <span className="text-lg font-medium">
+                    {isRTL ? selectedCountryData.nameAr : selectedCountryData.name}
+                  </span>
+                </div>
+              </div>
+            )}
+            
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-cairo mb-6 leading-tight animate-fade-in">
               {t('deliverySlogan')}
+              {selectedCountryData && (
+                <span className="block text-2xl sm:text-3xl mt-2 opacity-80">
+                  {t('inCountry') || 'في'} {isRTL ? selectedCountryData.nameAr : selectedCountryData.name}
+                </span>
+              )}
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl mb-10 max-w-2xl mx-auto font-cairo">
               {t('deliveryDescription')}
