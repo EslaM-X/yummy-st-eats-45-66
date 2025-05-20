@@ -7,7 +7,7 @@ import type {
 } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 5;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_REMOVE_DELAY = 5000;
 
 type ToasterToast = ToastProps & {
   id: string;
@@ -119,18 +119,16 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
-const dispatch = (() => {
-  const listeners: Array<(state: State) => void> = [];
+const listeners: Array<(state: State) => void> = [];
 
-  let state: State = { toasts: [] };
+let memoryState: State = { toasts: [] };
 
-  return (action: Action) => {
-    state = reducer(state, action);
-    listeners.forEach((listener) => {
-      listener(state);
-    });
-  };
-})();
+function dispatch(action: Action) {
+  memoryState = reducer(memoryState, action);
+  listeners.forEach((listener) => {
+    listener(memoryState);
+  });
+}
 
 type Toast = Omit<ToasterToast, "id">;
 
@@ -166,13 +164,12 @@ function toast(props: Toast) {
 }
 
 function useToast() {
-  const [state, setState] = React.useState<State>({ toasts: [] });
+  const [state, setState] = React.useState<State>(memoryState);
 
   React.useEffect(() => {
-    const listener = (state: State) => setState(state);
-    listeners.push(listener);
+    listeners.push(setState);
     return () => {
-      const index = listeners.indexOf(listener);
+      const index = listeners.indexOf(setState);
       if (index > -1) {
         listeners.splice(index, 1);
       }
@@ -186,7 +183,5 @@ function useToast() {
       dispatch({ type: actionTypes.DISMISS_TOAST, toastId }),
   };
 }
-
-const listeners: Array<(state: State) => void> = [];
 
 export { useToast, toast };
