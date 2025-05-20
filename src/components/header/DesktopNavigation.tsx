@@ -13,7 +13,6 @@ const DesktopNavigation = () => {
     { name: t('navigation:restaurants'), href: '/restaurants' },
     { name: t('navigation:products'), href: '/products' },
     { name: t('navigation:addFood'), href: '/add-food' },
-    { name: t('navigation:team'), href: '/team' },
     { name: t('navigation:rewards'), href: '/rewards' },
   ];
 

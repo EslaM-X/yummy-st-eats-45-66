@@ -37,7 +37,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
             className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-white hover:from-yellow-600 hover:to-amber-700 border-none transition-all duration-300"
           >
             <ChefHat className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
-            {t('addYourFood')}
+            {t('navigation:addFood')}
           </Button>
         </Link>
         
@@ -57,7 +57,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           </Link>
         ))}
         <div className="flex items-center justify-between px-4 py-2">
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('language')}</span>
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('common:changeLanguage')}</span>
           <button 
             onClick={onLanguageToggle}
             className="px-3 py-1 rounded-md text-sm font-medium bg-yellow-50 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500"
@@ -70,7 +70,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           className="mx-4 bg-yellow-800 hover:bg-yellow-900 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-center shadow-sm hover:shadow-md flex items-center justify-center"
         >
           <LogIn className="h-4 w-4 mr-1 rtl:ml-1 rtl:mr-0" />
-          {t('login')}
+          {t('navigation:login')}
         </button>
       </nav>
     </div>
