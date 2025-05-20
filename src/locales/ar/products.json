@@ -27,5 +27,6 @@
   "selectCountry": "اختر الدولة",
   "countryChanged": "تم تغيير الدولة",
   "countryLabel": "الدولة",
-  "searchCountries": "بحث الدول..."
+  "searchCountries": "بحث الدول...",
+  "filter": "تصفية"
 }
