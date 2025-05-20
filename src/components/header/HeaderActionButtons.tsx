@@ -38,7 +38,7 @@ export function HeaderActionButtons() {
 
   const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
-  // تطبيق التأثير المرئي عند تغيير الوضع - تم تصحيح طريقة إضافة الفئات
+  // تطبيق التأثير المرئي عند تغيير الوضع - تصحيح طريقة إضافة الفئات
   useEffect(() => {
     const root = document.documentElement;
     
