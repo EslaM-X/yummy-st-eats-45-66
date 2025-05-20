@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CountryDisplay } from '@/components/ui/country-display';
-import { Globe } from 'lucide-react';
+import { Globe, Search } from 'lucide-react'; // Added Search import here
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CountrySearch } from '@/components/ui/country-search';
 import { CountryFavorites } from '@/components/ui/country-favorites';
