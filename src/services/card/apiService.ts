@@ -8,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 // رابط API الافتراضي
 const API_BASE_URL = 'https://api.salla-shop.com';
 // الحصول على API Key من متغيرات البيئة
-const API_KEY = import.meta.env.VITE_ST_VPC_API_KEY || process.env.ST_VPC_API_KEY || 'demo-api-key';
+const API_KEY = import.meta.env.VITE_ST_VPC_API_KEY || 'demo-api-key';
 
 /**
  * إرسال طلب إلى API مع إضافة مفتاح API في الهيدر
