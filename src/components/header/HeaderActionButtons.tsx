@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Moon, Sun, Globe, Menu } from "lucide-react";
+import { ShoppingCart, Moon, Sun, Globe, Menu, Home, UtensilsCrossed, ShoppingBag, Gift, Users, FileText, ShieldCheck, Cookie } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
@@ -18,6 +18,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+const navIcons: { [key: string]: React.ReactNode } = {
+  home: <Home className="h-4 w-4 mr-2" />,
+  restaurants: <UtensilsCrossed className="h-4 w-4 mr-2" />,
+  products: <ShoppingBag className="h-4 w-4 mr-2" />,
+  rewards: <Gift className="h-4 w-4 mr-2" />,
+  addFood: <UtensilsCrossed className="h-4 w-4 mr-2" />,
+  team: <Users className="h-4 w-4 mr-2" />,
+  privacyPolicy: <ShieldCheck className="h-4 w-4 mr-2" />,
+  termsConditions: <FileText className="h-4 w-4 mr-2" />,
+  cookiePolicy: <Cookie className="h-4 w-4 mr-2" />,
+};
+
 export function HeaderActionButtons() {
   const { setTheme, theme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
@@ -30,8 +42,6 @@ export function HeaderActionButtons() {
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    
-    // إظهار رسالة توست عند تغيير الوضع
     toast({
       title: newTheme === "dark" 
         ? t('common:darkModeEnabled') 
@@ -49,103 +59,131 @@ export function HeaderActionButtons() {
 
   const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
-  // تطبيق التأثير المرئي عند تغيير الوضع - تصحيح طريقة إضافة الفئات
   useEffect(() => {
     const root = document.documentElement;
-    
-    // إضافة كل فئة على حدة بشكل صحيح
     root.classList.add('transition-all');
     root.classList.add('duration-300');
     root.classList.add('ease-in-out');
-    
     return () => {
-      // إزالة كل فئة على حدة عند التنظيف
       root.classList.remove('transition-all');
       root.classList.remove('duration-300');
       root.classList.remove('ease-in-out');
     };
   }, []);
 
-  // قائمة الروابط للتنقل
+  // قائمة الروابط - بدون navigation:
   const navigationLinks = [
-    { title: t('navigation:home'), path: "/" },
-    { title: t('navigation:restaurants'), path: "/restaurants" },
-    { title: t('navigation:products'), path: "/products" },
-    { title: t('navigation:rewards'), path: "/rewards" },
-    { title: t('navigation:addFood'), path: "/add-food" },
-    { title: t('navigation:team'), path: "/team" },
-    { title: t('navigation:privacyPolicy'), path: "/privacy-policy" },
-    { title: t('navigation:termsConditions'), path: "/terms-conditions" },
-    { title: t('navigation:cookiePolicy'), path: "/cookie-policy" },
+    { key: "home",        title: t('navigation:home'), path: "/" },
+    { key: "restaurants", title: t('navigation:restaurants'), path: "/restaurants" },
+    { key: "products",    title: t('navigation:products'), path: "/products" },
+    { key: "rewards",     title: t('navigation:rewards'), path: "/rewards" },
+    { key: "addFood",     title: t('navigation:addFood'), path: "/add-food" },
+    { key: "team",        title: t('navigation:team'), path: "/team" },
+    { key: "privacyPolicy", title: t('navigation:privacyPolicy'), path: "/privacy-policy" },
+    { key: "termsConditions", title: t('navigation:termsConditions'), path: "/terms-conditions" },
+    { key: "cookiePolicy", title: t('navigation:cookiePolicy'), path: "/cookie-policy" },
   ];
 
-  // قائمة منسدلة للهاتف المحمول
+  // قائمة منسدلة للهاتف المحمول بتصميم جديد وجذاب
   const MobileMenu = () => (
     <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="lg:hidden h-9 w-9 rounded-full hover:bg-primary/20 transition-all duration-300"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden h-10 w-10 rounded-full hover:bg-primary/10 transition-all duration-300 ring-1 ring-primary/10 shadow-md bg-gradient-to-br from-yellow-50 via-white to-yellow-100 dark:from-blue-900/60 dark:to-blue-800/20 dark:ring-0"
           aria-label={t('navigation:menu')}
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-5 w-5 text-yellow-700 dark:text-yellow-200" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
+      <DropdownMenuContent
         align={language === 'ar' ? "end" : "start"}
-        className="w-56 mt-2 bg-background border-border"
+        className="w-[90vw] max-w-xs rounded-xl p-2 mt-2 bg-white/90 dark:bg-gray-900/95 border-none shadow-2xl ring-2 ring-primary/10 animate-scale-in"
+        sideOffset={8}
       >
-        <DropdownMenuLabel className="text-center">
-          {t('navigation:menu')}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        
-        {navigationLinks.map((link) => (
-          <DropdownMenuItem 
-            key={link.path} 
-            className="cursor-pointer" 
-            onClick={() => {
-              navigate(link.path);
-              setIsMenuOpen(false);
-            }}
-          >
-            {link.title}
-          </DropdownMenuItem>
-        ))}
-        
-        <DropdownMenuSeparator />
-        <DropdownMenuItem 
-          className="cursor-pointer flex items-center justify-between" 
-          onClick={toggleTheme}
-        >
-          {t('common:theme')}
-          {theme === "light" ? (
-            <Moon className="h-4 w-4" />
-          ) : (
-            <Sun className="h-4 w-4" />
-          )}
-        </DropdownMenuItem>
-        <DropdownMenuItem 
-          className="cursor-pointer" 
-          onClick={toggleLanguage}
-        >
-          {language === 'ar' ? 'English' : 'العربية'}
-        </DropdownMenuItem>
+        <div className="flex flex-col gap-1">
+          {/* Header فارغ لمزيد من الأناقة */}
+          <div className="w-full pb-2 mb-2 border-b border-yellow-100 dark:border-gray-800 flex items-center justify-center">
+            <span className="text-lg font-bold tracking-wider text-yellow-600 dark:text-yellow-300 flex items-center gap-2">
+              <Menu className="h-5 w-5 inline-block" />
+              {t('navigation:menu')}
+            </span>
+          </div>
+          <div className="flex flex-col gap-1">
+            {navigationLinks.map(link => (
+              <DropdownMenuItem
+                key={link.path}
+                className={`group flex items-center gap-2 rounded-lg p-3 font-semibold hover:bg-gradient-to-tr hover:from-yellow-400 hover:to-amber-500/80 hover:text-white dark:hover:from-yellow-700 dark:hover:to-yellow-900/80
+                  transition-all duration-200
+                  shadow-none focus:bg-yellow-50 dark:focus:bg-yellow-900/20
+                  ${link.key === "addFood" ? "bg-gradient-to-tr from-yellow-300 via-yellow-200 to-amber-200 dark:from-yellow-700 dark:to-yellow-900/60 text-amber-700 dark:text-yellow-200 font-bold scale-[1.04] shadow hover:scale-[1.07] my-1" : ""}
+                `}
+                onClick={() => {
+                  navigate(link.path);
+                  setIsMenuOpen(false);
+                }}
+                style={{ fontWeight: link.key === "addFood" ? 700 : undefined }}
+              >
+                {navIcons[link.key] ?? <span className="h-4 w-4 mr-2"></span>}
+                <span className="text-base">{link.title}</span>
+              </DropdownMenuItem>
+            ))}
+          </div>
+          {/* عناصر التحكم بالوضع واللغة بشكل أيقوني وجميل */}
+          <div className="flex gap-2 mt-3 justify-center px-1">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={toggleTheme}
+              className="rounded-full !w-11 !h-11 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-blue-900 dark:to-yellow-900/10 border-none shadow"
+            >
+              {theme === "light" ? (
+                <Moon className="h-5 w-5 text-blue-800" />
+              ) : (
+                <Sun className="h-5 w-5 text-yellow-400" />
+              )}
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={toggleLanguage}
+              className="rounded-full !w-11 !h-11 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-950 border-none shadow"
+            >
+              <Globe className="h-5 w-5 text-yellow-700 dark:text-yellow-300" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => {
+                navigate('/cart');
+                setIsMenuOpen(false);
+              }}
+              className="relative rounded-full !w-11 !h-11 bg-gradient-to-br from-yellow-300 to-yellow-500 dark:from-yellow-900 dark:to-yellow-700 border-none shadow"
+            >
+              <ShoppingCart className="h-5 w-5 text-white" />
+              {cartItemsCount > 0 && (
+                <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-primary text-[10px] font-bold flex items-center justify-center text-white animate-fade-in">
+                  {cartItemsCount}
+                </span>
+              )}
+            </Button>
+          </div>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 
   return (
     <div className="flex items-center gap-2">
-      {/* القائمة المنسدلة للأجهزة المحمولة */}
+      {/* القائمة المنسدلة للأجهزة المحمولة - شكل جديد */}
       <MobileMenu />
-      
-      {/* أزرار التبديل للشاشات الكبيرة */}
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        onClick={toggleTheme} 
+
+      {/* أزرار التبديل للشاشات الكبيرة - لا تغيير */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleTheme}
         className="hidden sm:flex h-9 w-9 rounded-full bg-opacity-20 hover:scale-110 hover:bg-primary/20 transition-all duration-300 relative overflow-hidden group"
         aria-label={t('common:toggleTheme')}
       >
@@ -156,20 +194,20 @@ export function HeaderActionButtons() {
         )}
         <span className="absolute inset-0 bg-gradient-to-tr from-yellow-300 to-yellow-500 dark:from-blue-800 dark:to-indigo-900 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-full"></span>
       </Button>
-      
-      <Button 
-        variant="ghost" 
-        size="icon" 
+
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={toggleLanguage}
         className="hidden sm:flex h-9 w-9 rounded-full hover:scale-110 hover:bg-primary/20 transition-all duration-300"
         aria-label={t('common:changeLanguage')}
       >
         <Globe className="h-5 w-5" />
       </Button>
-      
-      <Button 
-        variant="ghost" 
-        size="icon" 
+
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => navigate('/cart')}
         className="h-9 w-9 rounded-full relative hover:scale-110 hover:bg-primary/20 transition-all duration-300"
         aria-label={t('common:cart')}
@@ -181,7 +219,7 @@ export function HeaderActionButtons() {
           </span>
         )}
       </Button>
-      
+
       <AuthButtons />
     </div>
   );
