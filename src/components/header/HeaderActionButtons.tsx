@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Moon, Sun, Globe, Menu, Home, UtensilsCrossed, ShoppingBag, Gift, Users, FileText, ShieldCheck, Cookie } from "lucide-react";
@@ -44,11 +43,11 @@ export function HeaderActionButtons() {
     setTheme(newTheme);
     toast({
       title: newTheme === "dark" 
-        ? t('common:darkModeEnabled') 
-        : t('common:lightModeEnabled'),
+        ? t('darkModeEnabled') 
+        : t('lightModeEnabled'),
       description: newTheme === "dark" 
-        ? t('common:enjoyDarkMode') 
-        : t('common:enjoyLightMode'),
+        ? t('enjoyDarkMode') 
+        : t('enjoyLightMode'),
       duration: 1500
     });
   };
@@ -71,20 +70,20 @@ export function HeaderActionButtons() {
     };
   }, []);
 
-  // قائمة الروابط - بدون navigation:
+  // قائمة الروابط
   const navigationLinks = [
-    { key: "home",        title: t('navigation:home'), path: "/" },
-    { key: "restaurants", title: t('navigation:restaurants'), path: "/restaurants" },
-    { key: "products",    title: t('navigation:products'), path: "/products" },
-    { key: "rewards",     title: t('navigation:rewards'), path: "/rewards" },
-    { key: "addFood",     title: t('navigation:addFood'), path: "/add-food" },
-    { key: "team",        title: t('navigation:team'), path: "/team" },
-    { key: "privacyPolicy", title: t('navigation:privacyPolicy'), path: "/privacy-policy" },
-    { key: "termsConditions", title: t('navigation:termsConditions'), path: "/terms-conditions" },
-    { key: "cookiePolicy", title: t('navigation:cookiePolicy'), path: "/cookie-policy" },
+    { key: "home",        title: t('home'), path: "/" },
+    { key: "restaurants", title: t('restaurants'), path: "/restaurants" },
+    { key: "products",    title: t('products'), path: "/products" },
+    { key: "rewards",     title: t('rewards'), path: "/rewards" },
+    { key: "addFood",     title: t('addFood'), path: "/add-food" },
+    { key: "team",        title: t('team'), path: "/team" },
+    { key: "privacyPolicy", title: t('privacyPolicy'), path: "/privacy-policy" },
+    { key: "termsConditions", title: t('termsConditions'), path: "/terms-conditions" },
+    { key: "cookiePolicy", title: t('cookiePolicy'), path: "/cookie-policy" },
   ];
 
-  // قائمة منسدلة للهاتف المحمول بتصميم جديد وجذاب
+  // قائمة منسدلة للهاتف المحمول بتصميم جذاب وتفاعلي للغاية
   const MobileMenu = () => (
     <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
       <DropdownMenuTrigger asChild>
@@ -92,32 +91,39 @@ export function HeaderActionButtons() {
           variant="ghost"
           size="icon"
           className="lg:hidden h-10 w-10 rounded-full hover:bg-primary/10 transition-all duration-300 ring-1 ring-primary/10 shadow-md bg-gradient-to-br from-yellow-50 via-white to-yellow-100 dark:from-blue-900/60 dark:to-blue-800/20 dark:ring-0"
-          aria-label={t('navigation:menu')}
+          aria-label={t('menu')}
         >
           <Menu className="h-5 w-5 text-yellow-700 dark:text-yellow-200" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={language === 'ar' ? "end" : "start"}
-        className="w-[90vw] max-w-xs rounded-xl p-2 mt-2 bg-white/90 dark:bg-gray-900/95 border-none shadow-2xl ring-2 ring-primary/10 animate-scale-in"
-        sideOffset={8}
+        className="w-[92vw] max-w-xs rounded-2xl p-2 mt-3 bg-white/95 dark:bg-gray-900/95 border-none shadow-2xl ring-2 ring-primary/10 animate-scale-in z-[1000]"
+        sideOffset={10}
       >
         <div className="flex flex-col gap-1">
-          {/* Header فارغ لمزيد من الأناقة */}
+
+          {/* Header مصغر بدون كلمة navigation */}
           <div className="w-full pb-2 mb-2 border-b border-yellow-100 dark:border-gray-800 flex items-center justify-center">
-            <span className="text-lg font-bold tracking-wider text-yellow-600 dark:text-yellow-300 flex items-center gap-2">
+            <span className="text-lg font-extrabold tracking-widest text-yellow-600 dark:text-yellow-300 flex items-center gap-2 animate-fade-in">
               <Menu className="h-5 w-5 inline-block" />
-              {t('navigation:menu')}
+              {/* شيفون متحرك صغير بدل النص لتزيين القائمة */}
+              <span className="h-2 w-2 rounded-full bg-yellow-400 animate-pulse inline-block"></span>
             </span>
           </div>
-          <div className="flex flex-col gap-1">
+
+          {/* عناصر القائمة بتأثيرات تفاعلية */}
+          <div className="flex flex-col gap-2">
             {navigationLinks.map(link => (
               <DropdownMenuItem
                 key={link.path}
-                className={`group flex items-center gap-2 rounded-lg p-3 font-semibold hover:bg-gradient-to-tr hover:from-yellow-400 hover:to-amber-500/80 hover:text-white dark:hover:from-yellow-700 dark:hover:to-yellow-900/80
-                  transition-all duration-200
-                  shadow-none focus:bg-yellow-50 dark:focus:bg-yellow-900/20
-                  ${link.key === "addFood" ? "bg-gradient-to-tr from-yellow-300 via-yellow-200 to-amber-200 dark:from-yellow-700 dark:to-yellow-900/60 text-amber-700 dark:text-yellow-200 font-bold scale-[1.04] shadow hover:scale-[1.07] my-1" : ""}
+                className={`
+                  group cursor-pointer flex items-center gap-3 rounded-xl px-4 py-3 font-semibold
+                  transition-all duration-200 ease-in-out shadow-none relative
+                  focus:bg-yellow-50 focus:text-yellow-900 dark:focus:bg-yellow-900/20 dark:focus:text-yellow-100
+                  hover:scale-[1.04] hover:bg-gradient-to-tr hover:from-yellow-400 hover:to-amber-500/80 hover:text-white dark:hover:from-yellow-700 dark:hover:to-yellow-900/80 dark:hover:text-yellow-100
+                  active:scale-[1.02] active:ring-2 active:ring-yellow-400
+                  ${link.key === "addFood" ? "bg-gradient-to-tr from-yellow-300 via-yellow-200 to-amber-200 dark:from-yellow-700 dark:to-yellow-900/60 text-amber-700 dark:text-yellow-200 font-bold scale-[1.04] shadow hover:scale-[1.07] my-[6px]" : ""}
                 `}
                 onClick={() => {
                   navigate(link.path);
@@ -125,18 +131,23 @@ export function HeaderActionButtons() {
                 }}
                 style={{ fontWeight: link.key === "addFood" ? 700 : undefined }}
               >
-                {navIcons[link.key] ?? <span className="h-4 w-4 mr-2"></span>}
-                <span className="text-base">{link.title}</span>
+                <span className="flex items-center justify-center bg-yellow-50 dark:bg-yellow-800 rounded-full p-2 group-hover:bg-white/20 transition-all duration-300 shadow-md ring-1 ring-yellow-200 dark:ring-yellow-900">
+                  {navIcons[link.key] ?? <span className="h-4 w-4 mr-2"></span>}
+                </span>
+                <span className="text-base font-cairo truncate">{link.title}</span>
+                {/* خيط متحرك على يمين كل عنصر لتأكيد التفاعل */}
+                <span className="ml-auto h-2 w-2 rounded-full bg-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></span>
               </DropdownMenuItem>
             ))}
           </div>
-          {/* عناصر التحكم بالوضع واللغة بشكل أيقوني وجميل */}
-          <div className="flex gap-2 mt-3 justify-center px-1">
+
+          {/* عناصر التحكم: الثيم، اللغة، سلة الشراء (أكثر تفاعلية) */}
+          <div className="flex gap-3 mt-4 justify-center px-1">
             <Button
               size="icon"
               variant="ghost"
               onClick={toggleTheme}
-              className="rounded-full !w-11 !h-11 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-blue-900 dark:to-yellow-900/10 border-none shadow"
+              className="rounded-full !w-12 !h-12 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-blue-900 dark:to-yellow-900/10 border-none shadow-md hover:scale-110 transition-transform duration-300"
             >
               {theme === "light" ? (
                 <Moon className="h-5 w-5 text-blue-800" />
@@ -148,7 +159,7 @@ export function HeaderActionButtons() {
               size="icon"
               variant="ghost"
               onClick={toggleLanguage}
-              className="rounded-full !w-11 !h-11 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-950 border-none shadow"
+              className="rounded-full !w-12 !h-12 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-950 border-none shadow-md hover:scale-110 transition-transform duration-300"
             >
               <Globe className="h-5 w-5 text-yellow-700 dark:text-yellow-300" />
             </Button>
@@ -159,7 +170,7 @@ export function HeaderActionButtons() {
                 navigate('/cart');
                 setIsMenuOpen(false);
               }}
-              className="relative rounded-full !w-11 !h-11 bg-gradient-to-br from-yellow-300 to-yellow-500 dark:from-yellow-900 dark:to-yellow-700 border-none shadow"
+              className="relative rounded-full !w-12 !h-12 bg-gradient-to-br from-yellow-300 to-yellow-500 dark:from-yellow-900 dark:to-yellow-700 border-none shadow-md hover:scale-110 transition-transform duration-300"
             >
               <ShoppingCart className="h-5 w-5 text-white" />
               {cartItemsCount > 0 && (
@@ -176,7 +187,7 @@ export function HeaderActionButtons() {
 
   return (
     <div className="flex items-center gap-2">
-      {/* القائمة المنسدلة للأجهزة المحمولة - شكل جديد */}
+      {/* القائمة المنسدلة للأجهزة المحمولة - تصميم مبتكر */}
       <MobileMenu />
 
       {/* أزرار التبديل للشاشات الكبيرة - لا تغيير */}
@@ -185,7 +196,7 @@ export function HeaderActionButtons() {
         size="icon"
         onClick={toggleTheme}
         className="hidden sm:flex h-9 w-9 rounded-full bg-opacity-20 hover:scale-110 hover:bg-primary/20 transition-all duration-300 relative overflow-hidden group"
-        aria-label={t('common:toggleTheme')}
+        aria-label={t('toggleTheme')}
       >
         {theme === "light" ? (
           <Moon className="h-5 w-5 absolute transform transition-transform duration-300 ease-in-out z-10" />
@@ -200,7 +211,7 @@ export function HeaderActionButtons() {
         size="icon"
         onClick={toggleLanguage}
         className="hidden sm:flex h-9 w-9 rounded-full hover:scale-110 hover:bg-primary/20 transition-all duration-300"
-        aria-label={t('common:changeLanguage')}
+        aria-label={t('changeLanguage')}
       >
         <Globe className="h-5 w-5" />
       </Button>
@@ -210,7 +221,7 @@ export function HeaderActionButtons() {
         size="icon"
         onClick={() => navigate('/cart')}
         className="h-9 w-9 rounded-full relative hover:scale-110 hover:bg-primary/20 transition-all duration-300"
-        aria-label={t('common:cart')}
+        aria-label={t('cart')}
       >
         <ShoppingCart className="h-5 w-5" />
         {cartItemsCount > 0 && (
