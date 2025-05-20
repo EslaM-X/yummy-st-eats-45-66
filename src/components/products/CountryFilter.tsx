@@ -4,9 +4,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CountryDisplay } from '@/components/ui/country-display';
-import { Globe, Search } from 'lucide-react'; // Added Search import here
+import { Globe, Search } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { CountrySearch } from '@/components/ui/country-search';
 import { CountryFavorites } from '@/components/ui/country-favorites';
 import { CountryList } from '@/components/ui/country-list';
 import { Input } from '@/components/ui/input';
@@ -26,6 +25,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
   const [favoritesVisible, setFavoritesVisible] = useState(true);
   const isMobile = useIsMobile();
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
   
   // Reset search and show favorites when dropdown closes
   useEffect(() => {
@@ -35,7 +35,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
         setFavoritesVisible(true);
       }, 200);
     } else if (isMobile) {
-      // على الأجهزة المحمولة، نتأخر قليلاً لضمان أن القائمة مفتوحة تماماً قبل محاولة التركيز
+      // On mobile, we delay focusing to ensure the dropdown is fully open
       setTimeout(() => {
         if (searchInputRef.current) {
           searchInputRef.current.focus();
@@ -82,13 +82,9 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
     }
   }, [searchQuery]);
 
-  // إيقاف انتشار الأحداث لمنع فقدان التركيز
-  const handleSearchInteraction = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
+  // Stop propagation for all search input events
+  const preventPropagation = (e: React.SyntheticEvent) => {
     e.stopPropagation();
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
   };
 
   return (
@@ -126,21 +122,25 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
           sideOffset={4}
           align="start"
         >
-          {/* حقل البحث محسن للجوال */}
-          <div className="sticky top-0 bg-white dark:bg-gray-800 z-[101] mb-3 pb-2">
+          {/* Improved search field for mobile */}
+          <div 
+            className="sticky top-0 bg-white dark:bg-gray-800 z-[101] mb-3 pb-2"
+            ref={searchContainerRef}
+            onClick={preventPropagation}
+            onMouseDown={preventPropagation}
+            onMouseUp={preventPropagation}
+            onTouchStart={preventPropagation}
+            onTouchEnd={preventPropagation}
+            onTouchMove={preventPropagation}
+          >
             <div className="relative">
               <Input
                 placeholder={t('searchCountries') || 'بحث عن دولة...'}
                 value={searchQuery}
                 onChange={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
+                  preventPropagation(e);
                   setSearchQuery(e.target.value);
                 }}
-                onClick={handleSearchInteraction}
-                onTouchStart={handleSearchInteraction}
-                onTouchMove={(e) => e.stopPropagation()}
-                onTouchEnd={handleSearchInteraction}
                 className="pl-8 pr-3 py-2 w-full border-gray-200 dark:border-gray-700 rounded-lg 
                         bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm
                         text-black dark:text-white"
@@ -151,12 +151,21 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
                 spellCheck="false"
                 inputMode="search"
                 enterKeyHint="search"
+                onClick={preventPropagation}
+                onMouseDown={preventPropagation}
+                onMouseUp={preventPropagation}
+                onTouchStart={preventPropagation}
+                onTouchEnd={preventPropagation}
+                onTouchMove={preventPropagation}
+                onFocus={preventPropagation}
+                onBlur={preventPropagation}
+                onKeyDown={preventPropagation}
               />
               <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
             </div>
           </div>
           
-          {/* "كل الدول" خيار */}
+          {/* "All Countries" option */}
           <SelectItem 
             value="all" 
             className="font-medium text-sm cursor-pointer hover:bg-primary/10 rounded-md mb-2 py-2 
@@ -170,12 +179,12 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
             </span>
           </SelectItem>
           
-          {/* المفضلة */}
+          {/* Favorites */}
           {favoritesVisible && (
             <CountryFavorites favoriteCountries={favoriteCountries} />
           )}
           
-          {/* قائمة الدول الرئيسية */}
+          {/* Main country list */}
           <CountryList filteredCountries={filteredCountries} maxHeight="40vh" />
         </SelectContent>
       </Select>
