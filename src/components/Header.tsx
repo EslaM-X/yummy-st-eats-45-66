@@ -11,21 +11,10 @@ import HeaderActionButtons from './header/HeaderActionButtons';
 
 const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const location = useLocation();
-
-  const navItems = [
-    { title: t('home'), path: "/" },
-    { title: t('restaurants'), path: "/restaurants" },
-    { title: t('products'), path: "/products" },
-    { title: t('rewards'), path: "/rewards" },
-  ];
-
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -52,11 +41,7 @@ const Header: React.FC = () => {
           <Logo />
 
           {/* Desktop Navigation */}
-          <DesktopNavigation 
-            navItems={navItems} 
-            isActive={isActive} 
-            openLoginModal={openLoginModal} 
-          />
+          <DesktopNavigation />
 
           {/* Action Buttons */}
           <HeaderActionButtons />
@@ -65,8 +50,13 @@ const Header: React.FC = () => {
         {/* Mobile Navigation Menu */}
         <MobileNavigation 
           isOpen={mobileMenuOpen}
-          navItems={navItems}
-          isActive={isActive}
+          navItems={[
+            { title: 'Home', path: "/" },
+            { title: 'Restaurants', path: "/restaurants" },
+            { title: 'Products', path: "/products" },
+            { title: 'Rewards', path: "/rewards" }
+          ]}
+          isActive={(path) => location.pathname === path}
           onItemClick={() => setMobileMenuOpen(false)}
           onLoginClick={openLoginModal}
           onLanguageToggle={toggleLanguage}

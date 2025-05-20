@@ -1,71 +1,102 @@
 
-/**
- * خدمات محاكاة معاملات البطاقة الافتراضية للتطوير والاختبار
- */
-import { PaymentResponse, PaymentRequest, RefundRequest, RefundResponse } from './apiTypes';
+import { 
+  PaymentRequest, 
+  RefundRequest, 
+  PaymentResponse, 
+  RefundResponse, 
+  Transaction
+} from './apiTypes';
 
-export async function sendMockRequest<T>(
-  endpoint: string,
-  method: string,
-  data: any
-): Promise<T> {
-  console.log('استخدام بيانات محاكاة للطلب:', {endpoint, method, data});
+/**
+ * محاكاة لعملية دفع ناجحة في بيئة التطوير
+ */
+export const mockPaymentTransaction = async (
+  paymentData: PaymentRequest
+): Promise<PaymentResponse> => {
+  // إضافة تأخير اصطناعي لمحاكاة اتصال الشبكة
+  await new Promise(resolve => setTimeout(resolve, 800));
   
-  // محاكاة تأخير الشبكة
-  await new Promise(resolve => setTimeout(resolve, 1800));
-  
-  // إعداد استجابة محاكاة بناءً على نوع الطلب والبيانات
-  let mockResponse: any;
-  
-  if (endpoint.includes('transaction')) {
-    // استجابة معاملة دفع
-    mockResponse = {
-      transaction_id: Math.floor(Math.random() * 100000) + 1000,
-      status: 'success',
-      amount: data.amount,
-      currency: 'ST',
-      timestamp: new Date().toISOString(),
-    };
-  } else if (endpoint.includes('refund')) {
-    // استجابة معاملة استرداد
-    mockResponse = {
-      status: 'success',
-      refund_txn_id: Math.floor(Math.random() * 100000) + 1000,
-      new_wallet_bal: 1250.75 - data.amount,
-      new_card_bal: 75.5,
-      refunded_amount: data.amount,
-      timestamp: new Date().toISOString(),
-    };
-  } else {
-    throw new Error('نوع طلب غير معروف');
+  // معالجة محاكاة الأخطاء للفحص
+  if (paymentData.amount <= 0) {
+    throw new Error('مبلغ الدفع يجب أن يكون أكبر من صفر');
   }
   
-  // محاكاة فشل عشوائي في حوالي 10% من الحالات
-  if (Math.random() < 0.1) {
-    throw new Error('فشل التواصل مع خادم API. يرجى المحاولة مرة أخرى.');
+  if (paymentData.card_number === '4111111111111111') {
+    throw new Error('بطاقة محظورة');
   }
   
-  return mockResponse as T;
-}
+  // إنشاء معرف معاملة عشوائي
+  const txnId = Math.floor(Math.random() * 10000000);
+  
+  // إرجاع استجابة محاكاة
+  return {
+    transaction_id: txnId,
+    status: 'approved',
+    amount: paymentData.amount,
+    timestamp: new Date().toISOString()
+  };
+};
 
 /**
- * محاكاة معاملات الدفع
+ * محاكاة لعملية استرداد ناجحة في بيئة التطوير
  */
-export async function mockPaymentTransaction(paymentData: PaymentRequest): Promise<PaymentResponse> {
-  return await sendMockRequest<PaymentResponse>(
-    '/st-vpc/v1/transactions',
-    'POST',
-    paymentData
-  );
-}
+export const mockRefundTransaction = async (
+  refundData: RefundRequest
+): Promise<RefundResponse> => {
+  // إضافة تأخير اصطناعي لمحاكاة اتصال الشبكة
+  await new Promise(resolve => setTimeout(resolve, 800));
+  
+  // محاكاة الأخطاء للفحص
+  if (refundData.amount <= 0) {
+    throw new Error('مبلغ الاسترداد يجب أن يكون أكبر من صفر');
+  }
+  
+  if (refundData.order_id === 0) {
+    throw new Error('رقم الطلب غير صالح');
+  }
+  
+  // إنشاء معرف معاملة استرداد عشوائي
+  const refundTxnId = Math.floor(Math.random() * 10000000);
+  
+  // محاكاة أرصدة محفظة وبطاقة جديدة
+  const newWalletBal = 2580.5;
+  const newCardBal = 500.0;
+  
+  // إرجاع استجابة محاكاة
+  return {
+    status: 'approved',
+    refund_txn_id: refundTxnId,
+    new_wallet_bal: newWalletBal,
+    new_card_bal: newCardBal,
+    timestamp: new Date().toISOString()
+  };
+};
 
 /**
- * محاكاة معاملات الاسترداد
+ * إنشاء مجموعة من معاملات المحاكاة للاختبار
  */
-export async function mockRefundTransaction(refundData: RefundRequest): Promise<RefundResponse> {
-  return await sendMockRequest<RefundResponse>(
-    '/st-vpc/v1/refund',
-    'POST',
-    refundData
+export const generateMockTransactions = (count: number = 10): Transaction[] => {
+  const transactions: Transaction[] = [];
+  
+  for (let i = 0; i < count; i++) {
+    const isPayment = Math.random() > 0.3; // 70% احتمالية أن تكون عملية دفع
+    const status = Math.random() > 0.1 ? 'completed' : 'pending'; // 90% احتمالية أن تكون مكتملة
+    
+    const createdAt = new Date();
+    createdAt.setDate(createdAt.getDate() - Math.floor(Math.random() * 30)); // تاريخ عشوائي خلال الشهر الماضي
+    
+    transactions.push({
+      id: `txn_${i + 1}`,
+      transaction_id: `${isPayment ? 'P' : 'R'}-${100000 + i}`,
+      amount: Math.round(Math.random() * 1000 * 100) / 100, // مبلغ عشوائي حتى 1000 بدقة منزلتين عشريتين
+      type: isPayment ? 'payment' : 'refund',
+      status: status,
+      created_at: createdAt.toISOString()
+    });
+  }
+  
+  // ترتيب المعاملات حسب التاريخ (الأحدث أولاً)
+  return transactions.sort((a, b) => 
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
-}
+};

@@ -1,6 +1,7 @@
+
 import React, { Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 import Index from './pages/Index';
 import AuthPage from './pages/AuthPage';
@@ -20,7 +21,6 @@ import CookiePolicyPage from './pages/CookiePolicyPage';
 import WalletPage from './pages/WalletPage';
 import NotFound from './pages/NotFound';
 
-import i18n from './locales/i18n';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -33,9 +33,11 @@ function App() {
 }
 
 function AppContent() {
+  const { isRTL } = useLanguage();
+
   useEffect(() => {
-    document.body.dir = i18n.dir();
-  }, [i18n.language]);
+    document.body.dir = isRTL ? 'rtl' : 'ltr';
+  }, [isRTL]);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>

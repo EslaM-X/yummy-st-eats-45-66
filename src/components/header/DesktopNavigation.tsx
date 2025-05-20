@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -5,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const DesktopNavigation = () => {
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
   
   const navItems = [
     { name: t('navigation:home'), href: '/' },
@@ -15,8 +17,6 @@ const DesktopNavigation = () => {
     { name: t('navigation:team'), href: '/team' },
     { name: t('navigation:rewards'), href: '/rewards' },
   ];
-
-  const { isLoggedIn, logout } = useAuth();
 
   return (
     <nav className="hidden lg:flex items-center space-x-6 rtl:space-x-reverse">
@@ -29,9 +29,9 @@ const DesktopNavigation = () => {
           {item.name}
         </Link>
       ))}
-      {isLoggedIn ? (
+      {user ? (
         <button
-          onClick={logout}
+          onClick={() => signOut()}
           className="text-sm font-semibold text-red-600 hover:text-red-900 dark:text-red-300 dark:hover:text-red-500 transition-colors duration-200"
         >
           {t('navigation:logout')}

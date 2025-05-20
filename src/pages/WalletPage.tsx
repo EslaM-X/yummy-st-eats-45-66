@@ -41,8 +41,8 @@ const WalletPage: React.FC = () => {
     } catch (error) {
       console.error('خطأ في استرداد بيانات المعاملات:', error);
       toast({
-        title: 'تعذر تحميل البيانات',
-        description: 'حدث خطأ أثناء تحميل بيانات المعاملات. يرجى المحاولة مرة أخرى.',
+        title: t('wallet:errorLoadingTransactions'),
+        description: t('wallet:errorLoadingTransactionsDescription'),
         variant: 'destructive',
       });
     } finally {
@@ -77,6 +77,11 @@ const WalletPage: React.FC = () => {
     fetchTransactions(true);
   };
 
+  // التنقل إلى صفحة تعبئة الرصيد
+  const handleAddFunds = () => {
+    navigate('/add-funds');
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
@@ -86,9 +91,9 @@ const WalletPage: React.FC = () => {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">محفظتي</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('wallet:myWallet')}</h1>
                 <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
-                  إدارة المحفظة الرقمية وبطاقة ST الافتراضية
+                  {t('wallet:walletManagement')}
                 </p>
               </div>
               <div className="mt-4 md:mt-0 flex flex-wrap gap-2">
@@ -99,7 +104,7 @@ const WalletPage: React.FC = () => {
                   onClick={handleRefresh}
                 >
                   <RefreshCcw className="h-4 w-4 mr-2" />
-                  تحديث
+                  {t('wallet:refresh')}
                 </Button>
               </div>
             </div>
@@ -109,19 +114,20 @@ const WalletPage: React.FC = () => {
           <div className="mb-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <WalletBalance 
-                balance={3750.5} 
+                balance={3750.5}
                 currency="ST"
                 pendingAmount={125.25}
                 lastUpdate={new Date().toISOString()}
+                handleAddMoney={handleAddFunds}
               />
               
               <Card className="col-span-1 lg:col-span-2 flex items-center justify-between p-6 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
                 <div>
-                  <h3 className="text-lg font-medium">تحتاج لعمليات دفع أكثر؟</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mt-1">يمكنك تعبئة رصيدك أو طلب بطاقة إضافية</p>
+                  <h3 className="text-lg font-medium">{t('wallet:needMorePayments')}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">{t('wallet:addFundsDescription')}</p>
                 </div>
-                <Button onClick={() => navigate('/add-funds')}>
-                  تعبئة الرصيد
+                <Button onClick={handleAddFunds}>
+                  {t('wallet:addFunds')}
                   <ArrowRight className="ml-2 h-4 w-4 rtl:rotate-180" />
                 </Button>
               </Card>
@@ -133,17 +139,17 @@ const WalletPage: React.FC = () => {
             <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto mb-8">
               <TabsTrigger value="wallet" className="text-base py-3">
                 <Wallet className="h-4 w-4 mr-2" />
-                المحفظة
+                {t('wallet:wallet')}
               </TabsTrigger>
               <TabsTrigger value="card" className="text-base py-3">
                 <CreditCard className="h-4 w-4 mr-2" />
-                البطاقة الافتراضية
+                {t('wallet:virtualCard')}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="wallet" className="space-y-8 animate-in fade-in-50">
               <div>
-                <h2 className="text-xl font-semibold mb-4">آخر المعاملات</h2>
+                <h2 className="text-xl font-semibold mb-4">{t('wallet:recentTransactions')}</h2>
                 
                 {loading ? (
                   // عناصر تحميل
@@ -167,7 +173,7 @@ const WalletPage: React.FC = () => {
                 
                 <div className="mt-4 text-center">
                   <Button variant="outline" onClick={() => navigate('/transactions')}>
-                    عرض كل المعاملات
+                    {t('wallet:viewAllTransactions')}
                     <ArrowRight className="ml-2 h-4 w-4 rtl:rotate-180" />
                   </Button>
                 </div>
