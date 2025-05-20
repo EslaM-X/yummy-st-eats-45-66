@@ -57,6 +57,7 @@ function AppContent() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/team" element={<CoreTeamPage />} />
+        <Route path="/core-team" element={<Navigate to="/team" replace />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/rewards" element={<RewardsPage />} />
         <Route path="/admin" element={<AdminPage />} />

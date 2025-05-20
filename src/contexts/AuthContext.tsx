@@ -1,5 +1,6 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -11,6 +12,9 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   loading: boolean;
   isAdmin: boolean;
+  profile: any;
+  refreshProfile: () => Promise<void>;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +24,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -27,8 +33,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      checkUserRole(session?.user?.id);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+        checkUserRole(session.user.id);
+      }
       setLoading(false);
+      setIsLoading(false);
     });
 
     // Listen for auth changes
@@ -38,14 +48,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          fetchProfile(session.user.id);
           checkUserRole(session.user.id);
         }
         
         if (event === "SIGNED_OUT") {
           setIsAdmin(false);
+          setProfile(null);
         }
         
         setLoading(false);
+        setIsLoading(false);
       }
     );
 
@@ -53,6 +66,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       subscription.unsubscribe();
     };
   }, []);
+
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) throw error;
+      
+      setProfile(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  const refreshProfile = async () => {
+    if (!user) return;
+    await fetchProfile(user.id);
+  };
 
   const checkUserRole = async (userId: string | undefined) => {
     if (!userId) return;
@@ -141,6 +175,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         signOut,
         loading,
         isAdmin,
+        profile,
+        refreshProfile,
+        isLoading,
       }}
     >
       {children}
