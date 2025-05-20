@@ -61,6 +61,134 @@ export class VirtualCardService {
   private static readonly API_KEY = process.env.ST_VPC_API_KEY || 'demo-api-key';
   
   /**
+   * Check if a card number is valid
+   */
+  public static isCardNumberValid(cardNumber: string): boolean {
+    // Basic validation: check if it's 16 digits (spaces allowed)
+    const sanitizedNumber = cardNumber.replace(/\s/g, '');
+    if (sanitizedNumber.length !== 16) {
+      return false;
+    }
+    
+    // Check if digits only
+    if (!/^\d+$/.test(sanitizedNumber)) {
+      return false;
+    }
+    
+    // Mock Luhn algorithm check (in a real app, this would be more thorough)
+    return true;
+  }
+  
+  /**
+   * Check if CVV is valid
+   */
+  public static isCvvValid(cvv: string): boolean {
+    // Basic validation: check if it's 3-4 digits
+    return /^\d{3,4}$/.test(cvv);
+  }
+  
+  /**
+   * Create a payment transaction
+   */
+  public static async createPaymentTransaction(data: TransactionRequestData): Promise<any> {
+    try {
+      // Here we would normally call an API or insert into Supabase
+      const { data: transaction, error } = await supabase
+        .from('st_virtual_card_transactions')
+        .insert({
+          card_number: data.card_number,
+          cvv: data.cvv,
+          amount: data.amount,
+          order_id: data.order_id.toString(),
+          transaction_type: 'payment',
+          status: 'processing',
+          card_last_four: data.card_number.slice(-4),
+          transaction_id: `TXN-${Math.floor(Math.random() * 10000000)}`
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return transaction;
+    } catch (error) {
+      console.error('Error creating payment transaction:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get admin transactions
+   */
+  public static async getAdminTransactions(): Promise<any[]> {
+    try {
+      // In a real app, fetch from Supabase
+      const { data, error } = await supabase
+        .from('st_virtual_card_transactions')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Format data for display
+      return data.map((tx: any) => ({
+        id: tx.id,
+        order_id: tx.order_id,
+        transaction_id: tx.transaction_id,
+        user: 'مستخدم',
+        email: 'user@example.com',
+        type: tx.transaction_type,
+        amount: tx.amount,
+        card_last_four: tx.card_last_four,
+        status: tx.status,
+        created_at: tx.created_at,
+        formatted_date: new Date(tx.created_at).toLocaleDateString('ar-SA')
+      }));
+    } catch (error) {
+      console.error('Error fetching admin transactions:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Get user transactions
+   */
+  public static async getUserTransactions(): Promise<any[]> {
+    try {
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        return [];
+      }
+      
+      // Fetch transactions for the user
+      const { data, error } = await supabase
+        .from('st_virtual_card_transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Format transactions for display
+      return data.map((tx: any) => ({
+        id: tx.id,
+        date: new Date(tx.created_at).toLocaleDateString('ar-SA'),
+        type: tx.transaction_type,
+        amount: tx.amount,
+        status: tx.status,
+        orderId: tx.order_id,
+        cardLastFour: tx.card_last_four,
+        transactionId: tx.transaction_id
+      }));
+    } catch (error) {
+      console.error('Error fetching user transactions:', error);
+      return [];
+    }
+  }
+  
+  /**
    * Processes a card payment transaction
    */
   public static async processPayment(data: TransactionRequestData): Promise<TransactionResponse> {

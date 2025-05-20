@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,40 +42,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     }
   });
 
-  // دالة تنظيف حالة المصادقة
-  const cleanupAuthState = () => {
-    // إزالة توكنات المصادقة القياسية
-    localStorage.removeItem('supabase.auth.token');
-    
-    // إزالة جميع مفاتيح Supabase من localStorage
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        localStorage.removeItem(key);
-      }
-    });
-    
-    // إزالة من sessionStorage إذا كان قيد الاستخدام
-    Object.keys(sessionStorage || {}).forEach((key) => {
-      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-        sessionStorage.removeItem(key);
-      }
-    });
-  };
-
   // معالجة تسجيل حساب جديد
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
     setLoading(true);
     try {
-      // تنظيف حالة المصادقة أولاً
-      cleanupAuthState();
-      
-      // محاولة تسجيل الخروج الشامل
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        // استمر حتى لو فشلت هذه العملية
-      }
-      
       // تسجيل حساب جديد
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
@@ -93,23 +62,34 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       
       if (error) throw error;
       
+      // تسجيل نجاح إنشاء الحساب
       toast({
         title: "تم إنشاء الحساب بنجاح",
         description: "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب.",
       });
       
-      // التحقق مما إذا كان التأكيد عبر البريد الإلكتروني مطلوبًا
       if (data.user && !data.session) {
+        // الحساب يحتاج إلى تأكيد بالبريد الإلكتروني
         if (onSuccess) {
           onSuccess();
         }
       } else if (data.session) {
+        // تم تسجيل الدخول تلقائياً
         window.location.href = '/';
       }
     } catch (error: any) {
+      // معالجة الأخطاء
+      console.error("Registration error:", error);
+      let errorMessage = error.message || "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.";
+      
+      // رسائل خطأ أكثر تحديداً
+      if (error.message?.includes("unique constraint")) {
+        errorMessage = "البريد الإلكتروني أو اسم المستخدم مستخدم بالفعل";
+      }
+      
       toast({
         title: "فشل إنشاء الحساب",
-        description: error.message || "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

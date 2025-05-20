@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
@@ -129,7 +128,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
               id="refund-amount"
               type="number"
               value={refundAmount}
-              onChange={handleAmountChange}
+              onChange={(e) => setRefundAmount(parseFloat(e.target.value))}
               className="col-span-3"
               placeholder="أدخل مبلغ الاسترداد"
               min={0}
@@ -144,7 +143,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
             <Input
               id="reason"
               value={reason}
-              onChange={handleReasonChange}
+              onChange={(e) => setReason(e.target.value)}
               className="col-span-3"
               placeholder={t("refund.reasonPlaceholder")}
             />

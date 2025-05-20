@@ -27,6 +27,12 @@ const AdminLoginPage: React.FC = () => {
       setUsername(savedUsername);
       setRememberMe(true);
     }
+    
+    // Check if already authenticated
+    const isAuthenticated = localStorage.getItem('adminAuthenticated');
+    if (isAuthenticated === 'true') {
+      navigate('/admin');
+    }
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
