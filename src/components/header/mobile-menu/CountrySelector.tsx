@@ -71,10 +71,9 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
             <input 
               type="text" 
               placeholder={t('searchCountries') || 'بحث الدول...'}
-              className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm pl-9 pr-3 text-black bg-gray-50 dark:bg-gray-900"
+              className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm pl-9 pr-3 text-black dark:text-white bg-gray-50 dark:bg-gray-900"
               value={countrySearchQuery}
               onChange={(e) => setCountrySearchQuery(e.target.value)}
-              style={{ color: 'black' }}
             />
             <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>

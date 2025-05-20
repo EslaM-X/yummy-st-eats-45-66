@@ -72,14 +72,14 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
                 placeholder={t('searchCountries')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 pr-2 py-1.5 w-full border-gray-200 dark:border-gray-700 rounded-lg text-black dark:text-white bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm"
+                className="pl-8 pr-2 py-1.5 w-full border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm"
                 style={{ color: 'black' }}
               />
               <Search className="absolute top-2 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
             </div>
           </div>
           
-          <SelectItem value="all" className="font-medium text-sm cursor-pointer hover:bg-primary/10 rounded-md mb-1 py-2">
+          <SelectItem value="all" className="font-medium text-sm cursor-pointer hover:bg-primary/10 rounded-md mb-1 py-2 text-black dark:text-white">
             <span className="text-sm flex items-center gap-2">
               <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
                 <Globe className="h-4 w-4" />
@@ -92,7 +92,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
             <SelectItem 
               key={country.code} 
               value={country.code} 
-              className="cursor-pointer hover:bg-primary/10 rounded-md py-2"
+              className="cursor-pointer hover:bg-primary/10 rounded-md py-2 text-black dark:text-white"
             >
               <CountryDisplay country={country} showName={true} />
             </SelectItem>

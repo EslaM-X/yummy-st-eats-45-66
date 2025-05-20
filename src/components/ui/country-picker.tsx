@@ -67,7 +67,8 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
               placeholder={t('searchCountries')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-2 py-2 w-full border-gray-200 dark:border-gray-700 rounded-lg text-black dark:text-white bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary"
+              className="pl-8 pr-2 py-2 w-full border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900 focus:ring-1 focus:ring-primary text-sm"
+              style={{ color: 'black' }}
             />
             <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
@@ -78,7 +79,7 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
             <SelectItem
               key={country.code}
               value={country.code}
-              className="cursor-pointer hover:bg-primary/10 rounded-md transition-all duration-200 py-2"
+              className="cursor-pointer hover:bg-primary/10 rounded-md transition-all duration-200 py-2 text-black dark:text-white"
             >
               <CountryDisplay country={country} showName={true} />
             </SelectItem>

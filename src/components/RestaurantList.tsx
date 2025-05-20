@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Restaurant } from '@/types';
 import RestaurantCard from './RestaurantCard';
-import { Search, Sliders, ChevronDown, X } from 'lucide-react';
+import { Search, Sliders, ChevronDown, X, Globe } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -13,6 +13,9 @@ import {
   CardDescription 
 } from "@/components/ui/card";
 import { useLanguage } from '@/contexts/LanguageContext';
+import { countries } from '@/components/ui/country-picker';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CountryDisplay } from '@/components/ui/country-display';
 
 const mockRestaurants: Restaurant[] = [
   {
@@ -75,6 +78,8 @@ const RestaurantList: React.FC = () => {
   const [showNewOnly, setShowNewOnly] = useState(false);
   const [showDiscountOnly, setShowDiscountOnly] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
+  const [countryFilter, setCountryFilter] = useState<string | undefined>(undefined);
+  const [searchCountryQuery, setSearchCountryQuery] = useState('');
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(mockRestaurants);
   
   // Get unique cuisines for filter
@@ -82,10 +87,22 @@ const RestaurantList: React.FC = () => {
     .flatMap(restaurant => restaurant.cuisine.split(', ').map(c => c.trim()))
     .filter((cuisine, index, self) => self.indexOf(cuisine) === index && cuisine !== '');
   
+  // Filter countries based on search query
+  const filteredCountries = searchCountryQuery.trim() === ''
+    ? countries
+    : countries.filter(country => {
+        const query = searchCountryQuery.toLowerCase();
+        return (
+          country.name.toLowerCase().includes(query) ||
+          country.nameAr.toLowerCase().includes(query) ||
+          country.code.toLowerCase().includes(query)
+        );
+      });
+  
   // Apply filters when any filter changes
   useEffect(() => {
     let filtered = mockRestaurants.filter(restaurant => {
-      const nameForSearch = restaurant.name; // Assuming name is always available and could be in Arabic or English
+      const nameForSearch = restaurant.name;
       const cuisineForSearch = restaurant.cuisine;
       const descriptionForSearch = restaurant.description || "";
 
@@ -99,8 +116,10 @@ const RestaurantList: React.FC = () => {
       const matchesRating = restaurant.rating >= minRating;
       const matchesNew = !showNewOnly || restaurant.isNew === true;
       const matchesDiscount = !showDiscountOnly || restaurant.discount !== undefined;
+      // In a real application, restaurants would have country data. For now, we'll assume all match
+      const matchesCountry = !countryFilter || true; 
       
-      return matchesSearch && matchesCuisine && matchesRating && matchesNew && matchesDiscount;
+      return matchesSearch && matchesCuisine && matchesRating && matchesNew && matchesDiscount && matchesCountry;
     });
     
     // Sort the restaurants
@@ -109,7 +128,6 @@ const RestaurantList: React.FC = () => {
         filtered = filtered.sort((a, b) => b.rating - a.rating);
         break;
       case 'name':
-        // localeCompare handles sorting for different languages appropriately
         filtered = filtered.sort((a, b) => a.name.localeCompare(b.name, isRTL ? 'ar' : 'en'));
         break;
       case 'deliveryTime':
@@ -127,7 +145,7 @@ const RestaurantList: React.FC = () => {
     }
     
     setFilteredRestaurants(filtered);
-  }, [searchTerm, cuisineFilter, minRating, showNewOnly, showDiscountOnly, sortBy, isRTL]);
+  }, [searchTerm, cuisineFilter, minRating, showNewOnly, showDiscountOnly, sortBy, isRTL, countryFilter]);
   
   const resetFilters = () => {
     setSearchTerm('');
@@ -136,6 +154,7 @@ const RestaurantList: React.FC = () => {
     setShowNewOnly(false);
     setShowDiscountOnly(false);
     setSortBy('recommended');
+    setCountryFilter(undefined);
   };
 
   const ratingDisplayValue = minRating > 0 ? `${minRating}+` : t('ratingFilterAll');
@@ -168,7 +187,7 @@ const RestaurantList: React.FC = () => {
                 <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? 'transform rotate-180' : ''}`} />
               </Button>
               
-              {(searchTerm || cuisineFilter || minRating > 0 || showNewOnly || showDiscountOnly || sortBy !== 'recommended') && (
+              {(searchTerm || cuisineFilter || minRating > 0 || showNewOnly || showDiscountOnly || sortBy !== 'recommended' || countryFilter) && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -182,7 +201,7 @@ const RestaurantList: React.FC = () => {
             </div>
             
             {showFilters && (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 border-t pt-4 border-gray-200 dark:border-gray-700">
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6 border-t pt-4 border-gray-200 dark:border-gray-700">
                 <div>
                   <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">{t('cuisineFilterLabel')}</h3>
                   <select
@@ -226,7 +245,54 @@ const RestaurantList: React.FC = () => {
                   </select>
                 </div>
                 
-                <div className={`flex items-center md:col-span-3 ${isRTL ? 'space-x-6 space-x-reverse' : 'space-x-6'}`}>
+                <div>
+                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">{t('countryFilterLabel') || 'تصفية حسب الدولة'}</h3>
+                  <Select
+                    value={countryFilter || 'all'}
+                    onValueChange={(value) => setCountryFilter(value === 'all' ? undefined : value)}
+                  >
+                    <SelectTrigger className="w-full bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
+                      <SelectValue>
+                        {countryFilter ? (
+                          <CountryDisplay
+                            country={countries.find(c => c.code === countryFilter)}
+                            showName={true}
+                          />
+                        ) : (
+                          <span className="flex items-center gap-2">
+                            <Globe className="h-4 w-4" />
+                            <span>{t('allCountriesOption') || 'كل الدول'}</span>
+                          </span>
+                        )}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px] overflow-y-auto bg-white dark:bg-gray-800">
+                      <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 p-2">
+                        <Input
+                          placeholder={t('searchCountries')}
+                          value={searchCountryQuery}
+                          onChange={(e) => setSearchCountryQuery(e.target.value)}
+                          className="text-black dark:text-white"
+                        />
+                      </div>
+                      
+                      <SelectItem value="all" className="text-black dark:text-white">
+                        <span className="flex items-center gap-2">
+                          <Globe className="h-4 w-4" />
+                          <span>{t('allCountriesOption') || 'كل الدول'}</span>
+                        </span>
+                      </SelectItem>
+                      
+                      {filteredCountries.map(country => (
+                        <SelectItem key={country.code} value={country.code} className="text-black dark:text-white">
+                          <CountryDisplay country={country} showName={true} />
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className={`flex items-center md:col-span-4 ${isRTL ? 'space-x-6 space-x-reverse' : 'space-x-6'}`}>
                   <label className={`flex items-center cursor-pointer ${isRTL ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
                     <input 
                       type="checkbox" 

@@ -5,13 +5,6 @@ import { Search, Globe } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-data';
 import { CountryDisplay } from '@/components/ui/country-display';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface CountryDropdownProps {
@@ -75,7 +68,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
             <input 
               type="text" 
               placeholder={t('searchCountries') || 'بحث الدول...'}
-              className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 pl-9 pr-3 text-sm text-black bg-white/80 dark:bg-gray-900 focus:ring-1 focus:ring-primary shadow-inner"
+              className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 pl-9 pr-3 text-sm bg-white/80 dark:bg-gray-900 focus:ring-1 focus:ring-primary shadow-inner text-black dark:text-white"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -85,7 +78,6 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
                   setShowFavorites(true);
                 }
               }}
-              style={{ color: 'black' }}
             />
             <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
@@ -102,7 +94,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
                   <Button
                     key={country.code}
                     variant="ghost"
-                    className={`flex flex-col items-center justify-center h-16 rounded-lg p-1 
+                    className={`flex flex-col items-center justify-center h-16 rounded-lg p-1 text-black dark:text-white
                       ${selectedCountry === country.code ? 
                         'bg-primary/10 ring-1 ring-primary' : 'hover:bg-primary/5'}`}
                     onClick={() => handleCountryChange(country.code)}
@@ -114,7 +106,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
                   </Button>
                 ))}
               </div>
-              <DropdownMenuSeparator className="my-3" />
+              <div className="my-3 h-px bg-gray-200 dark:bg-gray-700"></div>
             </div>
           )}
           
@@ -124,7 +116,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
                 <Button
                   key={country.code}
                   variant="ghost"
-                  className={`justify-start cursor-pointer h-10 px-3 hover:bg-primary/10 rounded-lg transition-all duration-200
+                  className={`justify-start cursor-pointer h-10 px-3 hover:bg-primary/10 rounded-lg transition-all duration-200 text-black dark:text-white
                     ${selectedCountry === country.code ? 'bg-primary/15' : ''}`}
                   onClick={() => handleCountryChange(country.code)}
                 >
