@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { ChefHat } from "lucide-react";
+import { AuthButtons } from '../auth/AuthButtons';
 
 const DesktopNavigation = () => {
   const { t } = useLanguage();
@@ -38,6 +39,9 @@ const DesktopNavigation = () => {
           <span>{t('addFood')}</span>
         </Button>
       </Link>
+      
+      {/* زر تسجيل الدخول */}
+      <AuthButtons />
     </nav>
   );
 };

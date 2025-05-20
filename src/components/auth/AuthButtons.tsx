@@ -21,7 +21,7 @@ export const AuthButtons: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSignInClick = () => {
-    navigate('/auth');
+    navigate('/login');
   };
 
   if (isLoading) {

@@ -1,6 +1,6 @@
 
 import React, { Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { Toaster } from '@/components/ui/toaster';
@@ -48,6 +48,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<AuthPage />} />
+        <Route path="/auth" element={<Navigate to="/login" replace />} />
         <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
         <Route path="/restaurants" element={<RestaurantsPage />} />
         <Route path="/add-food" element={<AddFoodPage />} />

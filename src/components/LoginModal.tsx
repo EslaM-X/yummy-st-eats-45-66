@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { useNavigate } from 'react-router-dom';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -24,28 +25,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication (would connect to backend in real implementation)
-    setTimeout(() => {
-      setIsLoading(false);
-      if (isSignUp) {
-        toast({
-          title: "تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول",
-          variant: "default",
-        });
-        setIsSignUp(false);
-      } else {
-        toast({
-          title: "تم تسجيل الدخول بنجاح",
-          variant: "default",
-        });
-        onClose();
-      }
-    }, 1500);
+    // Redirect to the full authentication page instead
+    navigate('/login');
+    onClose();
   };
 
   return (
@@ -91,11 +79,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           </div>
           <DialogFooter className="flex flex-col gap-2 sm:gap-0">
             <Button 
-              type="submit" 
+              type="button" 
               className="w-full bg-yellow-700 hover:bg-yellow-800 text-white"
               disabled={isLoading}
+              onClick={() => navigate('/login')}
             >
-              {isLoading ? 'جاري التحميل...' : isSignUp ? 'إنشاء حساب' : 'تسجيل الدخول'}
+              {isSignUp ? 'إنشاء حساب' : 'تسجيل الدخول'}
             </Button>
             <div className="text-center mt-3">
               <button
