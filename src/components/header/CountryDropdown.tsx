@@ -53,6 +53,15 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
     }
   }, [isOpen]);
 
+  // Handle country selection with page reload
+  const handleCountrySelect = (code: string) => {
+    handleCountryChange(code);
+    // Add a small delay before reloading to ensure country is saved to localStorage
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+  };
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -122,7 +131,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
                     className={`flex flex-col items-center justify-center h-16 rounded-lg p-1 text-black dark:text-white
                       ${selectedCountry === country.code ? 
                         'bg-primary/10 ring-1 ring-primary' : 'hover:bg-primary/5'}`}
-                    onClick={() => handleCountryChange(country.code)}
+                    onClick={() => handleCountrySelect(country.code)}
                   >
                     <span className="text-2xl mb-1">{country.flagEmoji}</span>
                     <span className="text-xs truncate w-full text-center">
@@ -144,7 +153,7 @@ const CountryDropdown: React.FC<CountryDropdownProps> = ({
                     variant="ghost"
                     className={`justify-start cursor-pointer h-10 px-3 hover:bg-primary/10 rounded-lg transition-all duration-200 text-black dark:text-white
                       ${selectedCountry === country.code ? 'bg-primary/15' : ''}`}
-                    onClick={() => handleCountryChange(country.code)}
+                    onClick={() => handleCountrySelect(country.code)}
                   >
                     <CountryDisplay country={country} showName={true} />
                   </Button>

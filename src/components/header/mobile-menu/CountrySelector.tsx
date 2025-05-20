@@ -65,6 +65,15 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
     setCountrySearchQuery(e.target.value);
   };
 
+  // Handle country selection with page reload
+  const handleCountrySelect = (code: string) => {
+    handleCountryChange(code);
+    // Add a small delay before reloading to ensure country is saved to localStorage
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+  };
+
   return (
     <div className="px-3 py-2 mb-2">
       {/* Quick access favorites */}
@@ -78,7 +87,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
               ${selectedCountry === country.code ? 
                 'bg-primary/20 ring-2 ring-primary shadow-md scale-110' : 
                 'hover:bg-primary/10 hover:scale-105'}`}
-            onClick={() => handleCountryChange(country.code)}
+            onClick={() => handleCountrySelect(country.code)}
           >
             <span className="text-lg relative">
               {country.flagEmoji}
@@ -137,7 +146,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
                       ${selectedCountry === country.code ? 
                         'ring-2 ring-primary shadow-md scale-110 bg-primary/10' : 
                         'hover:bg-primary/5 hover:scale-105'}`}
-                    onClick={() => handleCountryChange(country.code)}
+                    onClick={() => handleCountrySelect(country.code)}
                     title={language === 'ar' ? country.nameAr : country.name}
                   >
                     <span className="text-lg">{country.flagEmoji}</span>

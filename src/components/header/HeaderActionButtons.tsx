@@ -63,37 +63,26 @@ export function HeaderActionButtons() {
   // Navigate to cart
   const navigateToCart = () => navigate('/cart');
 
-  // Change selected country with improved UI feedback
+  // Change selected country with page reload
   const handleCountryChange = (code: string) => {
     if (code === selectedCountry) return; // Skip if same country
     
     // Apply transition effect to the whole page
     document.body.classList.add('transition-opacity', 'duration-300', 'opacity-50');
     
-    setTimeout(() => {
-      setSelectedCountry(code);
-      
-      // Display toast notification for country change
-      const country = countries.find(c => c.code === code);
-      toast({
-        title: t('countryChanged') || 'تم تغيير الدولة',
-        description: language === 'ar' ? `تم التغيير إلى ${country?.nameAr}` : `Changed to ${country?.name}`,
-        duration: 1500
-      });
-      
-      // Dispatch event to notify components about country change
-      window.dispatchEvent(new CustomEvent('country-changed', { detail: code }));
-      
-      // If not on homepage, redirect to homepage to show filtered content
-      if (location.pathname !== '/') {
-        navigate('/');
-      }
-      
-      // Remove transition effect
-      setTimeout(() => {
-        document.body.classList.remove('opacity-50');
-      }, 100);
-    }, 200);
+    // Change the country in state/localStorage
+    setSelectedCountry(code);
+    
+    // Display toast notification for country change
+    const country = countries.find(c => c.code === code);
+    toast({
+      title: t('countryChanged') || 'تم تغيير الدولة',
+      description: language === 'ar' ? `تم التغيير إلى ${country?.nameAr}` : `Changed to ${country?.name}`,
+      duration: 1500
+    });
+    
+    // Immediate page reload to refresh content based on new country
+    window.location.reload();
   };
 
   useEffect(() => {

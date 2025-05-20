@@ -43,6 +43,12 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
       onCountryChange(undefined);
     } else {
       onCountryChange(value);
+      // Add reload functionality for product filters too
+      if (value !== selectedCountry) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
     }
   };
 
