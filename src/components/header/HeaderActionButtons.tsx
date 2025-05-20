@@ -42,7 +42,7 @@ export function HeaderActionButtons() {
   useEffect(() => {
     const root = document.documentElement;
     
-    // إضافة كل فئة على حدة بدلاً من سلسلة واحدة
+    // إضافة كل فئة على حدة بشكل صحيح
     root.classList.add('transition-all');
     root.classList.add('duration-300');
     root.classList.add('ease-in-out');
