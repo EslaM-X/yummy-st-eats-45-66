@@ -17,10 +17,12 @@ export const CountryDisplay: React.FC<CountryDisplayProps> = ({
   if (!country) return null;
   
   return (
-    <div className="flex items-center gap-1 sm:gap-2">
-      <span className="text-base sm:text-lg">{country.flagEmoji}</span>
+    <div className="flex items-center gap-2 w-full">
+      <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full overflow-hidden bg-gray-50 dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700">
+        <span className="text-lg">{country.flagEmoji}</span>
+      </div>
       {showName && (
-        <span className="truncate">
+        <span className="truncate font-medium">
           {language === 'ar' ? country.nameAr : country.name}
         </span>
       )}

@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Search, Flag } from "lucide-react";
+import { Search } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-picker';
+import { CountryDisplay } from '@/components/ui/country-display';
 
 interface CountrySelectorProps {
   selectedCountry: string;
@@ -19,7 +20,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   setCountryMenuOpen
 }) => {
   const { t, language } = useLanguage();
-  const [countrySearchQuery, setCountrySearchQuery] = React.useState('');
+  const [countrySearchQuery, setCountrySearchQuery] = useState('');
 
   const filteredCountries = countrySearchQuery.trim() === ''
     ? countries
@@ -32,57 +33,75 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
         );
       });
 
+  const favoriteCountries = countries.slice(0, 6);
+
   return (
     <div className="px-3 py-2 mb-2">
-      <div className="flex justify-center flex-wrap">
-        {countries.slice(0, 6).map((country) => (
+      {/* Quick access favorites */}
+      <div className="flex justify-center flex-wrap mb-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl p-2">
+        {favoriteCountries.map((country) => (
           <Button
             key={country.code}
             variant="ghost"
             size="icon"
-            className={`rounded-full w-7 h-7 mx-0.5 ${selectedCountry === country.code ? 'bg-primary/20 ring-2 ring-primary' : ''}`}
+            className={`rounded-full w-9 h-9 mx-1 transition-all duration-300 
+              ${selectedCountry === country.code ? 
+                'bg-primary/20 ring-2 ring-primary shadow-md scale-110' : 
+                'hover:bg-primary/10 hover:scale-105'}`}
             onClick={() => handleCountryChange(country.code)}
           >
-            <span className="text-base">{country.flagEmoji}</span>
+            <span className="text-lg">{country.flagEmoji}</span>
           </Button>
         ))}
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full w-7 h-7 mx-0.5"
+          className={`rounded-full w-9 h-9 mx-1 transition-all duration-300 
+            ${countryMenuOpen ? 'bg-primary/20' : 'hover:bg-primary/10'}`}
           onClick={() => setCountryMenuOpen(!countryMenuOpen)}
         >
-          <Flag className="h-3.5 w-3.5" />
+          <Search className="h-4 w-4" />
         </Button>
       </div>
       
       {/* Detailed country list */}
       {countryMenuOpen && (
-        <div className="mt-2 animate-fade-in">
-          <div className="relative mb-2">
+        <div className="mt-2 animate-fade-in bg-white dark:bg-gray-800 rounded-xl p-3 shadow-inner">
+          <div className="relative mb-3">
             <input 
               type="text" 
               placeholder={t('searchCountries') || 'بحث الدول...'}
-              className="w-full p-1.5 rounded-md border border-input text-xs pr-6 text-black dark:text-white"
+              className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm pl-9 pr-3 text-black bg-gray-50 dark:bg-gray-900"
               value={countrySearchQuery}
               onChange={(e) => setCountrySearchQuery(e.target.value)}
+              style={{ color: 'black' }}
             />
-            <Search className="absolute top-1.5 right-2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
-          <div className="grid grid-cols-5 gap-1 max-h-[150px] overflow-y-auto">
-            {filteredCountries.map((country) => (
-              <Button
-                key={country.code}
-                variant="ghost"
-                size="icon"
-                className={`rounded-full w-7 h-7 ${selectedCountry === country.code ? 'bg-primary/20 ring-2 ring-primary' : ''}`}
-                onClick={() => handleCountryChange(country.code)}
-                title={language === 'ar' ? country.nameAr : country.name}
-              >
-                <span className="text-base">{country.flagEmoji}</span>
-              </Button>
-            ))}
-          </div>
+          
+          {filteredCountries.length > 0 ? (
+            <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5 max-h-[200px] overflow-y-auto p-1">
+              {filteredCountries.map((country) => (
+                <Button
+                  key={country.code}
+                  variant="ghost"
+                  size="icon"
+                  className={`rounded-full w-10 h-10 bg-gray-50 dark:bg-gray-800 
+                    ${selectedCountry === country.code ? 
+                      'ring-2 ring-primary shadow-md scale-110 bg-primary/10' : 
+                      'hover:bg-primary/5 hover:scale-105'}`}
+                  onClick={() => handleCountryChange(country.code)}
+                  title={language === 'ar' ? country.nameAr : country.name}
+                >
+                  <span className="text-lg">{country.flagEmoji}</span>
+                </Button>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+              {t('noCountriesFound') || 'لا توجد دول مطابقة'}
+            </div>
+          )}
         </div>
       )}
     </div>
