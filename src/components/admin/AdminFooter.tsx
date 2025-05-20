@@ -19,7 +19,7 @@ const AdminFooter: React.FC = () => {
           <Link to="/terms-conditions" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
             {t('termsConditions')}
           </Link>
-          <Link to="/core-team" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
+          <Link to="/team" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
             {t('coreTeam')}
           </Link>
           <Link to="/" className="text-sm text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">

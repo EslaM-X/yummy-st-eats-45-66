@@ -47,8 +47,7 @@ const Header: React.FC = () => {
             { title: t('home'), path: "/" },
             { title: t('restaurants'), path: "/restaurants" },
             { title: t('products'), path: "/products" },
-            { title: t('rewards'), path: "/rewards" },
-            { title: t('team'), path: "/team" }
+            { title: t('rewards'), path: "/rewards" }
           ]}
           isActive={(path) => location.pathname === path}
           onItemClick={() => setMobileMenuOpen(false)}
