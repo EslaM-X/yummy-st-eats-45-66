@@ -7,7 +7,7 @@ import { isCardNumberValid, isCvvValid } from './card/cardValidation';
 import { mockPaymentTransaction, mockRefundTransaction } from './card/mockService';
 import { sendPaymentRequest, sendRefundRequest } from './card/apiService';
 import { savePaymentTransaction, saveRefundTransaction, getUserTransactions } from './card/databaseService';
-import { PaymentRequest, RefundRequest, PaymentResponse, RefundResponse } from './card/apiTypes';
+import { PaymentRequest, RefundRequest, PaymentResponse, RefundResponse, Transaction } from './card/apiTypes';
 
 // رابط API الافتراضي
 const API_BASE_URL = 'https://api.salla-shop.com';
@@ -22,15 +22,12 @@ export class VirtualCardService {
   static isCardNumberValid = isCardNumberValid;
   static isCvvValid = isCvvValid;
 
+  private static isDevelopment = import.meta.env.DEV || !API_KEY || API_KEY === 'demo-api-key';
+
   /**
-   * إنشاء معاملة دفع جديدة وحفظها في قاعدة البيانات
+   * التحقق من صلاحية بيانات الدفع قبل إرسالها
    */
-  public static async createPaymentTransaction(
-    paymentData: PaymentRequest
-  ): Promise<PaymentResponse> {
-    console.log('إنشاء معاملة دفع جديدة:', paymentData);
-    
-    // التحقق من صحة البطاقة قبل إرسال الطلب
+  private static validatePaymentData(paymentData: PaymentRequest): void {
     if (!this.isCardNumberValid(paymentData.card_number)) {
       throw new Error('رقم البطاقة غير صالح');
     }
@@ -39,18 +36,65 @@ export class VirtualCardService {
       throw new Error('رمز CVV غير صالح');
     }
     
-    // في وضع التطوير، نستخدم بيانات محاكاة
-    const isDevelopment = import.meta.env.DEV || !API_KEY || API_KEY === 'demo-api-key';
+    if (!paymentData.amount || paymentData.amount <= 0) {
+      throw new Error('المبلغ يجب أن يكون أكبر من صفر');
+    }
+
+    if (!paymentData.order_id || paymentData.order_id <= 0) {
+      throw new Error('رقم الطلب غير صالح');
+    }
+  }
+
+  /**
+   * التحقق من صلاحية بيانات الاسترداد قبل إرسالها
+   */
+  private static validateRefundData(refundData: RefundRequest): void {
+    if (!refundData.order_id || refundData.order_id <= 0) {
+      throw new Error('رقم الطلب غير صالح');
+    }
     
-    // إرسال طلب الدفع إلى API أو استخدام المحاكاة
-    const response = isDevelopment 
-      ? await mockPaymentTransaction(paymentData)
-      : await sendPaymentRequest(paymentData);
-    
-    // حفظ المعاملة في قاعدة البيانات
-    await savePaymentTransaction(response, paymentData);
-    
-    return response;
+    if (!refundData.amount || refundData.amount <= 0) {
+      throw new Error('المبلغ المسترد يجب أن يكون أكبر من صفر');
+    }
+  }
+
+  /**
+   * إنشاء معاملة دفع جديدة وحفظها في قاعدة البيانات
+   */
+  public static async createPaymentTransaction(
+    paymentData: PaymentRequest
+  ): Promise<PaymentResponse> {
+    try {
+      console.log('إنشاء معاملة دفع جديدة:', paymentData);
+      
+      // التحقق من صحة البيانات
+      this.validatePaymentData(paymentData);
+      
+      // إرسال طلب الدفع إلى API أو استخدام المحاكاة
+      const response = this.isDevelopment 
+        ? await mockPaymentTransaction(paymentData)
+        : await sendPaymentRequest(paymentData);
+      
+      // حفظ المعاملة في قاعدة البيانات (عملية غير متزامنة في الخلفية)
+      savePaymentTransaction(response, paymentData)
+        .catch(err => console.error('خطأ في حفظ معاملة الدفع:', err));
+      
+      return response;
+    } catch (error) {
+      console.error('خطأ في معالجة معاملة الدفع:', error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'حدث خطأ غير متوقع أثناء معالجة طلب الدفع';
+      
+      toast({
+        title: 'خطأ في معاملة الدفع',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+      
+      throw error;
+    }
   }
 
   /**
@@ -59,38 +103,97 @@ export class VirtualCardService {
   public static async createRefundTransaction(
     refundData: RefundRequest
   ): Promise<RefundResponse> {
-    console.log('إنشاء معاملة استرداد:', refundData);
-    
-    // التحقق من صحة بيانات الاسترداد
-    if (!refundData.order_id || refundData.order_id <= 0) {
-      throw new Error('رقم الطلب غير صالح');
+    try {
+      console.log('إنشاء معاملة استرداد:', refundData);
+      
+      // التحقق من صحة بيانات الاسترداد
+      this.validateRefundData(refundData);
+      
+      // إرسال طلب الاسترداد إلى API أو استخدام المحاكاة
+      const response = this.isDevelopment
+        ? await mockRefundTransaction(refundData)
+        : await sendRefundRequest(refundData);
+      
+      // حفظ معاملة الاسترداد في قاعدة البيانات (عملية غير متزامنة في الخلفية)
+      saveRefundTransaction(response, refundData)
+        .catch(err => console.error('خطأ في حفظ معاملة الاسترداد:', err));
+      
+      return response;
+    } catch (error) {
+      console.error('خطأ في معالجة معاملة الاسترداد:', error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'حدث خطأ غير متوقع أثناء معالجة طلب الاسترداد';
+      
+      toast({
+        title: 'خطأ في معاملة الاسترداد',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+      
+      throw error;
     }
-    
-    if (!refundData.amount || refundData.amount <= 0) {
-      throw new Error('المبلغ المسترد يجب أن يكون أكبر من صفر');
-    }
-    
-    // في وضع التطوير، نستخدم بيانات محاكاة
-    const isDevelopment = import.meta.env.DEV || !API_KEY || API_KEY === 'demo-api-key';
-    
-    // إرسال طلب الاسترداد إلى API أو استخدام المحاكاة
-    const response = isDevelopment
-      ? await mockRefundTransaction(refundData)
-      : await sendRefundRequest(refundData);
-    
-    // حفظ المعاملة في قاعدة البيانات
-    await saveRefundTransaction(response, refundData);
-    
-    return response;
   }
 
   /**
-   * استرجاع معاملات الدفع والاسترداد للمستخدم الحالي
+   * استرجاع معاملات المستخدم مع التخزين المؤقت للبيانات
    */
-  public static async getUserTransactions(limit: number = 10) {
-    return getUserTransactions(limit);
+  private static transactionsCache: Transaction[] | null = null;
+  private static lastCacheTime: number = 0;
+  private static cacheDuration = 60000; // مدة صلاحية التخزين المؤقت بالمللي ثانية (1 دقيقة)
+
+  /**
+   * استرجاع معاملات الدفع والاسترداد للمستخدم الحالي
+   * مع دعم التخزين المؤقت لتحسين الأداء
+   */
+  public static async getUserTransactions(limit: number = 10, forceRefresh: boolean = false): Promise<Transaction[]> {
+    const currentTime = Date.now();
+    const isCacheValid = !forceRefresh && 
+                         this.transactionsCache && 
+                         (currentTime - this.lastCacheTime < this.cacheDuration);
+    
+    // إذا كانت البيانات المخزنة مؤقتًا صالحة، استخدمها
+    if (isCacheValid) {
+      console.log('استخدام البيانات المخزنة مؤقتًا للمعاملات');
+      return this.transactionsCache;
+    }
+    
+    try {
+      // استرجاع بيانات جديدة
+      const transactions = await getUserTransactions(limit);
+      
+      // تحديث التخزين المؤقت
+      this.transactionsCache = transactions;
+      this.lastCacheTime = currentTime;
+      
+      return transactions;
+    } catch (error) {
+      console.error('خطأ في استرجاع معاملات المستخدم:', error);
+      
+      // في حالة الخطأ، إرجاع البيانات المخزنة مؤقتًا إذا كانت متوفرة
+      if (this.transactionsCache) {
+        toast({
+          title: 'تعذر تحديث البيانات',
+          description: 'نعرض لك البيانات السابقة. يرجى المحاولة مرة أخرى لاحقًا.',
+          variant: 'default',
+        });
+        return this.transactionsCache;
+      }
+      
+      // إذا لم تكن هناك بيانات مخزنة مؤقتًا، إعادة إلقاء الخطأ
+      throw error;
+    }
+  }
+
+  /**
+   * مسح التخزين المؤقت للمعاملات
+   */
+  public static clearTransactionsCache(): void {
+    this.transactionsCache = null;
+    this.lastCacheTime = 0;
   }
 }
 
 // تصدير الأنواع المطلوبة
-export type { PaymentRequest, RefundRequest, PaymentResponse, RefundResponse };
+export type { PaymentRequest, RefundRequest, PaymentResponse, RefundResponse, Transaction };

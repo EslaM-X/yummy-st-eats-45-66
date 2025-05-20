@@ -3,8 +3,18 @@
   "home": "Home",
   "restaurants": "Restaurants",
   "products": "Products",
-  "rewards": "Rewards",
+  "addFood": "Add Food",
   "wallet": "Wallet",
-  "cart": "Cart",
-  "login": "Login"
+  "team": "Team",
+  "login": "Login",
+  "logout": "Logout",
+  "profile": "Profile",
+  "rewards": "Rewards",
+  "settings": "Settings",
+  "returnToHome": "Return to Home",
+  "orders": "Orders",
+  "admin": "Admin Panel",
+  "privacyPolicy": "Privacy Policy",
+  "termsConditions": "Terms & Conditions",
+  "cookiePolicy": "Cookie Policy"
 }

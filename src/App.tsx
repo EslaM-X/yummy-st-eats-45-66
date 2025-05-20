@@ -1,75 +1,65 @@
+import React, { Suspense, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { StrictMode } from "react";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import RestaurantsPage from "./pages/RestaurantsPage";
-import ProductsPage from "./pages/ProductsPage";
-import CartPage from "./pages/CartPage";
-import CheckoutPage from "./pages/CheckoutPage";
-import RewardsPage from "./pages/RewardsPage";
-import AddFoodPage from "./pages/AddFoodPage";
-import RegisterRestaurantPage from "./pages/RegisterRestaurantPage";
-import AdminPage from "./pages/AdminPage";
-import AdminLoginPage from "./pages/AdminLoginPage";
-import AuthPage from "./pages/AuthPage";
-import ProfilePage from "./pages/ProfilePage";
-import TermsConditionsPage from "./pages/TermsConditionsPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import CookiePolicyPage from "./pages/CookiePolicyPage";
-import CoreTeamPage from "./pages/CoreTeamPage";
-import { ThemeProvider } from "@/components/theme-provider";
-import { LanguageProvider } from "@/contexts/LanguageContext";
-import { CartProvider } from "@/contexts/CartContext";
-import { AuthProvider } from "@/contexts/AuthContext";
+import Index from './pages/Index';
+import AuthPage from './pages/AuthPage';
+import RegisterRestaurantPage from './pages/RegisterRestaurantPage';
+import RestaurantsPage from './pages/RestaurantsPage';
+import AddFoodPage from './pages/AddFoodPage';
+import ProductsPage from './pages/ProductsPage';
+import CheckoutPage from './pages/CheckoutPage';
+import CoreTeamPage from './pages/CoreTeamPage';
+import ProfilePage from './pages/ProfilePage';
+import RewardsPage from './pages/RewardsPage';
+import AdminPage from './pages/AdminPage';
+import AdminLoginPage from './pages/AdminLoginPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsConditionsPage from './pages/TermsConditionsPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
+import WalletPage from './pages/WalletPage';
+import NotFound from './pages/NotFound';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import i18n from './locales/i18n';
+import ScrollToTop from './components/ScrollToTop';
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="light" storageKey="st-eats-theme">
-      <LanguageProvider>
-        <AuthProvider>
-          <CartProvider>
-            <BrowserRouter>
-              <TooltipProvider>
-                <Toaster />
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/restaurants" element={<RestaurantsPage />} />
-                  <Route path="/products" element={<ProductsPage />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/rewards" element={<RewardsPage />} />
-                  <Route path="/add-food" element={<AddFoodPage />} />
-                  <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
-                  <Route path="/admin-login" element={<AdminLoginPage />} />
-                  <Route path="/admin" element={<AdminPage />} />
-                  <Route path="/auth" element={<AuthPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/terms-conditions" element={<TermsConditionsPage />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-                  <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-                  <Route path="/core-team" element={<CoreTeamPage />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </TooltipProvider>
-            </BrowserRouter>
-          </CartProvider>
-        </AuthProvider>
-      </LanguageProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <Router>
+      <ScrollToTop />
+      <AppContent />
+    </Router>
+  );
+}
+
+function AppContent() {
+  useEffect(() => {
+    document.body.dir = i18n.dir();
+  }, [i18n.language]);
+
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
+        <Route path="/restaurants" element={<RestaurantsPage />} />
+        <Route path="/add-food" element={<AddFoodPage />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/wallet" element={<WalletPage />} />
+        <Route path="/team" element={<CoreTeamPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/rewards" element={<RewardsPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+        <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
+  );
+}
 
 export default App;
