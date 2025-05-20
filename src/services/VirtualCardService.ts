@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 interface TransactionRequestData {
@@ -58,8 +57,6 @@ interface CardDetails {
 }
 
 export class VirtualCardService {
-  private static readonly API_KEY = process.env.ST_VPC_API_KEY || 'demo-api-key';
-  
   /**
    * Check if a card number is valid
    */
@@ -92,25 +89,27 @@ export class VirtualCardService {
    */
   public static async createPaymentTransaction(data: TransactionRequestData): Promise<any> {
     try {
-      // Here we would normally call an API or insert into Supabase
-      const { data: transaction, error } = await supabase
-        .from('st_virtual_card_transactions')
-        .insert({
+      const { data: session } = await supabase.auth.getSession();
+      
+      if (!session.session) {
+        throw new Error("User must be authenticated to process payment");
+      }
+      
+      const { data: result, error } = await supabase.functions.invoke("process-payment", {
+        body: {
           card_number: data.card_number,
           cvv: data.cvv,
           amount: data.amount,
-          order_id: data.order_id.toString(),
-          transaction_type: 'payment',
-          status: 'processing',
-          card_last_four: data.card_number.slice(-4),
-          transaction_id: `TXN-${Math.floor(Math.random() * 10000000)}`
-        })
-        .select()
-        .single();
+          order_id: data.order_id.toString()
+        }
+      });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Payment function error:", error);
+        throw new Error(error.message || "Failed to process payment");
+      }
       
-      return transaction;
+      return result;
     } catch (error) {
       console.error('Error creating payment transaction:', error);
       throw error;
@@ -189,32 +188,61 @@ export class VirtualCardService {
   }
   
   /**
+   * Get pending refund requests
+   */
+  public static async getPendingRefunds(status: string = 'pending'): Promise<any[]> {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      
+      if (!session.session) {
+        throw new Error("User must be authenticated to view refunds");
+      }
+      
+      const { data: result, error } = await supabase.functions.invoke("get-pending-refunds", {
+        query: { status }
+      });
+      
+      if (error) {
+        console.error("Get refunds function error:", error);
+        throw new Error(error.message || "Failed to retrieve refund requests");
+      }
+      
+      return result.data || [];
+    } catch (error) {
+      console.error('Error fetching pending refunds:', error);
+      return [];
+    }
+  }
+  
+  /**
    * Processes a card payment transaction
    */
   public static async processPayment(data: TransactionRequestData): Promise<TransactionResponse> {
     try {
-      // In a real application, this would make an API call to a payment gateway
-      // For demo purposes, we're simulating a successful response
+      const { data: session } = await supabase.auth.getSession();
       
-      // For future integration with Supabase Functions
-      // const { data: response, error } = await supabase.functions.invoke('st-payment', {
-      //   body: JSON.stringify(data)
-      // });
+      if (!session.session) {
+        throw new Error("User must be authenticated to process payment");
+      }
       
-      // if (error) throw new Error(error.message);
-      // return response;
+      const { data: result, error } = await supabase.functions.invoke("process-payment", {
+        body: {
+          card_number: data.card_number,
+          cvv: data.cvv,
+          amount: data.amount,
+          order_id: data.order_id.toString()
+        }
+      });
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (error) {
+        console.error("Payment function error:", error);
+        throw new Error(error.message || "Failed to process payment");
+      }
       
-      // Simulate successful transaction
-      const response: TransactionResponse = {
-        transaction_id: Math.floor(Math.random() * 1000) + 500,
-        status: 'frozen'  // Transactions start in frozen state until confirmed
+      return {
+        transaction_id: result.transaction_id,
+        status: result.status || 'frozen'
       };
-      
-      console.log('Payment processed:', response);
-      return response;
     } catch (error) {
       console.error('Payment processing error:', error);
       throw error;
@@ -226,34 +254,31 @@ export class VirtualCardService {
    */
   public static async processRefund(data: RefundRequestData): Promise<RefundResponse> {
     try {
-      // In a real application, this would make an API call to a payment gateway
-      // For demo purposes, we're simulating a successful response
+      const { data: session } = await supabase.auth.getSession();
       
-      // For future integration with Supabase Functions
-      // const { data: response, error } = await supabase.functions.invoke('st-refund', {
-      //   body: JSON.stringify({
-      //     order_id: data.orderId,
-      //     amount: data.amount,
-      //     reason: data.reason
-      //   })
-      // });
+      if (!session.session) {
+        throw new Error("User must be authenticated to process refund");
+      }
       
-      // if (error) throw new Error(error.message);
-      // return response;
+      const { data: result, error } = await supabase.functions.invoke("process-refund", {
+        body: {
+          order_id: data.orderId,
+          amount: data.amount,
+          reason: data.reason
+        }
+      });
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (error) {
+        console.error("Refund function error:", error);
+        throw new Error(error.message || "Failed to process refund");
+      }
       
-      // Simulate successful refund
-      const response: RefundResponse = {
-        status: 'success',
-        refund_txn_id: Math.floor(Math.random() * 1000) + 500,
-        new_wallet_bal: 1250.75 - data.amount,
-        new_card_bal: 75.50 + data.amount
+      return {
+        status: result.status || 'success',
+        refund_txn_id: result.refund_txn_id,
+        new_wallet_bal: result.new_wallet_bal || 0,
+        new_card_bal: result.new_card_bal || 0
       };
-      
-      console.log('Refund processed:', response);
-      return response;
     } catch (error) {
       console.error('Refund processing error:', error);
       throw error;
@@ -265,22 +290,42 @@ export class VirtualCardService {
    */
   public static async getTransactionStats(): Promise<TransactionStats> {
     try {
-      // In a real application, this would fetch data from an API or database
-      // For demo purposes, we're returning mock data
+      // Get payments data
+      const { data: payments, error: paymentsError } = await supabase
+        .from('st_virtual_card_transactions')
+        .select('amount')
+        .eq('transaction_type', 'payment');
+        
+      if (paymentsError) throw paymentsError;
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Get refunds data
+      const { data: refunds, error: refundsError } = await supabase
+        .from('refund_transactions')
+        .select('amount');
+        
+      if (refundsError) throw refundsError;
+      
+      // Calculate totals
+      const total_payments = payments.reduce((sum, tx) => sum + Number(tx.amount), 0);
+      const total_refunds = refunds.reduce((sum, tx) => sum + Number(tx.amount), 0);
       
       return {
-        total_payments: 14587.50,
-        total_refunds: 1243.25,
-        payment_count: 167,
-        refund_count: 23,
-        net_revenue: 13344.25
+        total_payments,
+        total_refunds,
+        payment_count: payments.length,
+        refund_count: refunds.length,
+        net_revenue: total_payments - total_refunds
       };
     } catch (error) {
       console.error('Error fetching transaction stats:', error);
-      throw error;
+      // Return fallback data if there's an error
+      return {
+        total_payments: 0,
+        total_refunds: 0,
+        payment_count: 0,
+        refund_count: 0,
+        net_revenue: 0
+      };
     }
   }
   
@@ -289,97 +334,86 @@ export class VirtualCardService {
    */
   public static async getRecentTransactions(limit: number = 10): Promise<TransactionRecord[]> {
     try {
-      // In a real application, this would fetch data from an API or database
-      // For demo purposes, we're returning mock data
+      // Get recent payment transactions
+      const { data: payments, error: paymentsError } = await supabase
+        .from('st_virtual_card_transactions')
+        .select(`
+          id,
+          created_at,
+          transaction_type,
+          amount,
+          status,
+          order_id,
+          card_last_four,
+          transaction_id,
+          profiles:user_id (
+            full_name,
+            username
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+        
+      if (paymentsError) throw paymentsError;
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      // Get recent refund transactions
+      const { data: refunds, error: refundsError } = await supabase
+        .from('refund_transactions')
+        .select(`
+          id,
+          created_at,
+          amount,
+          status,
+          order_id,
+          transaction_id,
+          profiles:user_id (
+            full_name,
+            username
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+        
+      if (refundsError) throw refundsError;
       
-      const transactions: TransactionRecord[] = [
-        {
-          id: 4231,
-          date: '2025-05-19T14:23:45',
-          type: 'payment',
-          amount: 156.50,
-          status: 'completed',
-          orderId: 'ORD-9021',
-          cardNumber: '•••• •••• •••• 3841',
+      // Combine and sort transactions
+      const combinedTransactions = [
+        ...payments.map((p: any) => ({
+          id: p.id,
+          date: p.created_at,
+          type: 'payment' as const,
+          amount: Number(p.amount),
+          status: p.status,
+          orderId: p.order_id,
+          cardNumber: p.card_last_four ? `•••• •••• •••• ${p.card_last_four}` : undefined,
           customer: {
-            name: 'أحمد محمد',
-            email: 'ahmad@example.com'
+            name: p.profiles?.full_name || 'Unknown User',
+            email: p.profiles?.username || 'unknown@example.com'
           }
-        },
-        {
-          id: 4230,
-          date: '2025-05-19T13:45:12',
-          type: 'refund',
-          amount: 42.75,
-          status: 'completed',
-          orderId: 'ORD-9018',
-          cardNumber: '•••• •••• •••• 5294',
+        })),
+        ...refunds.map((r: any) => ({
+          id: r.id,
+          date: r.created_at,
+          type: 'refund' as const,
+          amount: Number(r.amount),
+          status: r.status,
+          orderId: r.order_id,
           customer: {
-            name: 'سارة عبدالله',
-            email: 'sara@example.com'
+            name: r.profiles?.full_name || 'Unknown User',
+            email: r.profiles?.username || 'unknown@example.com'
           }
-        },
-        {
-          id: 4229,
-          date: '2025-05-19T11:32:09',
-          type: 'payment',
-          amount: 214.25,
-          status: 'frozen',
-          orderId: 'ORD-9017',
-          cardNumber: '•••• •••• •••• 7712',
-          customer: {
-            name: 'خالد العمري',
-            email: 'khalid@example.com'
-          }
-        },
-        {
-          id: 4228,
-          date: '2025-05-19T10:17:54',
-          type: 'payment',
-          amount: 78.00,
-          status: 'completed',
-          orderId: 'ORD-9016',
-          cardNumber: '•••• •••• •••• 1187',
-          customer: {
-            name: 'نورة السعيد',
-            email: 'noura@example.com'
-          }
-        },
-        {
-          id: 4227,
-          date: '2025-05-18T21:05:33',
-          type: 'payment',
-          amount: 135.50,
-          status: 'completed',
-          orderId: 'ORD-9015',
-          cardNumber: '•••• •••• •••• 9234',
-          customer: {
-            name: 'فهد القحطاني',
-            email: 'fahad@example.com'
-          }
-        },
-        {
-          id: 4226,
-          date: '2025-05-18T18:56:21',
-          type: 'refund',
-          amount: 67.25,
-          status: 'completed',
-          orderId: 'ORD-9012',
-          cardNumber: '•••• •••• •••• 6318',
-          customer: {
-            name: 'هدى الشمري',
-            email: 'huda@example.com'
-          }
-        }
+        }))
       ];
       
-      return transactions.slice(0, limit);
+      // Sort by date descending
+      combinedTransactions.sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      
+      return combinedTransactions.slice(0, limit);
     } catch (error) {
       console.error('Error fetching recent transactions:', error);
-      throw error;
+      return [];
     }
   }
   

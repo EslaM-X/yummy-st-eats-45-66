@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,31 +6,43 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import RefundDialog from '@/components/checkout/RefundDialog';
+import { VirtualCardService } from '@/services/VirtualCardService';
+import { supabase } from '@/integrations/supabase/client';
 
 const CheckoutPage: React.FC = () => {
+  const location = useLocation();
+  const orderData = location.state || { amount: 0, cartItems: [] };
+
   const [cardNumber, setCardNumber] = useState('');
   const [cvv, setCvv] = useState('');
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(orderData.amount || 0);
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [isRefundDialogOpen, setIsRefundDialogOpen] = useState(false);
+  const [currentTransaction, setCurrentTransaction] = useState<any>(null);
   
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCardNumber(e.target.value);
+    // Format card number with spaces after every 4 digits
+    const value = e.target.value.replace(/\s/g, '').substring(0, 16);
+    const formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
+    setCardNumber(formattedValue);
   };
   
   const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCvv(e.target.value);
+    const value = e.target.value.replace(/\D/g, '').substring(0, 3);
+    setCvv(value);
   };
   
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     if (!isNaN(value)) {
       setAmount(value);
+    } else {
+      setAmount(0);
     }
   };
   
@@ -47,24 +60,96 @@ const CheckoutPage: React.FC = () => {
     
     setIsProcessing(true);
     
-    // Simulate payment processing
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      // Check if user is authenticated
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      if (!sessionData.session) {
+        throw new Error(language === 'ar' ? 'يجب تسجيل الدخول لإتمام عملية الدفع' : 'You must be logged in to complete the payment');
+      }
+      
+      // Create unique order ID
+      const orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
+      // Process payment via VirtualCardService
+      const response = await VirtualCardService.createPaymentTransaction({
+        card_number: cardNumber,
+        cvv: cvv,
+        amount: Number(amount.toFixed(5)),
+        order_id: orderId
+      });
+      
+      // Set current transaction for potential refund
+      setCurrentTransaction({
+        transaction_id: response.transaction_id,
+        order_id: orderId,
+        amount: amount,
+        card_number: cardNumber
+      });
+      
       toast({
         title: language === 'ar' ? "تمت العملية بنجاح" : "Process completed successfully",
         description: language === 'ar' ? "تمت عملية الدفع بنجاح" : "Payment process successfully",
       });
-    }, 2000);
+      
+      // Store the order information
+      localStorage.setItem('lastCompletedOrder', JSON.stringify({
+        orderId,
+        amount,
+        date: new Date().toISOString(),
+        items: orderData.cartItems || [],
+        transactionId: response.transaction_id
+      }));
+      
+      // Wait a bit before redirecting
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+    } catch (error) {
+      console.error('Payment processing error:', error);
+      toast({
+        title: language === 'ar' ? "فشل في العملية" : "Process Failed",
+        description: error instanceof Error ? error.message : (language === 'ar' ? "حدث خطأ أثناء معالجة الدفع" : "An error occurred during payment processing"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
   
   const handleRefundSuccess = () => {
     // Handle successful refund
     toast({
       title: "تم الاسترداد بنجاح",
-      description: "تم استرداد المبلغ بنجاح وإضافته إلى رصيد محفظتك",
+      description: "تم استرداد المبلغ بنجاح وسيتم معالجة طلبك من قبل الإدارة",
     });
     
-    // Reload page or update state as needed
+    // Clear transaction data
+    setCurrentTransaction(null);
+  };
+  
+  const openRefundDialog = () => {
+    if (currentTransaction) {
+      setIsRefundDialogOpen(true);
+    } else {
+      // Get last order from localStorage
+      const lastOrder = JSON.parse(localStorage.getItem('lastCompletedOrder') || '{}');
+      
+      if (lastOrder.orderId && lastOrder.amount) {
+        setCurrentTransaction({
+          transaction_id: lastOrder.transactionId,
+          order_id: lastOrder.orderId,
+          amount: lastOrder.amount
+        });
+        setIsRefundDialogOpen(true);
+      } else {
+        toast({
+          title: "لا توجد معاملات",
+          description: "لا توجد معاملات سابقة يمكن استردادها",
+          variant: "destructive",
+        });
+      }
+    }
   };
   
   return (
@@ -89,6 +174,7 @@ const CheckoutPage: React.FC = () => {
                   value={cardNumber}
                   onChange={handleCardNumberChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600"
+                  maxLength={19}
                 />
               </div>
               <div>
@@ -102,6 +188,7 @@ const CheckoutPage: React.FC = () => {
                   value={cvv}
                   onChange={handleCvvChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600"
+                  maxLength={3}
                 />
               </div>
               <div>
@@ -115,6 +202,8 @@ const CheckoutPage: React.FC = () => {
                   value={amount}
                   onChange={handleAmountChange}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:border-gray-600"
+                  step="0.01"
+                  min="0.01"
                 />
               </div>
               <Button 
@@ -127,26 +216,30 @@ const CheckoutPage: React.FC = () => {
                   : (language === 'ar' ? 'ادفع الآن' : 'Pay Now')}
               </Button>
             </form>
-            <Button 
-              type="button" 
-              variant="link"
-              onClick={() => setIsRefundDialogOpen(true)}
-            >
-              Open Refund Dialog
-            </Button>
+            
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <Button 
+                type="button" 
+                variant="outline"
+                onClick={openRefundDialog}
+                className="w-full"
+              >
+                {language === 'ar' ? 'طلب استرداد' : 'Request Refund'}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
       
       {/* Refund Dialog */}
-      {isRefundDialogOpen && (
+      {isRefundDialogOpen && currentTransaction && (
         <RefundDialog
           isOpen={isRefundDialogOpen}
           onClose={() => setIsRefundDialogOpen(false)}
           orderDetails={{
-            orderId: 1234,
-            amount: 150.75,
-            cardNumber: "**** **** **** 4321"
+            orderId: currentTransaction.order_id,
+            amount: currentTransaction.amount,
+            cardNumber: currentTransaction.card_number ? `**** **** **** ${currentTransaction.card_number.slice(-4)}` : undefined
           }}
           onSuccess={handleRefundSuccess}
         />

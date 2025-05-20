@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
@@ -10,9 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from '@/hooks/use-toast';
 import { VirtualCardService } from '@/services/VirtualCardService';
 import { useTranslation } from 'react-i18next';
+import { Loader2 } from "lucide-react";
 
 interface RefundDialogProps {
   isOpen: boolean;
@@ -44,7 +47,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
     }
   };
   
-  const handleReasonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setReason(e.target.value);
   };
   
@@ -53,6 +56,15 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
       toast({
         title: t("refund.invalidAmount"),
         description: t("refund.amountError"),
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!reason.trim()) {
+      toast({
+        title: t("refund.missingReason"),
+        description: t("refund.reasonRequired"),
         variant: "destructive",
       });
       return;
@@ -80,7 +92,7 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
       console.error("Refund processing error:", error);
       toast({
         title: t("refund.failed"),
-        description: t("refund.errorMessage"),
+        description: error instanceof Error ? error.message : t("refund.errorMessage"),
         variant: "destructive",
       });
     } finally {
@@ -109,6 +121,19 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
               disabled
             />
           </div>
+          {orderDetails.cardNumber && (
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="card-number" className="text-right">
+                {t("refund.cardNumber")}
+              </Label>
+              <Input
+                id="card-number"
+                value={orderDetails.cardNumber}
+                className="col-span-3"
+                disabled
+              />
+            </div>
+          )}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="total-amount" className="text-right">
               {t("refund.totalAmount")}
@@ -128,10 +153,10 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
               id="refund-amount"
               type="number"
               value={refundAmount}
-              onChange={(e) => setRefundAmount(parseFloat(e.target.value))}
+              onChange={handleAmountChange}
               className="col-span-3"
-              placeholder="أدخل مبلغ الاسترداد"
-              min={0}
+              placeholder={t("refund.amountPlaceholder")}
+              min={0.01}
               max={orderDetails.amount}
               step={0.01}
             />
@@ -140,11 +165,11 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
             <Label htmlFor="reason" className="text-right">
               {t("refund.reason")}
             </Label>
-            <Input
+            <Textarea
               id="reason"
               value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="col-span-3"
+              onChange={handleReasonChange}
+              className="col-span-3 min-h-[80px]"
               placeholder={t("refund.reasonPlaceholder")}
             />
           </div>
@@ -153,7 +178,13 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
           <Button type="button" variant="outline" onClick={onClose} disabled={isProcessing}>
             {t("refund.cancel")}
           </Button>
-          <Button type="button" onClick={handleSubmit} disabled={isProcessing}>
+          <Button 
+            type="button" 
+            onClick={handleSubmit} 
+            disabled={isProcessing}
+            className="gap-2"
+          >
+            {isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
             {isProcessing ? t("refund.processing") : t("refund.confirm")}
           </Button>
         </DialogFooter>
