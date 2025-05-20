@@ -3,7 +3,6 @@ import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CartProvider } from '@/contexts/CartContext';
-import { AuthProvider } from '@/contexts/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
 
 import Index from './pages/Index';
@@ -28,15 +27,13 @@ import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <ScrollToTop />
-          <AppContent />
-          <Toaster />
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <CartProvider>
+      <Router>
+        <ScrollToTop />
+        <AppContent />
+        <Toaster />
+      </Router>
+    </CartProvider>
   );
 }
 
