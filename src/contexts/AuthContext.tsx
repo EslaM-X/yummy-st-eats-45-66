@@ -94,13 +94,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('role')
+        .select('user_type')
         .eq('id', userId)
         .single();
       
       if (error) throw error;
       
-      setIsAdmin(data?.role === 'admin');
+      setIsAdmin(data?.user_type === 'admin');
     } catch (error) {
       console.error('Error checking user role:', error);
     }
@@ -137,13 +137,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (data.user) {
         const { error: profileError } = await supabase
           .from('profiles')
-          .insert([
-            {
-              id: data.user.id,
-              email: email,
-              created_at: new Date(),
-            },
-          ]);
+          .insert({
+            id: data.user.id,
+            email: email,
+            created_at: new Date().toISOString(), // تحويل Date إلى نص ISO
+          });
           
         if (profileError) {
           console.error('Error creating profile:', profileError);
