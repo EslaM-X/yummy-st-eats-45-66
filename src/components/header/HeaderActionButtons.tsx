@@ -24,13 +24,15 @@ export function HeaderActionButtons() {
 
   const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
+  const buttonBaseClasses = "h-9 w-9 hover:scale-110 transition-transform duration-200 ease-in-out";
+
   return (
     <div className="flex items-center gap-2">
       <Button 
         variant="ghost" 
         size="icon" 
         onClick={toggleTheme} 
-        className="h-9 w-9"
+        className={buttonBaseClasses}
         aria-label={t('common:toggleTheme')}
       >
         {theme === "light" ? (
@@ -44,7 +46,7 @@ export function HeaderActionButtons() {
         variant="ghost" 
         size="icon" 
         onClick={toggleLanguage}
-        className="h-9 w-9"
+        className={buttonBaseClasses}
         aria-label={t('common:changeLanguage')}
       >
         <Globe className="h-5 w-5" />
@@ -54,7 +56,7 @@ export function HeaderActionButtons() {
         variant="ghost" 
         size="icon" 
         onClick={() => navigate('/cart')}
-        className="h-9 w-9 relative"
+        className={`${buttonBaseClasses} relative`}
         aria-label={t('common:cart')}
       >
         <ShoppingCart className="h-5 w-5" />
@@ -71,3 +73,4 @@ export function HeaderActionButtons() {
 }
 
 export default HeaderActionButtons;
+
