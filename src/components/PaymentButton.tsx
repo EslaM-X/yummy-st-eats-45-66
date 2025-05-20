@@ -57,12 +57,15 @@ const PaymentButton = ({
   return (
     <Button 
       onClick={handlePayment} 
-      className={`payment-button ${className || ""}`}
+      className={`payment-button group relative overflow-hidden ${className || ""}`}
       variant={variant}
       disabled={loading}
     >
-      <CreditCard className="h-5 w-5 mr-2 rtl:ml-2 rtl:mr-0" />
-      {loading ? `${t('processing')}...` : `${t('payNow')} ${amount} ST`}
+      <div className="relative z-10 flex items-center">
+        <CreditCard className="h-5 w-5 mr-2 rtl:ml-2 rtl:mr-0 group-hover:scale-110 transition-transform" />
+        <span>{loading ? `${t('processing')}...` : `${t('payNow')} ${amount} ST`}</span>
+      </div>
+      <span className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></span>
     </Button>
   );
 };

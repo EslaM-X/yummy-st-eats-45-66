@@ -8,6 +8,7 @@ import OrderSummary from '@/components/checkout/OrderSummary';
 import RefundDialog from '@/components/checkout/RefundDialog';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ShoppingBag, CheckCircle, CreditCard } from 'lucide-react';
 
 interface LocationState {
   amount: number;
@@ -71,15 +72,26 @@ const CheckoutPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       <Header />
-      <main className="flex-grow py-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+      <main className="flex-grow py-10 relative">
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/5 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
+          <div className="mb-10 text-center">
+            <div className="inline-flex items-center justify-center p-2 bg-primary/10 rounded-full mb-3">
+              {paymentComplete ? (
+                <CheckCircle className="h-8 w-8 text-green-500" />
+              ) : (
+                <CreditCard className="h-8 w-8 text-primary" />
+              )}
+            </div>
+            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
               {paymentComplete ? t('paymentSuccessful') : t('completePayment')}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
               {paymentComplete 
                 ? t('orderCompletedMessage') 
                 : t('enterCardDetails')
@@ -97,32 +109,31 @@ const CheckoutPage: React.FC = () => {
                   onSuccess={handlePaymentSuccess}
                 />
               ) : (
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900">
-                    <svg className="w-8 h-8 text-green-500 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border-2 border-primary/10 transition-all hover:shadow-xl relative overflow-hidden bg-gradient-to-br from-white to-primary/5 dark:from-gray-900 dark:to-gray-800">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-600"></div>
+                  <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 dark:bg-green-900/30">
+                    <CheckCircle className="w-10 h-10 text-green-500 dark:text-green-400" />
                   </div>
-                  <h2 className="text-xl font-semibold text-center mb-4">{t('orderDetails')}</h2>
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <div className="flex justify-between py-2">
+                  <h2 className="text-2xl font-semibold text-center mb-6 text-primary">{t('orderDetails')}</h2>
+                  <div className="space-y-4">
+                    <div className="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                       <span className="text-gray-600 dark:text-gray-400">{t('orderNumber')}:</span>
-                      <span className="font-medium">{orderId}</span>
+                      <span className="font-medium text-primary">{orderId}</span>
                     </div>
-                    <div className="flex justify-between py-2">
+                    <div className="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                       <span className="text-gray-600 dark:text-gray-400">{t('totalAmount')}:</span>
-                      <span className="font-medium">{amount} ST</span>
+                      <span className="font-medium text-primary">{amount} ST</span>
                     </div>
-                    <div className="flex justify-between py-2">
+                    <div className="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                       <span className="text-gray-600 dark:text-gray-400">{t('orderStatus')}:</span>
-                      <span className="font-medium text-green-600 dark:text-green-400">
+                      <span className="font-medium px-3 py-1 rounded-full text-sm bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                         {refundProcessed ? t('refunded') : t('completed')}
                       </span>
                     </div>
                     {refundProcessed && (
-                      <div className="flex justify-between py-2">
+                      <div className="flex justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                         <span className="text-gray-600 dark:text-gray-400">{t('refundStatus')}:</span>
-                        <span className="font-medium text-amber-600 dark:text-amber-400">{t('processed')}</span>
+                        <span className="font-medium px-3 py-1 rounded-full text-sm bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">{t('processed')}</span>
                       </div>
                     )}
                   </div>

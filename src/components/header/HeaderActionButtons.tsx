@@ -56,12 +56,12 @@ export function HeaderActionButtons() {
         variant="ghost" 
         size="icon" 
         onClick={() => navigate('/cart')}
-        className={`${buttonBaseClasses} relative`}
+        className={`${buttonBaseClasses} relative hover:bg-primary/10 dark:hover:bg-primary/20`}
         aria-label={t('common:cart')}
       >
         <ShoppingCart className="h-5 w-5" />
         {cartItemsCount > 0 && (
-          <span className="absolute top-0 right-0 h-5 w-5 rounded-full bg-primary text-[11px] font-medium flex items-center justify-center text-primary-foreground">
+          <span className="absolute top-0 right-0 h-5 w-5 rounded-full bg-primary text-[11px] font-medium flex items-center justify-center text-primary-foreground animate-fade-in">
             {cartItemsCount}
           </span>
         )}
@@ -73,4 +73,3 @@ export function HeaderActionButtons() {
 }
 
 export default HeaderActionButtons;
-
