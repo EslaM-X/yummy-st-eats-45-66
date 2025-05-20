@@ -12,6 +12,7 @@ import RestaurantsPage from './pages/RestaurantsPage';
 import AddFoodPage from './pages/AddFoodPage';
 import ProductsPage from './pages/ProductsPage';
 import CheckoutPage from './pages/CheckoutPage';
+import CartPage from './pages/CartPage';
 import CoreTeamPage from './pages/CoreTeamPage';
 import ProfilePage from './pages/ProfilePage';
 import RewardsPage from './pages/RewardsPage';
@@ -54,6 +55,7 @@ function AppContent() {
         <Route path="/add-food" element={<AddFoodPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/team" element={<CoreTeamPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/rewards" element={<RewardsPage />} />
