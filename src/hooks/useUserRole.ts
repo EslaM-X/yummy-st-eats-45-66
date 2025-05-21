@@ -5,9 +5,13 @@ import { User } from '@supabase/supabase-js';
 
 export const useUserRole = (user: User | null) => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const checkUserRole = useCallback(async (userId: string) => {
+    if (!userId) return;
+    
     try {
+      setLoading(true);
       console.log("Checking user role for:", userId);
       const { data, error } = await supabase
         .from('profiles')
@@ -26,6 +30,8 @@ export const useUserRole = (user: User | null) => {
     } catch (error) {
       console.error('Error checking user role:', error);
       setIsAdmin(false);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -40,5 +46,5 @@ export const useUserRole = (user: User | null) => {
     }
   }, [user, checkUserRole]);
 
-  return { isAdmin, checkUserRole }; // Exposing checkUserRole for direct use if needed
+  return { isAdmin, loading, checkUserRole }; // Exposing loading state and checkUserRole for direct use if needed
 };

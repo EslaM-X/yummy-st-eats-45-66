@@ -43,7 +43,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white text-center">
             {isSignUp ? 'إنشاء حساب جديد' : 'تسجيل الدخول'}
           </DialogTitle>
-          <DialogDescription className="text-gray-600 dark:text-gray-400 text-center mt-2">
+          <DialogDescription className="text-center mt-2 text-gray-600 dark:text-gray-400">
             {isSignUp 
               ? 'أنشئ حسابك للوصول إلى جميع مميزات التطبيق'
               : 'أدخل بيانات حسابك للوصول إلى جميع مميزات التطبيق'
@@ -60,7 +60,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full"
+              className="w-full text-black dark:text-white"
               dir="ltr"
             />
           </div>
@@ -73,7 +73,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full"
+              className="w-full text-black dark:text-white"
               dir="ltr"
             />
           </div>

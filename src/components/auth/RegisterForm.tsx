@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,9 +6,10 @@ import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Register form schema
 const registerSchema = z.object({
@@ -59,7 +61,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       const { error, data } = await signUp(values.email, values.password, {
         full_name: values.fullName,
         username: values.username,
-        phone: values.phone,
+        phone: values.phone || '',
         user_type: values.userType
       });
       
@@ -72,6 +74,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       }
     } catch (error: any) {
       console.error("Registration error:", error);
+      toast({
+        title: "فشل إنشاء الحساب",
+        description: error.message || "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -92,6 +99,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                 <Input 
                   placeholder={language === 'ar' ? 'أدخل بريدك الإلكتروني' : 'Enter your email'} 
                   type="email" 
+                  className="text-black dark:text-white"
                   {...field} 
                 />
               </FormControl>
@@ -112,6 +120,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                 <Input 
                   placeholder={language === 'ar' ? 'أدخل كلمة المرور' : 'Enter your password'} 
                   type="password" 
+                  className="text-black dark:text-white"
                   {...field} 
                 />
               </FormControl>
@@ -131,6 +140,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
               <FormControl>
                 <Input 
                   placeholder={language === 'ar' ? 'أدخل اسمك الكامل' : 'Enter your full name'} 
+                  className="text-black dark:text-white"
                   {...field} 
                 />
               </FormControl>
@@ -150,6 +160,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
               <FormControl>
                 <Input 
                   placeholder={language === 'ar' ? 'أدخل اسم المستخدم' : 'Enter username'} 
+                  className="text-black dark:text-white"
                   {...field} 
                 />
               </FormControl>
@@ -169,6 +180,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
               <FormControl>
                 <Input 
                   placeholder={language === 'ar' ? 'أدخل رقم هاتفك' : 'Enter your phone number'} 
+                  className="text-black dark:text-white"
                   {...field} 
                 />
               </FormControl>
@@ -186,17 +198,22 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                 {language === 'ar' ? 'نوع الحساب' : 'Account Type'}
               </FormLabel>
               <FormControl>
-                <select 
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  {...field}
+                <Select 
+                  value={field.value} 
+                  onValueChange={field.onChange}
                 >
-                  <option value="customer">
-                    {language === 'ar' ? 'عميل' : 'Customer'}
-                  </option>
-                  <option value="restaurant_owner">
-                    {language === 'ar' ? 'صاحب مطعم' : 'Restaurant Owner'}
-                  </option>
-                </select>
+                  <SelectTrigger className="text-black dark:text-white">
+                    <SelectValue placeholder={language === 'ar' ? 'اختر نوع الحساب' : 'Select account type'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="customer">
+                      {language === 'ar' ? 'عميل' : 'Customer'}
+                    </SelectItem>
+                    <SelectItem value="restaurant_owner">
+                      {language === 'ar' ? 'صاحب مطعم' : 'Restaurant Owner'}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>

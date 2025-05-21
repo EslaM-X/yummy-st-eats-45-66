@@ -40,7 +40,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setLoading(true);
     try {
-      await signIn(values.email, values.password);
+      const { error } = await signIn(values.email, values.password);
+      
+      if (error) {
+        console.error("Login error:", error);
+        return;
+      }
       
       // التوجيه إلى الصفحة الرئيسية
       navigate('/');
@@ -48,8 +53,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error) {
-      // تم التعامل مع الخطأ في وظيفة تسجيل الدخول
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast({
+        title: "فشل تسجيل الدخول",
+        description: error.message || "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -70,6 +80,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 <Input 
                   placeholder={language === 'ar' ? 'أدخل بريدك الإلكتروني' : 'Enter your email'} 
                   type="email" 
+                  className="text-black dark:text-white"
                   {...field} 
                 />
               </FormControl>
@@ -90,6 +101,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 <Input 
                   placeholder={language === 'ar' ? 'أدخل كلمة المرور' : 'Enter your password'} 
                   type="password" 
+                  className="text-black dark:text-white"
                   {...field} 
                 />
               </FormControl>

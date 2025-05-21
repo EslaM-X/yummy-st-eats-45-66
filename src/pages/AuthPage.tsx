@@ -9,13 +9,14 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const AuthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("login");
   const navigate = useNavigate();
   const { language } = useLanguage();
   const [session, setSession] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { toast } = useToast();
 
   // التحقق من وجود جلسة تسجيل دخول نشطة
@@ -23,6 +24,7 @@ const AuthPage: React.FC = () => {
     // التحقق من جلسة تسجيل الدخول الحالية
     const checkSession = async () => {
       try {
+        setIsLoading(true);
         const { data } = await supabase.auth.getSession();
         setSession(data.session);
         
@@ -37,6 +39,8 @@ const AuthPage: React.FC = () => {
           description: "حدث خطأ أثناء التحقق من حالة تسجيل الدخول الخاصة بك.",
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -77,6 +81,18 @@ const AuthPage: React.FC = () => {
     });
     setActiveTab("login");
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <p className="text-lg">جارٍ التحميل...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">

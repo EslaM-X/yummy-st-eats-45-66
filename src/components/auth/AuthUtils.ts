@@ -5,6 +5,8 @@
 
 // Clean up auth state to prevent "limbo" states
 export const cleanupAuthState = () => {
+  if (typeof window === 'undefined') return; // تجنب الأخطاء في بيئة SSR
+
   // Remove standard auth tokens
   localStorage.removeItem('supabase.auth.token');
   
@@ -16,9 +18,11 @@ export const cleanupAuthState = () => {
   });
   
   // Remove from sessionStorage if in use
-  Object.keys(sessionStorage || {}).forEach((key) => {
-    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-      sessionStorage.removeItem(key);
-    }
-  });
+  if (typeof sessionStorage !== 'undefined') {
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  }
 };

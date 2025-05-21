@@ -5,9 +5,13 @@ import { User } from '@supabase/supabase-js';
 
 export const useProfile = (user: User | null) => {
   const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchProfile = useCallback(async (userId: string) => {
+    if (!userId) return;
+    
     try {
+      setLoading(true);
       console.log("Fetching profile for user:", userId);
       const { data, error } = await supabase
         .from('profiles')
@@ -26,6 +30,8 @@ export const useProfile = (user: User | null) => {
     } catch (error) {
       console.error('Error fetching profile:', error);
       setProfile(null);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -46,5 +52,5 @@ export const useProfile = (user: User | null) => {
     }
   }, [user, fetchProfile]);
 
-  return { profile, refreshProfile, fetchProfile }; // Exposing fetchProfile for direct use if needed
+  return { profile, loading, refreshProfile, fetchProfile }; // Exposing loading state and fetchProfile for direct use if needed
 };

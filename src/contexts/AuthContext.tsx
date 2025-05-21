@@ -18,19 +18,18 @@ interface AuthContextType {
   loading: boolean; 
   isAdmin: boolean; 
   profile: any; 
-  refreshProfile: () => Promise<void>; 
+  refreshProfile: () => Promise<void>;
   isLoading: boolean; 
+  profileLoading?: boolean;
+  roleLoading?: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { session, user, loading, isLoading: authStateIsLoading } = useAuthState();
-  // Removed fetchProfile and checkUserRole from useProfile and useUserRole destructuring
-  // as they were not directly used in AuthProvider after previous refactoring.
-  // Their primary effect is via useEffect within those hooks reacting to `user` changes.
-  const { profile, refreshProfile } = useProfile(user); 
-  const { isAdmin } = useUserRole(user); 
+  const { profile, refreshProfile, loading: profileLoading } = useProfile(user); 
+  const { isAdmin, loading: roleLoading } = useUserRole(user); 
   const { toast } = useToast(); // Get the toast function here
 
   const handleSignIn = async (email: string, password: string) => {
@@ -48,12 +47,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         user,
         signIn: handleSignIn,
         signUp: handleSignUp,
-        signOut: signOutUser, // signOutUser does not use toast
+        signOut: signOutUser,
         loading, 
         isAdmin, 
         profile, 
-        refreshProfile, 
-        isLoading: authStateIsLoading, 
+        refreshProfile,
+        isLoading: authStateIsLoading,
+        profileLoading,
+        roleLoading, 
       }}
     >
       {children}
@@ -68,4 +69,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
