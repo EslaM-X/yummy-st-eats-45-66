@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SearchBar from '@/components/products/SearchBar';
-import FilterToggle from '@/components/products/FilterToggle';
 import FilterSection from '@/components/products/FilterSection';
 import ProductsGrid from '@/components/products/ProductsGrid';
 import { getCategories, getFilteredProducts } from '@/services/ProductService';
@@ -85,24 +84,21 @@ const ProductsPage: React.FC = () => {
           </div>
 
           {/* Search and filters */}
-          <div className="mb-8">
-            <div className="flex flex-col md:flex-row gap-4 mb-4">
-              <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-              <FilterToggle isFiltersOpen={isFiltersOpen} setIsFiltersOpen={setIsFiltersOpen} />
-            </div>
-
-            {isFiltersOpen && (
-              <FilterSection 
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                categories={categories}
-                handleClearFilters={handleClearFilters}
-                selectedCountry={selectedCountry}
-                setSelectedCountry={setSelectedCountry}
-              />
-            )}
+          <div className="mb-8 space-y-4">
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            
+            <FilterSection 
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              categories={categories}
+              handleClearFilters={handleClearFilters}
+              selectedCountry={selectedCountry}
+              setSelectedCountry={setSelectedCountry}
+              isFiltersOpen={isFiltersOpen}
+              setIsFiltersOpen={setIsFiltersOpen}
+            />
           </div>
 
           {/* Ad Placeholder */}

@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-data';
 import { CountryDisplay } from '@/components/ui/country-display';
-import { Globe, Search } from 'lucide-react';
+import { Globe, Search, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 
 interface CountryFilterProps {
   selectedCountry: string | undefined;
@@ -54,99 +54,100 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
         {t('countryFilterLabel') || 'تصفية حسب الدولة'}
       </label>
       
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>
-          <button className="flex items-center gap-2 p-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                        bg-white dark:bg-gray-700 text-sm text-start w-full h-10 truncate">
-            {selectedCountry ? (
-              <CountryDisplay 
-                country={countries.find(c => c.code === selectedCountry)}
-                showName={true} 
-              />
-            ) : (
-              <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <Globe className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">{t('allCountriesOption') || 'كل الدول'}</span>
-              </span>
-            )}
-          </button>
-        </DrawerTrigger>
-        
-        <DrawerContent className="max-h-[80vh]">
-          <div className="p-3">
-            <div className="mb-2">
-              <div className="relative">
-                <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-                <Input
-                  placeholder={t('searchCountries') || 'بحث عن دولة...'}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 pr-3 w-full text-sm py-1"
-                  autoComplete="off"
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button className="flex items-center justify-between gap-2 p-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                        bg-white dark:bg-gray-700 text-sm text-start w-full h-9 truncate">
+            <div className="flex items-center gap-2 truncate">
+              {selectedCountry ? (
+                <CountryDisplay 
+                  country={countries.find(c => c.code === selectedCountry)}
+                  showName={true} 
                 />
+              ) : (
+                <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300 truncate">
+                  <Globe className="w-4 h-4 flex-shrink-0" />
+                  <span className="truncate">{t('allCountriesOption') || 'كل الدول'}</span>
+                </span>
+              )}
+            </div>
+            <ChevronDown className="w-4 h-4 text-gray-500" />
+          </button>
+        </PopoverTrigger>
+        
+        <PopoverContent className="w-[280px] p-3 max-h-[300px] overflow-y-auto" align="start">
+          <div className="mb-2">
+            <div className="relative">
+              <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <Input
+                placeholder={t('searchCountries') || 'بحث عن دولة...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 pr-3 w-full text-sm py-1"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-1">
+            <button
+              onClick={() => handleCountryChange('all')}
+              className={`flex items-center gap-2 p-2 rounded-md text-start text-sm
+                        ${!selectedCountry ? 'bg-primary/15' : 'hover:bg-primary/5'}`}
+            >
+              <Globe className="h-4 w-4 flex-shrink-0" />
+              <span>{t('allCountriesOption') || 'كل الدول'}</span>
+            </button>
+            
+            {/* Favorite countries */}
+            <div className="py-1">
+              <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                {t('popularCountries') || 'الدول الشائعة'}
+              </h3>
+              <div className="grid grid-cols-3 gap-1">
+                {favoriteCountries.map(country => (
+                  <button
+                    key={country.code}
+                    onClick={() => handleCountryChange(country.code)}
+                    className={`flex flex-col items-center justify-center p-1 rounded-md text-sm
+                              ${selectedCountry === country.code ? 'bg-primary/15' : 'hover:bg-primary/5'}`}
+                  >
+                    <span className="text-lg mb-0.5">{country.flagEmoji}</span>
+                    <span className="text-xs truncate w-full text-center">
+                      {language === 'ar' ? country.nameAr : country.name}
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
             
-            <div className="grid grid-cols-1 gap-1 max-h-[60vh] overflow-auto">
-              <button
-                onClick={() => handleCountryChange('all')}
-                className={`flex items-center gap-2 p-2 rounded-md text-start text-sm
-                          ${!selectedCountry ? 'bg-primary/15' : 'hover:bg-primary/5'}`}
-              >
-                <Globe className="h-4 w-4 flex-shrink-0" />
-                <span>{t('allCountriesOption') || 'كل الدول'}</span>
-              </button>
-              
-              {/* Favorite countries */}
-              <div className="py-1">
-                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                  {t('popularCountries') || 'الدول الشائعة'}
-                </h3>
-                <div className="grid grid-cols-3 gap-1">
-                  {favoriteCountries.map(country => (
-                    <button
-                      key={country.code}
-                      onClick={() => handleCountryChange(country.code)}
-                      className={`flex flex-col items-center justify-center p-1 rounded-md text-sm
-                                ${selectedCountry === country.code ? 'bg-primary/15' : 'hover:bg-primary/5'}`}
-                    >
-                      <span className="text-lg mb-0.5">{country.flagEmoji}</span>
-                      <span className="text-xs truncate w-full text-center">
-                        {language === 'ar' ? country.nameAr : country.name}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+            {/* All countries */}
+            <div className="py-1">
+              <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                {t('allCountriesLabel') || 'كل الدول'}
+              </h3>
+              <div className="grid grid-cols-1 gap-1">
+                {filteredCountries.map(country => (
+                  <button
+                    key={country.code}
+                    onClick={() => handleCountryChange(country.code)}
+                    className={`flex items-center gap-2 p-1.5 w-full rounded-md text-start text-sm
+                            ${selectedCountry === country.code ? 'bg-primary/15' : 'hover:bg-primary/5'}`}
+                  >
+                    <CountryDisplay country={country} showName={true} />
+                  </button>
+                ))}
               </div>
               
-              {/* All countries */}
-              <div className="py-1">
-                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                  {t('allCountriesLabel') || 'كل الدول'}
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                  {filteredCountries.map(country => (
-                    <button
-                      key={country.code}
-                      onClick={() => handleCountryChange(country.code)}
-                      className={`flex items-center gap-2 p-1.5 w-full rounded-md text-start text-sm
-                              ${selectedCountry === country.code ? 'bg-primary/15' : 'hover:bg-primary/5'}`}
-                    >
-                      <CountryDisplay country={country} showName={true} />
-                    </button>
-                  ))}
+              {filteredCountries.length === 0 && (
+                <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
+                  {t('noCountriesFound') || 'لا توجد دول مطابقة'}
                 </div>
-                
-                {filteredCountries.length === 0 && (
-                  <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
-                    {t('noCountriesFound') || 'لا توجد دول مطابقة'}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
-        </DrawerContent>
-      </Drawer>
+        </PopoverContent>
+      </Popover>
     </>
   );
 };
