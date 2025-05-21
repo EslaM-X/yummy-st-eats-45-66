@@ -1,20 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { Restaurant } from '@/types';
-import RestaurantCard from './RestaurantCard';
-import { Search, Sliders, ChevronDown, X, Globe } from 'lucide-react';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { 
-  Card, 
-  CardContent
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { countries } from '@/components/ui/country-data';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CountryDisplay } from '@/components/ui/country-display';
 import { useSelectedCountry } from './header/HeaderActionButtons';
+import RestaurantSearchBar from './restaurants/RestaurantSearchBar';
+import RestaurantFilter from './restaurants/RestaurantFilter';
+import EmptyRestaurantState from './restaurants/EmptyRestaurantState';
+import RestaurantGrid from './restaurants/RestaurantGrid';
 
 // Mock restaurants with country data
 const mockRestaurants: (Restaurant & { country?: string })[] = [
@@ -84,7 +76,6 @@ const RestaurantList: React.FC = () => {
   const [showDiscountOnly, setShowDiscountOnly] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
   const [countryFilter, setCountryFilter] = useState<string | undefined>(undefined);
-  const [searchCountryQuery, setSearchCountryQuery] = useState('');
   const [filteredRestaurants, setFilteredRestaurants] = useState<(Restaurant & { country?: string })[]>(mockRestaurants);
   
   // Get the global selected country from the header
@@ -94,18 +85,6 @@ const RestaurantList: React.FC = () => {
   const allCuisines = mockRestaurants
     .flatMap(restaurant => restaurant.cuisine.split(', ').map(c => c.trim()))
     .filter((cuisine, index, self) => self.indexOf(cuisine) === index && cuisine !== '');
-  
-  // Filter countries based on search query
-  const filteredCountries = searchCountryQuery.trim() === ''
-    ? countries
-    : countries.filter(country => {
-        const query = searchCountryQuery.toLowerCase();
-        return (
-          country.name.toLowerCase().includes(query) ||
-          country.nameAr.toLowerCase().includes(query) ||
-          country.code.toLowerCase().includes(query)
-        );
-      });
   
   // Apply filters when any filter changes or when the global country changes
   useEffect(() => {
@@ -183,200 +162,54 @@ const RestaurantList: React.FC = () => {
     setCountryFilter(undefined);
   };
 
+  // Check if there are any active filters
+  const hasActiveFilters = searchTerm || cuisineFilter || minRating > 0 || 
+                           showNewOnly || showDiscountOnly || 
+                           sortBy !== 'recommended' || countryFilter;
+
   return (
     <section className="py-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search and filter bar */}
         <Card className="bg-white dark:bg-gray-800 mb-8 shadow-md">
           <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-              <div className="relative flex-grow">
-                <Search className={`absolute top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 ${isRTL ? 'right-3' : 'left-3'}`} />
-                <Input 
-                  type="text"
-                  placeholder={t('searchRestaurantPlaceholderRList')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className={`${isRTL ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 w-full`}
-                />
-              </div>
-              
-              <Button
-                variant="outline"
-                className="flex items-center gap-2"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <Sliders className="h-4 w-4" />
-                <span>{t('filterSortButton')}</span>
-                <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? 'transform rotate-180' : ''}`} />
-              </Button>
-              
-              {(searchTerm || cuisineFilter || minRating > 0 || showNewOnly || showDiscountOnly || sortBy !== 'recommended' || countryFilter) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={resetFilters}
-                  className="text-gray-500"
-                >
-                  <X className={`h-4 w-4 ${isRTL ? 'ml-1' : 'mr-1'}`} />
-                  {t('resetFiltersButton')}
-                </Button>
-              )}
-            </div>
+            {/* Search Bar */}
+            <RestaurantSearchBar 
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
+              hasActiveFilters={!!hasActiveFilters}
+              resetFilters={resetFilters}
+            />
             
+            {/* Expandable Filters */}
             {showFilters && (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6 border-t pt-4 border-gray-200 dark:border-gray-700">
-                <div>
-                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">{t('cuisineFilterLabel')}</h3>
-                  <select
-                    value={cuisineFilter}
-                    onChange={(e) => setCuisineFilter(e.target.value)}
-                    className="w-full p-2 rounded-md bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
-                  >
-                    <option value="">{t('allCuisinesOption')}</option>
-                    {allCuisines.map((cuisine, index) => (
-                      <option key={index} value={cuisine}>{cuisine}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('ratingFilterLabel')}
-                  </h3>
-                  <Slider
-                    value={[minRating]}
-                    min={0}
-                    max={5}
-                    step={0.5}
-                    className="py-4"
-                    onValueChange={(value) => setMinRating(value[0])}
-                    dir={isRTL ? 'rtl' : 'ltr'}
-                  />
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">{t('sortByFilterLabel')}</h3>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full p-2 rounded-md bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
-                  >
-                    <option value="recommended">{t('sortByOptionRecommended')}</option>
-                    <option value="rating">{t('sortByOptionRating')}</option>
-                    <option value="name">{t('sortByOptionName')}</option>
-                    <option value="deliveryTime">{t('sortByOptionDelivery')}</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">{t('countryFilterLabel') || 'تصفية حسب الدولة'}</h3>
-                  <Select
-                    value={countryFilter || 'all'}
-                    onValueChange={(value) => setCountryFilter(value === 'all' ? undefined : value)}
-                  >
-                    <SelectTrigger className="w-full bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
-                      <SelectValue>
-                        {countryFilter ? (
-                          <CountryDisplay
-                            country={countries.find(c => c.code === countryFilter)}
-                            showName={true}
-                          />
-                        ) : (
-                          <span className="flex items-center gap-2">
-                            <Globe className="h-4 w-4" />
-                            <span>
-                              {globalSelectedCountry ? (
-                                <CountryDisplay 
-                                  country={countries.find(c => c.code === globalSelectedCountry)} 
-                                  showName={true}
-                                />
-                              ) : (
-                                t('allCountriesOption') || 'كل الدول'
-                              )}
-                            </span>
-                          </span>
-                        )}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[200px] overflow-y-auto bg-white dark:bg-gray-800">
-                      <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 p-2">
-                        <Input
-                          placeholder={t('searchCountries')}
-                          value={searchCountryQuery}
-                          onChange={(e) => setSearchCountryQuery(e.target.value)}
-                          className="text-black dark:text-white"
-                        />
-                      </div>
-                      
-                      <SelectItem value="all" className="text-black dark:text-white">
-                        <span className="flex items-center gap-2">
-                          <Globe className="h-4 w-4" />
-                          <span>{t('allCountriesOption') || 'كل الدول'}</span>
-                        </span>
-                      </SelectItem>
-                      
-                      {filteredCountries.map(country => (
-                        <SelectItem key={country.code} value={country.code} className="text-black dark:text-white">
-                          <CountryDisplay country={country} showName={true} />
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className={`flex items-center md:col-span-4 ${isRTL ? 'space-x-6 space-x-reverse' : 'space-x-6'}`}>
-                  <label className={`flex items-center cursor-pointer ${isRTL ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
-                    <input 
-                      type="checkbox" 
-                      checked={showNewOnly} 
-                      onChange={(e) => setShowNewOnly(e.target.checked)} 
-                      className="rounded text-yellow-800 focus:ring-yellow-700"
-                    />
-                    <span className="text-gray-700 dark:text-gray-300">{t('newOnlyCheckboxLabel')}</span>
-                  </label>
-                  
-                  <label className={`flex items-center cursor-pointer ${isRTL ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
-                    <input 
-                      type="checkbox" 
-                      checked={showDiscountOnly} 
-                      onChange={(e) => setShowDiscountOnly(e.target.checked)} 
-                      className="rounded text-yellow-800 focus:ring-yellow-700"
-                    />
-                    <span className="text-gray-700 dark:text-gray-300">{t('discountOnlyCheckboxLabel')}</span>
-                  </label>
-                </div>
-              </div>
+              <RestaurantFilter 
+                cuisineFilter={cuisineFilter}
+                setCuisineFilter={setCuisineFilter}
+                minRating={minRating}
+                setMinRating={setMinRating}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                showNewOnly={showNewOnly}
+                setShowNewOnly={setShowNewOnly}
+                showDiscountOnly={showDiscountOnly}
+                setShowDiscountOnly={setShowDiscountOnly}
+                countryFilter={countryFilter}
+                setCountryFilter={setCountryFilter}
+                allCuisines={allCuisines}
+                globalSelectedCountry={globalSelectedCountry}
+              />
             )}
           </CardContent>
         </Card>
         
-        {/* Restaurants grid */}
+        {/* Restaurants grid or empty state */}
         {filteredRestaurants.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {filteredRestaurants.map((restaurant) => (
-              <RestaurantCard key={restaurant.id} restaurant={restaurant} />
-            ))}
-          </div>
+          <RestaurantGrid restaurants={filteredRestaurants} />
         ) : (
-          <div className="text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <div className="inline-block p-3 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
-              <Search className="h-8 w-8 text-gray-400" />
-            </div>
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
-              {t('noRestaurantsFoundTitleRList')}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {t('noRestaurantsFoundSubtitleRList')}
-            </p>
-            <Button 
-              onClick={resetFilters} 
-              variant="outline" 
-              className="font-semibold"
-            >
-              {t('showAllRestaurantsButtonRList')}
-            </Button>
-          </div>
+          <EmptyRestaurantState resetFilters={resetFilters} />
         )}
       </div>
     </section>
