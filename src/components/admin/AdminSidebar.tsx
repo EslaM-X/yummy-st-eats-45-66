@@ -29,7 +29,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   return (
     <aside 
-      className={`fixed top-0 right-0 z-40 h-screen transition-all duration-300 ease-in-out 
+      className={`fixed bottom-0 z-40 h-screen transition-all duration-300 ease-in-out 
       ${collapsed ? 'w-16' : 'w-64'} bg-gray-800 text-white pt-20 pb-4 shadow-lg flex flex-col 
       justify-between`}
     >

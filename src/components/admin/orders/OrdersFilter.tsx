@@ -24,7 +24,7 @@ const OrdersFilter: React.FC<OrdersFilterProps> = ({
 }) => {
   return (
     <>
-      <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
@@ -38,7 +38,7 @@ const OrdersFilter: React.FC<OrdersFilterProps> = ({
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="تصفية حسب التاريخ" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent position="popper" align="end" sideOffset={4} className="w-[180px] bg-white dark:bg-gray-800 z-50">
             <SelectItem value="all">جميع الأيام</SelectItem>
             <SelectItem value="today">اليوم</SelectItem>
             <SelectItem value="yesterday">الأمس</SelectItem>
@@ -47,7 +47,7 @@ const OrdersFilter: React.FC<OrdersFilterProps> = ({
           </SelectContent>
         </Select>
       </div>
-      <Tabs value={selectedTab} onValueChange={onTabChange} className="mb-6">
+      <Tabs value={selectedTab} onValueChange={onTabChange} className="mb-6 fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-800 p-2 shadow-lg w-full">
         <TabsList className="grid grid-cols-3 md:grid-cols-6 w-full">
           <TabsTrigger value="all">الكل</TabsTrigger>
           <TabsTrigger value="new">جديد</TabsTrigger>

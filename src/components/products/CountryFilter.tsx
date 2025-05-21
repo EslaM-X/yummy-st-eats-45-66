@@ -89,7 +89,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
         {t('countryFilterLabel') || 'تصفية حسب الدولة'}
       </label>
       <Select
@@ -119,8 +119,9 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
         <SelectContent 
           className="max-h-[80vh] bg-white dark:bg-gray-800 shadow-xl rounded-xl p-3 animate-scale-in z-[100]"
           position="popper"
+          side="bottom"
           sideOffset={4}
-          align="start"
+          align="center"
         >
           {/* Improved search field for mobile */}
           <div 

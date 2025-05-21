@@ -69,7 +69,7 @@ const ProductsPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 pb-60">
       <Header />
       <main className={`flex-grow py-10 transition-opacity duration-300 ${isUpdating ? 'opacity-50' : 'opacity-100'}`}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">

@@ -15,7 +15,7 @@ interface AdminContentProps {
 
 const AdminContent: React.FC<AdminContentProps> = ({ activeTab, onTabChange }) => {
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto px-4 py-6 pb-20 max-w-7xl">
       {activeTab === 'dashboard' && <AdminDashboard />}
       
       {activeTab === 'users' && <AdminUsers />}

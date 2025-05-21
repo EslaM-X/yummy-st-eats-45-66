@@ -16,7 +16,7 @@ const FilterToggle: React.FC<FilterToggleProps> = ({ isFiltersOpen, setIsFilters
     <Button
       onClick={() => setIsFiltersOpen(!isFiltersOpen)}
       variant="outline"
-      className="flex items-center gap-2 font-cairo"
+      className="fixed bottom-4 right-4 z-50 flex items-center gap-2 font-cairo shadow-lg"
     >
       <Filter className="h-4 w-4" />
       {t('filter')}
