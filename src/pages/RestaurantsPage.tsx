@@ -30,7 +30,7 @@ const RestaurantsPage: React.FC = () => {
 
   // Get country name for display
   const selectedCountryData = globalSelectedCountry ? 
-    countries.find(c => c.code === globalSelectedCountry) : null;
+    countries.find(c => c.code === globalSelectedCountry) || null : null;
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-amber-50 to-white dark:from-gray-900 dark:to-gray-800">
