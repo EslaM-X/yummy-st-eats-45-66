@@ -8,9 +8,10 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Eye, EyeOff, Lock, User } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
+import { supabase } from '@/integrations/supabase/client';
 
 const AdminLoginPage: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -20,36 +21,75 @@ const AdminLoginPage: React.FC = () => {
   const { isRTL } = useLanguage();
   const { theme } = useTheme();
 
-  // Check if there's a saved username
+  // التحقق من وجود جلسة نشطة
   useEffect(() => {
-    const savedUsername = localStorage.getItem('adminUsername');
-    if (savedUsername) {
-      setUsername(savedUsername);
-      setRememberMe(true);
-    }
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // التحقق مما إذا كان المستخدم مديرًا
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('user_type')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (!error && profile?.user_type === 'admin') {
+          navigate('/admin');
+        }
+      }
+    };
     
-    // Check if already authenticated
-    const isAuthenticated = localStorage.getItem('adminAuthenticated');
-    if (isAuthenticated === 'true') {
-      navigate('/admin');
+    checkSession();
+  }, [navigate]);
+
+  // استرجاع البريد الإلكتروني المحفوظ
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('adminEmail');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simple authentication check (in a real app, this would be handled securely on the backend)
-    setTimeout(() => {
-      if (username === 'admin' && password === 'admin123') {
-        // Set admin authentication in localStorage
-        localStorage.setItem('adminAuthenticated', 'true');
-        
-        // Save username if remember me is checked
+    try {
+      // تسجيل الدخول باستخدام Supabase
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.session) {
+        // التحقق مما إذا كان المستخدم مديرًا
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('user_type')
+          .eq('id', data.session.user.id)
+          .single();
+
+        if (profileError) {
+          throw new Error('خطأ في التحقق من صلاحية المستخدم');
+        }
+
+        if (profile?.user_type !== 'admin') {
+          // ليس مديرًا
+          await supabase.auth.signOut(); // تسجيل الخروج
+          throw new Error('ليس لديك صلاحيات المدير');
+        }
+
+        // حفظ البريد الإلكتروني إذا تم اختيار "تذكرني"
         if (rememberMe) {
-          localStorage.setItem('adminUsername', username);
+          localStorage.setItem('adminEmail', email);
         } else {
-          localStorage.removeItem('adminUsername');
+          localStorage.removeItem('adminEmail');
         }
 
         toast({
@@ -57,16 +97,19 @@ const AdminLoginPage: React.FC = () => {
           description: "مرحباً بك في لوحة الإدارة",
           variant: "default",
         });
+        
         navigate('/admin');
-      } else {
-        toast({
-          title: "خطأ في تسجيل الدخول",
-          description: "اسم المستخدم أو كلمة المرور غير صحيحة",
-          variant: "destructive",
-        });
       }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast({
+        title: "خطأ في تسجيل الدخول",
+        description: error.message || "اسم المستخدم أو كلمة المرور غير صحيحة",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const toggleShowPassword = () => {
@@ -88,16 +131,17 @@ const AdminLoginPage: React.FC = () => {
             <CardContent className="space-y-6">
               <div className="space-y-2">
                 <div className="relative">
-                  <label htmlFor="username" className="text-sm font-medium block mb-2">
-                    اسم المستخدم
+                  <label htmlFor="email" className="text-sm font-medium block mb-2">
+                    البريد الإلكتروني
                   </label>
                   <div className="relative">
                     <User className="absolute top-1/2 transform -translate-y-1/2 right-3 rtl:right-auto rtl:left-3 h-4 w-4 text-gray-500" />
                     <Input
-                      id="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="admin"
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="admin@example.com"
                       required
                       className={`w-full pr-10 rtl:pr-4 rtl:pl-10 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}
                     />

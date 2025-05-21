@@ -7,13 +7,15 @@ interface AdminSidebarProps {
   onTabChange: (value: string) => void;
   collapsed: boolean;
   toggleCollapsed: () => void;
+  handleLogout?: () => void;
 }
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ 
   activeTab, 
   onTabChange, 
   collapsed,
-  toggleCollapsed
+  toggleCollapsed,
+  handleLogout
 }) => {
   const menu = [
     { id: 'dashboard', name: 'لوحة التحكم', icon: <BarChart3 className="h-5 w-5" /> },
@@ -73,6 +75,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
       <div className="px-3 mt-auto">
         <button
+          onClick={handleLogout}
           className="flex items-center text-right w-full px-3 py-3 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-150"
         >
           <div className={`flex ${collapsed ? 'justify-center w-full' : 'ml-auto'}`}>

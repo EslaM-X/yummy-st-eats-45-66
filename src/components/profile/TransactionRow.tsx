@@ -3,6 +3,7 @@ import React from 'react';
 import { Transaction } from '@/services/VirtualCardService';
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from '@/contexts/LanguageContext';
+import { TableCell, TableRow } from "@/components/ui/table";
 
 interface TransactionRowProps {
   transaction: Transaction;
@@ -41,26 +42,42 @@ const TransactionRow: React.FC<TransactionRowProps> = ({ transaction }) => {
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
+  const getTransactionTypeLabel = (type: string) => {
+    if (language === 'ar') {
+      switch (type.toLowerCase()) {
+        case 'deposit': return 'إيداع';
+        case 'withdrawal': return 'سحب';
+        case 'payment': return 'دفع';
+        case 'refund': return 'استرداد';
+        default: return type;
+      }
+    }
+    return type.charAt(0).toUpperCase() + type.slice(1);
+  };
+
   const currency = language === 'ar' ? 'ر.س' : 'SAR';
   
   // استخدام تاريخ المعاملة أو تنسيق تاريخ الإنشاء
   const displayDate = transaction.date || new Date(transaction.created_at).toLocaleDateString();
 
   return (
-    <div className="flex items-center justify-between p-4 border-b dark:border-gray-700 last:border-b-0">
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{transaction.description}</p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">{displayDate}</p>
-      </div>
-      <div className="ml-4 rtl:mr-4 rtl:ml-0 flex-shrink-0 text-right">
-        <p className={`text-sm font-semibold ${transaction.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-          {transaction.amount > 0 ? '+' : ''}{transaction.amount.toFixed(2)} {currency}
-        </p>
-        <Badge variant={getStatusVariant(transaction.status) as any} className="mt-1 text-xs">
+    <TableRow>
+      <TableCell className="font-medium">{displayDate}</TableCell>
+      <TableCell>{transaction.description}</TableCell>
+      <TableCell>
+        <Badge variant="outline">
+          {getTransactionTypeLabel(transaction.type)}
+        </Badge>
+      </TableCell>
+      <TableCell className={`text-right font-medium ${transaction.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+        {transaction.amount > 0 ? '+' : ''}{transaction.amount.toFixed(2)} {currency}
+      </TableCell>
+      <TableCell>
+        <Badge variant={getStatusVariant(transaction.status) as any}>
           {translatedStatus(transaction.status)}
         </Badge>
-      </div>
-    </div>
+      </TableCell>
+    </TableRow>
   );
 };
 

@@ -13,6 +13,7 @@ interface AdminLayoutProps {
   sidebarCollapsed: boolean;
   setSidebarCollapsed: (collapsed: boolean) => void;
   isMobile: boolean;
+  handleLogout?: () => void;
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({
@@ -21,7 +22,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   onTabChange,
   sidebarCollapsed,
   setSidebarCollapsed,
-  isMobile
+  isMobile,
+  handleLogout
 }) => {
   const { isRTL } = useLanguage();
   
@@ -34,6 +36,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
           onTabChange={onTabChange}
           collapsed={sidebarCollapsed}
           toggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)}
+          handleLogout={handleLogout}
         />
       </div>
 
@@ -55,6 +58,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
             onTabChange={onTabChange}
             collapsed={false}
             toggleCollapsed={() => {}}
+            handleLogout={handleLogout}
           />
         </SheetContent>
       </Sheet>

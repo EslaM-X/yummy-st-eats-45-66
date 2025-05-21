@@ -3,6 +3,7 @@ import React from 'react';
 import { Transaction } from '@/services/VirtualCardService';
 import TransactionRow from './TransactionRow';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Table, TableBody, TableHeader, TableRow, TableHead } from "@/components/ui/table";
 
 interface TransactionListDisplayProps {
   transactions: Transaction[];
@@ -32,10 +33,23 @@ const TransactionListDisplay: React.FC<TransactionListDisplayProps> = ({ transac
   }
 
   return (
-    <div className="divide-y dark:divide-gray-700">
-      {transactions.map((transaction) => (
-        <TransactionRow key={transaction.id} transaction={transaction} />
-      ))}
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{language === 'ar' ? 'التاريخ' : 'Date'}</TableHead>
+            <TableHead>{language === 'ar' ? 'الوصف' : 'Description'}</TableHead>
+            <TableHead>{language === 'ar' ? 'النوع' : 'Type'}</TableHead>
+            <TableHead className="text-right">{language === 'ar' ? 'المبلغ' : 'Amount'}</TableHead>
+            <TableHead>{language === 'ar' ? 'الحالة' : 'Status'}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transactions.map((transaction) => (
+            <TransactionRow key={transaction.id} transaction={transaction} />
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };
