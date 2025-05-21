@@ -2,16 +2,11 @@
 import React from 'react';
 import { Coffee } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { countries } from '@/components/ui/country-data';
+import { Country } from '@/components/ui/country-data';
 
 interface PageHeaderProps {
   isVisible: boolean;
-  selectedCountryData: {
-    code: string;
-    name: string;
-    nameAr: string;
-    flagEmoji: string;
-  } | null;
+  selectedCountryData: Country | null;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({ isVisible, selectedCountryData }) => {

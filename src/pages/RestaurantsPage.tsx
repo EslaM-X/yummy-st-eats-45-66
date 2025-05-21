@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useSelectedCountry } from '@/components/header/HeaderActionButtons';
-import { countries } from '@/components/ui/country-data';
+import { countries, Country } from '@/components/ui/country-data';
 
 // Import refactored components
 import PageHeader from './restaurants/components/PageHeader';
