@@ -1,8 +1,12 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
 import { cleanupAuthState, isValidToken } from '@/components/auth/AuthUtils';
+
+// استيراد URL وAPI Key من ملف العميل
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '@/integrations/supabase/client';
 
 interface AuthContextType {
   session: Session | null;
