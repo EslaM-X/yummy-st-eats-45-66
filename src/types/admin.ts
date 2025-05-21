@@ -59,3 +59,49 @@ export interface Alert {
   title: string;
   message: string;
 }
+
+// إضافة نوع البطاقة الافتراضية
+export interface VirtualCard {
+  id: string;
+  user_id: string;
+  card_number: string;
+  holder_name: string;
+  expiry_date: string;
+  cvv: string;
+  balance: number;
+  is_active: boolean;
+  card_type: string;
+  is_default?: boolean;
+  created_at: string;
+  last_used?: string;
+}
+
+// إضافة نوع إعدادات لوحة الإدارة
+export interface AdminSettings {
+  general: {
+    appName: string;
+    adminEmail: string;
+    supportPhone: string;
+    maxDistance: number;
+    defaultLanguage: 'ar' | 'en';
+  };
+  notifications: {
+    emailNotifications: boolean;
+    pushNotifications: boolean;
+    smsNotifications: boolean;
+    orderUpdates: boolean;
+    marketingEmails: boolean;
+  };
+  payment: {
+    acceptCreditCards: boolean;
+    acceptCashOnDelivery: boolean;
+    acceptWallet: boolean;
+    commissionRate: number;
+    vatRate: number;
+  };
+  security: {
+    twoFactorAuth: boolean;
+    requireStrongPasswords: boolean;
+    sessionTimeout: number;
+  };
+}
