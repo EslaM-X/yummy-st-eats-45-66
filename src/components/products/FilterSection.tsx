@@ -1,15 +1,12 @@
 
 import React from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 // Import the new smaller components
 import FilterHeader from './filters/FilterHeader';
-import CategoryFilter from './filters/CategoryFilter';
-import SortFilter from './filters/SortFilter';
-import CompactCountryFilter from './filters/CompactCountryFilter';
-import ResetButton from './filters/ResetButton';
+import FilterContainer from './filters/FilterContainer';
+import FilterContent from './filters/FilterContent';
 
 interface FilterSectionProps {
   selectedCategory: string;
@@ -36,7 +33,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   isFiltersOpen,
   setIsFiltersOpen
 }) => {
-  const { t } = useLanguage();
   const isMobile = useIsMobile();
   
   // Calculate active filters
@@ -58,36 +54,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
       />
       
       {/* Expandable Filter Content */}
-      <div className={cn(
-        "grid transition-all duration-300 ease-in-out origin-top",
-        isFiltersOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-      )}>
-        <div className="overflow-hidden">
-          <div className="p-3 pt-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
-            {/* Category Filter */}
-            <CategoryFilter 
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              categories={categories}
-            />
-            
-            {/* Sort By Filter */}
-            <SortFilter 
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-            />
-            
-            {/* Compact Country Filter */}
-            <CompactCountryFilter 
-              selectedCountry={selectedCountry}
-              setSelectedCountry={setSelectedCountry}
-            />
-            
-            {/* Reset Button */}
-            <ResetButton handleClearFilters={handleClearFilters} />
-          </div>
-        </div>
-      </div>
+      <FilterContainer isFiltersOpen={isFiltersOpen}>
+        <FilterContent
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          categories={categories}
+          handleClearFilters={handleClearFilters}
+          selectedCountry={selectedCountry}
+          setSelectedCountry={setSelectedCountry}
+        />
+      </FilterContainer>
     </div>
   );
 };
