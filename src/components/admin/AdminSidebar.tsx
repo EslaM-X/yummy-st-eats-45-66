@@ -5,7 +5,6 @@ import { BarChart3, Users, Store, ShoppingCart, Settings, LogOut, CreditCard, Re
 interface AdminSidebarProps {
   activeTab: string;
   onTabChange: (value: string) => void;
-  handleLogout: () => void;
   collapsed: boolean;
   toggleCollapsed: () => void;
 }
@@ -13,7 +12,6 @@ interface AdminSidebarProps {
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ 
   activeTab, 
   onTabChange, 
-  handleLogout,
   collapsed,
   toggleCollapsed
 }) => {
@@ -75,7 +73,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
       <div className="px-3 mt-auto">
         <button
-          onClick={handleLogout}
           className="flex items-center text-right w-full px-3 py-3 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-150"
         >
           <div className={`flex ${collapsed ? 'justify-center w-full' : 'ml-auto'}`}>

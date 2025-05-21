@@ -33,7 +33,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
           activeTab={activeTab}
           onTabChange={onTabChange}
           collapsed={sidebarCollapsed}
-          setCollapsed={setSidebarCollapsed}
+          toggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
       </div>
 
@@ -54,7 +54,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
             activeTab={activeTab}
             onTabChange={onTabChange}
             collapsed={false}
-            setCollapsed={() => {}}
+            toggleCollapsed={() => {}}
           />
         </SheetContent>
       </Sheet>

@@ -199,7 +199,7 @@ export class VirtualCardService {
       }
       
       const { data: result, error } = await supabase.functions.invoke("get-pending-refunds", {
-        query: { status }
+        body: { status } // Using body instead of query parameter
       });
       
       if (error) {
