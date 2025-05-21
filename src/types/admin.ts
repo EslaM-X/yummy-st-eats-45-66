@@ -1,9 +1,7 @@
-export interface OrderItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
 
+// تعريفات الأنواع المستخدمة في واجهة الإدارة
+
+// نوع الطلب
 export interface Order {
   id: string;
   customer: {
@@ -23,46 +21,41 @@ export interface Order {
   deliveryTime: string | null;
 }
 
-export interface VirtualCard {
-  id: string;
-  user_id: string;
-  card_number: string;
-  holder_name: string;
-  expiry_date: string;
-  cvv: string;
-  balance: number;
-  is_active: boolean;
-  created_at: string;
-  card_type: 'virtual' | 'physical';
-  is_default: boolean;
-  last_used?: string;
+// نوع عنصر الطلب
+export interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
 }
 
-export interface AdminSettings {
-  general: {
-    appName: string;
-    adminEmail: string;
-    supportPhone: string;
-    maxDistance: number;
-    defaultLanguage: string;
-  };
-  notifications: {
-    emailNotifications: boolean;
-    pushNotifications: boolean;
-    smsNotifications: boolean;
-    orderUpdates: boolean;
-    marketingEmails: boolean;
-  };
-  payment: {
-    acceptCreditCards: boolean;
-    acceptCashOnDelivery: boolean;
-    acceptWallet: boolean;
-    commissionRate: number;
-    vatRate: number;
-  };
-  security: {
-    twoFactorAuth: boolean;
-    requireStrongPasswords: boolean;
-    sessionTimeout: number;
-  };
+// نوع المستخدم
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: 'نشط' | 'محظور' | 'معلق';
+  role: 'مستخدم' | 'مدير مطعم' | 'مشرف';
+  orders: number;
+  joinDate: string;
+}
+
+// نوع المطعم
+export interface Restaurant {
+  id: string;
+  name: string;
+  type: string;
+  address: string;
+  status: 'مفتوح' | 'مغلق' | 'معلق';
+  rating: number;
+  orders: number;
+  joiningDate: string;
+  imageUrl: string;
+}
+
+// نوع التنبيه
+export interface Alert {
+  type: "error" | "success" | "warning" | "info";
+  title: string;
+  message: string;
 }

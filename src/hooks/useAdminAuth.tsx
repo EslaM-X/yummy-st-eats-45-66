@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { cleanupAuthState } from '@/components/auth/AuthUtils';
 
 export const useAdminAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -33,7 +34,7 @@ export const useAdminAuth = () => {
           .from('profiles')
           .select('user_type')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
         
         if (profileError) {
           console.error('Error fetching user profile:', profileError);
@@ -70,14 +71,19 @@ export const useAdminAuth = () => {
 
   const handleLogout = async () => {
     try {
+      // Clean up auth state
+      cleanupAuthState();
+      
+      // Sign out from Supabase
       await supabase.auth.signOut();
+      
       toast({
         title: "تسجيل الخروج",
         description: "تم تسجيل خروجك بنجاح",
       });
-      navigate('/');
-      setIsAuthenticated(false);
-      setIsAdmin(false);
+      
+      // Force page reload for a clean state
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
       toast({

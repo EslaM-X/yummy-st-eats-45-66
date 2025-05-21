@@ -57,6 +57,9 @@ const AdminLoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Clean up any existing auth state
+      clearAuthState();
+      
       // تسجيل الدخول باستخدام Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -112,6 +115,20 @@ const AdminLoginPage: React.FC = () => {
     }
   };
 
+  // تنظيف حالة المصادقة
+  const clearAuthState = () => {
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+      }
+    });
+    Object.keys(sessionStorage || {}).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  };
+
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -143,7 +160,7 @@ const AdminLoginPage: React.FC = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="admin@example.com"
                       required
-                      className={`w-full pr-10 rtl:pr-4 rtl:pl-10 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}
+                      className={`w-full pr-10 rtl:pr-4 rtl:pl-10 text-black dark:text-white ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}
                     />
                   </div>
                 </div>
@@ -161,7 +178,8 @@ const AdminLoginPage: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className={`w-full pr-10 rtl:pr-4 rtl:pl-10 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}
+                    className={`w-full pr-10 rtl:pr-4 rtl:pl-10 text-black dark:text-white ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}
+                    style={{color: theme === 'dark' ? '#fff' : '#000'}}
                   />
                   <button
                     type="button"

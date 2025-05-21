@@ -26,17 +26,22 @@ serve(async (req) => {
       throw new Error('Missing required fields: to, subject, or html');
     }
     
+    console.log(`Sending email to ${to} with subject: ${subject}`);
+    
     // إرسال البريد الإلكتروني
     const { data, error } = await resend.emails.send({
-      from: 'ST🍕 Eat <noreply@yourdomain.com>', // قم بتغيير هذا إلى نطاق البريد الإلكتروني الخاص بك
+      from: 'ST🍕 Eat <onboarding@resend.dev>', // قم بتغيير هذا إلى نطاق البريد الإلكتروني الخاص بك
       to: [to],
       subject: subject,
       html: html,
     });
     
     if (error) {
+      console.error('Error sending email:', error);
       throw error;
     }
+    
+    console.log('Email sent successfully:', data);
     
     return new Response(JSON.stringify({ success: true, data }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

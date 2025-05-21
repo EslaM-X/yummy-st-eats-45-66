@@ -20,11 +20,12 @@ const AdminOrders: React.FC = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
+        console.log("Fetching orders from Supabase...");
         
         // محاولة جلب البيانات من Supabase
         const { data, error } = await supabase
           .from('orders')
-          .select('*, user_id, restaurant_id');
+          .select('*');
         
         if (error) {
           console.error('Error fetching orders:', error);
@@ -32,6 +33,8 @@ const AdminOrders: React.FC = () => {
           setOrders(generateMockOrders());
           return;
         }
+        
+        console.log("Orders data fetched:", data);
         
         if (data && data.length > 0) {
           // تحميل بيانات المستخدمين والمطاعم
@@ -41,14 +44,22 @@ const AdminOrders: React.FC = () => {
               .from('profiles')
               .select('*')
               .eq('id', order.user_id)
-              .single();
+              .maybeSingle();
+            
+            if (userError) {
+              console.error('Error fetching user profile:', userError);
+            }
             
             // جلب بيانات المطعم
             const { data: restaurantData, error: restaurantError } = await supabase
               .from('restaurants')
               .select('*')
               .eq('id', order.restaurant_id)
-              .single();
+              .maybeSingle();
+            
+            if (restaurantError) {
+              console.error('Error fetching restaurant:', restaurantError);
+            }
             
             const formattedItems: OrderItem[] = Array.isArray(order.items) ? 
               order.items.map((item: any) => ({
@@ -78,9 +89,11 @@ const AdminOrders: React.FC = () => {
             } as Order;
           }));
           
+          console.log("Orders with details:", ordersWithDetails);
           setOrders(ordersWithDetails);
         } else {
           // استخدام البيانات الوهمية إذا كانت البيانات فارغة
+          console.log("No orders found, using mock data");
           setOrders(generateMockOrders());
         }
       } catch (error) {
@@ -281,6 +294,8 @@ const AdminOrders: React.FC = () => {
         case 'ملغي': dbStatus = 'cancelled'; break;
         default: dbStatus = 'new';
       }
+      
+      console.log(`Updating order ${orderId} status to ${dbStatus}`);
       
       // محاولة تحديث حالة الطلب في Supabase
       const { error } = await supabase

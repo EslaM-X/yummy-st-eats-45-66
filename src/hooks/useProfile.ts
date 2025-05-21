@@ -8,17 +8,20 @@ export const useProfile = (user: User | null) => {
 
   const fetchProfile = useCallback(async (userId: string) => {
     try {
+      console.log("Fetching profile for user:", userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error('Error fetching profile:', error);
         setProfile(null); // Clear profile on error
         return;
       }
+      
+      console.log("Profile data:", data);
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -28,7 +31,10 @@ export const useProfile = (user: User | null) => {
 
   useEffect(() => {
     if (user?.id) {
-      fetchProfile(user.id);
+      // Use setTimeout to prevent potential deadlocks with auth state changes
+      setTimeout(() => {
+        fetchProfile(user.id);
+      }, 0);
     } else {
       setProfile(null); // Clear profile if no user
     }
@@ -42,4 +48,3 @@ export const useProfile = (user: User | null) => {
 
   return { profile, refreshProfile, fetchProfile }; // Exposing fetchProfile for direct use if needed
 };
-

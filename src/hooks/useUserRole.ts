@@ -8,17 +8,20 @@ export const useUserRole = (user: User | null) => {
 
   const checkUserRole = useCallback(async (userId: string) => {
     try {
+      console.log("Checking user role for:", userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('user_type')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error('Error checking user role:', error);
         setIsAdmin(false); // Reset on error
         return;
       }
+      
+      console.log("User role data:", data);
       setIsAdmin(data?.user_type === 'admin');
     } catch (error) {
       console.error('Error checking user role:', error);
@@ -28,7 +31,10 @@ export const useUserRole = (user: User | null) => {
 
   useEffect(() => {
     if (user?.id) {
-      checkUserRole(user.id);
+      // Use setTimeout to prevent potential deadlocks with auth state changes
+      setTimeout(() => {
+        checkUserRole(user.id);
+      }, 0);
     } else {
       setIsAdmin(false); // Reset if no user
     }
@@ -36,4 +42,3 @@ export const useUserRole = (user: User | null) => {
 
   return { isAdmin, checkUserRole }; // Exposing checkUserRole for direct use if needed
 };
-
