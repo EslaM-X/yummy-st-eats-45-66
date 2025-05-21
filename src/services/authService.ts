@@ -1,22 +1,16 @@
-
 import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast'; // Ensure this path is correct or pass toast
 import { cleanupAuthState } from '@/components/auth/AuthUtils';
+import type { toast as ToastFunctionType } from '@/hooks/use-toast'; // Import type for toast function
 
-// Note: The useToast hook cannot be called directly at the top level of a module.
-// It must be called within a React component or a custom hook.
-// For simplicity in this refactor, we'll assume toast is passed if needed or handled by the caller.
-// Or, we can make these functions accept toast as a parameter.
-// For this iteration, I'll have them use it directly, assuming it might be refactored later if issues arise in a non-component context.
-// A better approach would be to pass the toast function as an argument to signIn and signUp.
+// Note: The useToast hook is no longer called directly in this module.
+// The toast function is now passed as a parameter to signInUser and signUpUser.
 
-export const signInUser = async (email: string, password: string) => {
-  // toast function needs to be obtained from useToast() in a component/hook scope
-  // This is a placeholder for where you'd get the toast function
-  const { toast } = useToast(); // This will cause an error if authService is not used in a component context.
-                                // For now, we'll proceed, but this is a common refactoring challenge.
-                                // A more robust solution is to pass `toast` as an argument.
-
+export const signInUser = async (
+  email: string,
+  password: string,
+  // Use the type of the toast function from shadcn/ui
+  toast: typeof ToastFunctionType
+) => {
   try {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
@@ -31,8 +25,13 @@ export const signInUser = async (email: string, password: string) => {
   }
 };
 
-export const signUpUser = async (email: string, password: string, metadata?: any) => {
-  const { toast } = useToast(); // Same issue as above
+export const signUpUser = async (
+  email: string,
+  password: string,
+  metadata: any | undefined, // Keep metadata optional
+  // Use the type of the toast function from shadcn/ui
+  toast: typeof ToastFunctionType
+) => {
   console.log("Signing up with data:", { email, metadata });
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -47,6 +46,7 @@ export const signUpUser = async (email: string, password: string, metadata?: any
     if (error) throw error;
     console.log("Sign up successful:", data);
 
+    // ... keep existing code (custom email sending logic)
     try {
       const response = await fetch(`${SUPABASE_URL}/functions/v1/custom-email`, {
         method: 'POST',
@@ -98,4 +98,3 @@ export const signOutUser = async () => {
   await supabase.auth.signOut();
   cleanupAuthState();
 };
-
