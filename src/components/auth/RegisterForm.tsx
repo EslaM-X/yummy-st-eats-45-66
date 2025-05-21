@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from '@/contexts/AuthContext';
 
 // Register form schema
 const registerSchema = z.object({
@@ -29,6 +31,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const { language } = useLanguage();
+  const { signUp } = useAuth();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -46,21 +49,25 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
     setLoading(true);
     try {
-      // تسجيل حساب جديد
-      const { data, error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          data: {
-            full_name: values.fullName,
-            username: values.username,
-            phone: values.phone,
-            user_type: values.userType
-          }
-        }
+      console.log("Attempting to register user with data:", { 
+        email: values.email, 
+        fullName: values.fullName,
+        username: values.username,
+        phone: values.phone,
+        userType: values.userType 
+      });
+      
+      // استخدام وظيفة signUp من AuthContext بدلاً من الاتصال المباشر بـ Supabase
+      const { error, data } = await signUp(values.email, values.password, {
+        full_name: values.fullName,
+        username: values.username,
+        phone: values.phone,
+        user_type: values.userType
       });
       
       if (error) throw error;
+      
+      console.log("Registration successful:", data);
       
       // تسجيل نجاح إنشاء الحساب
       toast({
