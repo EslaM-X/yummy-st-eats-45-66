@@ -29,27 +29,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { toast } = useToast();
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-        checkUserRole(session.user.id);
-      }
-      setLoading(false);
-      setIsLoading(false);
-    });
-
-    // Listen for auth changes
+    // تسجيل الاشتراك في تغييرات حالة المصادقة - يجب أن يكون أولاً
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          fetchProfile(session.user.id);
-          checkUserRole(session.user.id);
+          setTimeout(() => {
+            fetchProfile(session.user.id);
+            checkUserRole(session.user.id);
+          }, 0);
         }
         
         if (event === "SIGNED_OUT") {
@@ -61,6 +51,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsLoading(false);
       }
     );
+
+    // الحصول على الجلسة الحالية
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        fetchProfile(session.user.id);
+        checkUserRole(session.user.id);
+      }
+      
+      setLoading(false);
+      setIsLoading(false);
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -113,7 +117,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return { error: null };
     } catch (error: any) {
       toast({
-        title: "Login failed",
+        title: "فشل تسجيل الدخول",
         description: error.message,
         variant: "destructive",
       });
@@ -133,11 +137,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (error) throw error;
       
-      // The profile will be created automatically by the trigger
+      // سيتم إنشاء الملف الشخصي تلقائيًا بواسطة المشغل (trigger)
       return { error: null, data };
     } catch (error: any) {
       toast({
-        title: "Registration failed",
+        title: "فشل التسجيل",
         description: error.message,
         variant: "destructive",
       });
@@ -172,7 +176,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('يجب استخدام useAuth داخل AuthProvider');
   }
   return context;
 };

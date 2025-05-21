@@ -24,33 +24,54 @@ const AdminOrders: React.FC = () => {
         // محاولة جلب البيانات من Supabase
         const { data, error } = await supabase
           .from('orders')
-          .select('*, customer:user_id(*), restaurant:restaurant_id(*)');
+          .select('*, user_id, restaurant_id');
         
         if (error) {
           console.error('Error fetching orders:', error);
           // استخدام البيانات الوهمية في حالة حدوث خطأ
           setOrders(generateMockOrders());
-        } else if (data && data.length > 0) {
-          // تنسيق البيانات لتناسب واجهة المستخدم
-          const formattedOrders = data.map(order => ({
-            id: order.id,
-            customer: {
-              name: order.customer?.full_name || 'عميل',
-              address: order.delivery_address || 'عنوان التوصيل',
-              phone: order.customer?.phone || '05xxxxxxxx',
-            },
-            restaurant: {
-              name: order.restaurant?.name || 'مطعم',
-              address: order.restaurant?.address || 'عنوان المطعم',
-            },
-            items: order.items || [],
-            status: mapOrderStatus(order.status),
-            paymentMethod: mapPaymentMethod(order.payment_method),
-            total: order.total_amount || 0,
-            orderDate: formatOrderDate(order.created_at),
-            deliveryTime: order.delivered_at ? formatOrderDate(order.delivered_at) : null,
+          return;
+        }
+        
+        if (data && data.length > 0) {
+          // تحميل بيانات المستخدمين والمطاعم
+          const ordersWithDetails = await Promise.all(data.map(async (order) => {
+            // جلب بيانات المستخدم
+            const { data: userData, error: userError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', order.user_id)
+              .single();
+            
+            // جلب بيانات المطعم
+            const { data: restaurantData, error: restaurantError } = await supabase
+              .from('restaurants')
+              .select('*')
+              .eq('id', order.restaurant_id)
+              .single();
+            
+            // تنسيق الطلب للعرض
+            return {
+              id: order.id,
+              customer: {
+                name: userData?.full_name || 'عميل',
+                address: order.delivery_address || 'عنوان التوصيل',
+                phone: userData?.phone || '05xxxxxxxx',
+              },
+              restaurant: {
+                name: restaurantData?.name || 'مطعم',
+                address: restaurantData?.address || 'عنوان المطعم',
+              },
+              items: order.items || [],
+              status: mapOrderStatus(order.status),
+              paymentMethod: mapPaymentMethod(order.payment_method),
+              total: order.total_amount || 0,
+              orderDate: formatOrderDate(order.created_at),
+              deliveryTime: order.delivered_at ? formatOrderDate(order.delivered_at) : null,
+            };
           }));
-          setOrders(formattedOrders);
+          
+          setOrders(ordersWithDetails);
         } else {
           // استخدام البيانات الوهمية إذا كانت البيانات فارغة
           setOrders(generateMockOrders());
@@ -272,7 +293,7 @@ const AdminOrders: React.FC = () => {
       }
       
       // تحديث الحالة محليًا في حالة النجاح
-      setOrders(prev => prev.map(order => 
+      setOrders(orders.map(order => 
         order.id === orderId ? { ...order, status } : order
       ));
       
@@ -281,7 +302,7 @@ const AdminOrders: React.FC = () => {
         title: "تحديث حالة الطلب",
         description: `تم تحديث حالة الطلب ${orderId} إلى ${status}`,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in updating order status:', error);
       toast({
         title: "خطأ في تحديث الحالة",
@@ -309,7 +330,7 @@ const AdminOrders: React.FC = () => {
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-              <span className="ml-3 text-lg">جاري تحميل الطلبات...</span>
+              <span className="mr-3 text-lg">جاري تحميل الطلبات...</span>
             </div>
           ) : (
             <OrdersTable 
