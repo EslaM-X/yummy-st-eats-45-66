@@ -29,7 +29,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-800 p-4 rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] animate-slide-up">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-safe">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t('categoryFilterLabel')}
