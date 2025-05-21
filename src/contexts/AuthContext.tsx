@@ -31,10 +31,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     // تسجيل الاشتراك في تغييرات حالة المصادقة - يجب أن يكون أولاً
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
+        // استخدام setTimeout للتعامل مع الوظائف غير المتزامنة بشكل آمن
         if (session?.user) {
           setTimeout(() => {
             fetchProfile(session.user.id);
@@ -79,7 +80,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .eq('id', userId)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
       
       setProfile(data);
     } catch (error) {
@@ -102,7 +106,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .eq('id', userId)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error checking user role:', error);
+        return;
+      }
       
       setIsAdmin(data?.user_type === 'admin');
     } catch (error) {
@@ -112,7 +119,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       return { error: null };
     } catch (error: any) {
@@ -126,25 +133,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signUp = async (email: string, password: string, metadata?: any) => {
+    console.log("Signing up with data:", { email, metadata });
     try {
+      // إضافة حالة أكثر توضيحاً لمتابعة عملية التسجيل
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: metadata,
+          emailRedirectTo: window.location.origin + '/login'
         },
       });
       
       if (error) throw error;
       
-      // سيتم إنشاء الملف الشخصي تلقائيًا بواسطة المشغل (trigger)
+      console.log("Sign up successful:", data);
+      
+      // نجاح التسجيل
+      toast({
+        title: "تم إنشاء الحساب بنجاح",
+        description: "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب.",
+      });
+      
       return { error: null, data };
     } catch (error: any) {
+      console.error("Registration error details:", error);
+      
+      // معالجة أكثر تفصيلاً للأخطاء
+      let errorMessage = "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.";
+      
+      if (error.message?.includes("unique constraint")) {
+        errorMessage = "البريد الإلكتروني أو اسم المستخدم مستخدم بالفعل";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
-        title: "فشل التسجيل",
-        description: error.message,
+        title: "فشل إنشاء الحساب",
+        description: errorMessage,
         variant: "destructive",
       });
+      
       return { error, data: null };
     }
   };

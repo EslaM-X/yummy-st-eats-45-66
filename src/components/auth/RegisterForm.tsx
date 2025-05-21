@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,9 +5,8 @@ import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from '@/contexts/AuthContext';
 
 // Register form schema
@@ -49,7 +47,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
     setLoading(true);
     try {
-      console.log("Attempting to register user with data:", { 
+      console.log("Attempting to register with data:", { 
         email: values.email, 
         fullName: values.fullName,
         username: values.username,
@@ -57,7 +55,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
         userType: values.userType 
       });
       
-      // استخدام وظيفة signUp من AuthContext بدلاً من الاتصال المباشر بـ Supabase
+      // استخدام وظيفة signUp من AuthContext
       const { error, data } = await signUp(values.email, values.password, {
         full_name: values.fullName,
         username: values.username,
@@ -67,38 +65,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       
       if (error) throw error;
       
-      console.log("Registration successful:", data);
+      console.log("Registration response:", data);
       
-      // تسجيل نجاح إنشاء الحساب
-      toast({
-        title: "تم إنشاء الحساب بنجاح",
-        description: "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب.",
-      });
-      
-      if (data.user && !data.session) {
-        // الحساب يحتاج إلى تأكيد بالبريد الإلكتروني
-        if (onSuccess) {
-          onSuccess();
-        }
-      } else if (data.session) {
-        // تم تسجيل الدخول تلقائياً
-        window.location.href = '/';
+      if (onSuccess) {
+        onSuccess();
       }
     } catch (error: any) {
-      // معالجة الأخطاء
       console.error("Registration error:", error);
-      let errorMessage = error.message || "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.";
-      
-      // رسائل خطأ أكثر تحديداً
-      if (error.message?.includes("unique constraint")) {
-        errorMessage = "البريد الإلكتروني أو اسم المستخدم مستخدم بالفعل";
-      }
-      
-      toast({
-        title: "فشل إنشاء الحساب",
-        description: errorMessage,
-        variant: "destructive",
-      });
     } finally {
       setLoading(false);
     }

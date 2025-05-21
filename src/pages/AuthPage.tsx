@@ -9,31 +9,47 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
+import { useToast } from '@/components/ui/use-toast';
 
 const AuthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("login");
   const navigate = useNavigate();
   const { language } = useLanguage();
   const [session, setSession] = useState<any>(null);
+  const { toast } = useToast();
 
   // التحقق من وجود جلسة تسجيل دخول نشطة
   useEffect(() => {
     // التحقق من جلسة تسجيل الدخول الحالية
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-      
-      // إذا كان المستخدم مسجّل الدخول بالفعل، توجيهه إلى الصفحة الرئيسية
-      if (data.session) {
-        navigate('/');
+      try {
+        const { data } = await supabase.auth.getSession();
+        setSession(data.session);
+        
+        // إذا كان المستخدم مسجّل الدخول بالفعل، توجيهه إلى الصفحة الرئيسية
+        if (data.session) {
+          navigate('/');
+        }
+      } catch (error) {
+        console.error("Session check error:", error);
+        toast({
+          title: "خطأ في التحقق من الجلسة",
+          description: "حدث خطأ أثناء التحقق من حالة تسجيل الدخول الخاصة بك.",
+          variant: "destructive",
+        });
       }
     };
     
     // الاستماع إلى تغييرات حالة المصادقة
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state changed:", event, session);
         setSession(session);
         if (session) {
+          toast({
+            title: "تم تسجيل الدخول بنجاح",
+            description: "مرحبًا بك مجدداً!",
+          });
           navigate('/');
         }
       }
@@ -45,7 +61,22 @@ const AuthPage: React.FC = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, toast]);
+
+  const handleLoginSuccess = () => {
+    toast({
+      title: "تم تسجيل الدخول بنجاح",
+      description: "مرحباً بعودتك!",
+    });
+  };
+
+  const handleRegisterSuccess = () => {
+    toast({
+      title: "تم إنشاء الحساب بنجاح",
+      description: "يرجى التحقق من بريدك الإلكتروني لتأكيد حسابك.",
+    });
+    setActiveTab("login");
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -74,11 +105,11 @@ const AuthPage: React.FC = () => {
               </TabsList>
               
               <TabsContent value="login">
-                <LoginForm onSuccess={() => setActiveTab("login")} />
+                <LoginForm onSuccess={handleLoginSuccess} />
               </TabsContent>
               
               <TabsContent value="register">
-                <RegisterForm onSuccess={() => setActiveTab("login")} />
+                <RegisterForm onSuccess={handleRegisterSuccess} />
               </TabsContent>
             </Tabs>
           </CardContent>

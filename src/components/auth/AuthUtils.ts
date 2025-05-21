@@ -18,3 +18,23 @@ export const cleanupAuthState = () => {
     }
   });
 };
+
+// دالة للتحقق من صلاحية التوكن
+export const isValidToken = () => {
+  try {
+    const tokenString = localStorage.getItem('sb-podtrairfwunyjzdvmst-auth-token');
+    if (!tokenString) return false;
+    
+    const token = JSON.parse(tokenString);
+    if (!token || !token.expires_at) return false;
+    
+    // التحقق من انتهاء صلاحية التوكن
+    const expiresAt = new Date(token.expires_at * 1000);
+    const now = new Date();
+    
+    return expiresAt > now;
+  } catch (error) {
+    console.error('Error checking token validity:', error);
+    return false;
+  }
+};
