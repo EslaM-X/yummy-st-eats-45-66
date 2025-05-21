@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 interface OrdersTableProps {
   orders: Order[];
   onViewOrder: (orderId: string) => void;
-  onUpdateStatus: (orderId: string, status: string) => void;
+  onUpdateStatus: (orderId: string, status: Order['status']) => void;
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({

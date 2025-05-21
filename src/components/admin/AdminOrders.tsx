@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from '@/hooks/use-toast';
 import OrdersFilter from './orders/OrdersFilter';
 import OrdersTable from './orders/OrdersTable';
-import { Order } from '@/types/admin';
+import { Order, OrderItem } from '@/types/admin';
 import { supabase } from '@/integrations/supabase/client';
 
 const AdminOrders: React.FC = () => {
@@ -50,6 +50,13 @@ const AdminOrders: React.FC = () => {
               .eq('id', order.restaurant_id)
               .single();
             
+            const formattedItems: OrderItem[] = Array.isArray(order.items) ? 
+              order.items.map((item: any) => ({
+                name: item.name || 'منتج',
+                quantity: item.quantity || 1,
+                price: item.price || 0
+              })) : [];
+
             // تنسيق الطلب للعرض
             return {
               id: order.id,
@@ -62,13 +69,13 @@ const AdminOrders: React.FC = () => {
                 name: restaurantData?.name || 'مطعم',
                 address: restaurantData?.address || 'عنوان المطعم',
               },
-              items: order.items || [],
+              items: formattedItems,
               status: mapOrderStatus(order.status),
               paymentMethod: mapPaymentMethod(order.payment_method),
               total: order.total_amount || 0,
               orderDate: formatOrderDate(order.created_at),
               deliveryTime: order.delivered_at ? formatOrderDate(order.delivered_at) : null,
-            };
+            } as Order;
           }));
           
           setOrders(ordersWithDetails);
@@ -262,11 +269,11 @@ const AdminOrders: React.FC = () => {
     });
   };
 
-  const handleUpdateStatus = async (orderId: string, status: string) => {
+  const handleUpdateStatus = async (orderId: string, newStatus: Order['status']) => {
     try {
       // تحويل حالة الطلب إلى الصيغة المناسبة لقاعدة البيانات
       let dbStatus = '';
-      switch (status) {
+      switch (newStatus) {
         case 'جديد': dbStatus = 'new'; break;
         case 'قيد التحضير': dbStatus = 'preparing'; break;
         case 'قيد التوصيل': dbStatus = 'delivering'; break;
@@ -294,13 +301,13 @@ const AdminOrders: React.FC = () => {
       
       // تحديث الحالة محليًا في حالة النجاح
       setOrders(orders.map(order => 
-        order.id === orderId ? { ...order, status } : order
+        order.id === orderId ? { ...order, status: newStatus } : order
       ));
       
       // عرض رسالة نجاح
       toast({
         title: "تحديث حالة الطلب",
-        description: `تم تحديث حالة الطلب ${orderId} إلى ${status}`,
+        description: `تم تحديث حالة الطلب ${orderId} إلى ${newStatus}`,
       });
     } catch (error: any) {
       console.error('Error in updating order status:', error);

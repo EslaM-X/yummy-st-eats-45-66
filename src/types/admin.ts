@@ -1,3 +1,8 @@
+export interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
 
 export interface Order {
   id: string;
@@ -10,16 +15,27 @@ export interface Order {
     name: string;
     address: string;
   };
-  items: {
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
+  items: OrderItem[];
   status: 'جديد' | 'قيد التحضير' | 'قيد التوصيل' | 'مكتمل' | 'ملغي';
   paymentMethod: 'بطاقة' | 'نقداً عند الاستلام' | 'محفظة إلكترونية';
   total: number;
   orderDate: string;
   deliveryTime: string | null;
+}
+
+export interface VirtualCard {
+  id: string;
+  user_id: string;
+  card_number: string;
+  holder_name: string;
+  expiry_date: string;
+  cvv: string;
+  balance: number;
+  is_active: boolean;
+  created_at: string;
+  card_type: 'virtual' | 'physical';
+  is_default: boolean;
+  last_used?: string;
 }
 
 export interface AdminSettings {
