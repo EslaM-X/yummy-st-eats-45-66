@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Transaction } from '@/components/wallet/TransactionList'; // Assuming Transaction type is defined here
+import { Transaction } from '@/services/VirtualCardService';
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -42,12 +42,15 @@ const TransactionRow: React.FC<TransactionRowProps> = ({ transaction }) => {
   };
 
   const currency = language === 'ar' ? 'ر.س' : 'SAR';
+  
+  // استخدام تاريخ المعاملة أو تنسيق تاريخ الإنشاء
+  const displayDate = transaction.date || new Date(transaction.created_at).toLocaleDateString();
 
   return (
     <div className="flex items-center justify-between p-4 border-b dark:border-gray-700 last:border-b-0">
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{transaction.description}</p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">{transaction.date}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{displayDate}</p>
       </div>
       <div className="ml-4 rtl:mr-4 rtl:ml-0 flex-shrink-0 text-right">
         <p className={`text-sm font-semibold ${transaction.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>

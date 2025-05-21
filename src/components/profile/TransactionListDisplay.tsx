@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Transaction } from '@/components/wallet/TransactionList';
+import { Transaction } from '@/services/VirtualCardService';
 import TransactionRow from './TransactionRow';
 import { useLanguage } from '@/contexts/LanguageContext';
 
