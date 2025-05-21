@@ -1,12 +1,1 @@
-
-project_id = "ioikeckohhxlchmlpgxp"
-
-[functions]
-[functions.process-payment]
-verify_jwt = true
-
-[functions.process-refund]
-verify_jwt = true
-
-[functions.get-pending-refunds]
-verify_jwt = true
+project_id = "podtrairfwunyjzdvmst"
