@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
@@ -160,7 +159,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+            'apikey': SUPABASE_PUBLISHABLE_KEY // Corrected header
           },
           body: JSON.stringify({
             email: email,
@@ -170,10 +169,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
 
         if (!response.ok) {
-          console.warn('تم إنشاء الحساب ولكن قد يكون هناك مشكلة في إرسال البريد الإلكتروني المخصص');
+          const errorData = await response.json();
+          console.warn('تم إنشاء الحساب ولكن قد يكون هناك مشكلة في إرسال البريد الإلكتروني المخصص:', errorData);
+          // يمكنك إضافة تنبيه للمستخدم هنا إذا كنت ترغب في ذلك
         }
       } catch (emailError) {
         console.error('خطأ في إرسال البريد المخصص:', emailError);
+         // يمكنك إضافة تنبيه للمستخدم هنا إذا كنت ترغب في ذلك
       }
       
       // نجاح التسجيل
@@ -189,7 +191,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // معالجة أكثر تفصيلاً للأخطاء
       let errorMessage = "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.";
       
-      if (error.message?.includes("unique constraint")) {
+      if (error.message?.includes("User already registered")) {
+        errorMessage = "هذا البريد الإلكتروني مسجل بالفعل.";
+      } else if (error.message?.includes("unique constraint") || error.message?.includes("already exists")) {
         errorMessage = "البريد الإلكتروني أو اسم المستخدم مستخدم بالفعل";
       } else if (error.message) {
         errorMessage = error.message;
