@@ -1,11 +1,9 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-data';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CountryDisplay } from '@/components/ui/country-display';
 import { Globe, Search } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { Input } from '@/components/ui/input';
 import { 
   Drawer,
@@ -25,7 +23,6 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
   const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [open, setOpen] = useState(false);
-  const isMobile = useIsMobile();
   
   // Filter countries based on search query
   const filteredCountries = searchQuery.trim() === ''
@@ -51,21 +48,16 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
     setOpen(false);
   };
 
-  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    e.stopPropagation();
-  };
-
   return (
-    <div className="flex flex-col gap-2">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    <>
+      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
         {t('countryFilterLabel') || 'تصفية حسب الدولة'}
       </label>
       
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
           <button className="flex items-center gap-2 p-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                           bg-white dark:bg-gray-800 text-sm text-start w-full h-10">
+                        bg-white dark:bg-gray-700 text-sm text-start w-full h-10 truncate">
             {selectedCountry ? (
               <CountryDisplay 
                 country={countries.find(c => c.code === selectedCountry)}
@@ -73,52 +65,52 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
               />
             ) : (
               <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <Globe className="w-4 h-4" />
-                {t('allCountriesOption') || 'كل الدول'}
+                <Globe className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{t('allCountriesOption') || 'كل الدول'}</span>
               </span>
             )}
           </button>
         </DrawerTrigger>
         
         <DrawerContent className="max-h-[80vh]">
-          <div className="p-4">
-            <div className="mb-4">
+          <div className="p-3">
+            <div className="mb-2">
               <div className="relative">
                 <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
                 <Input
                   placeholder={t('searchCountries') || 'بحث عن دولة...'}
                   value={searchQuery}
-                  onChange={handleSearchInput}
-                  className="pl-8 pr-3 w-full"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8 pr-3 w-full text-sm py-1"
                   autoComplete="off"
                 />
               </div>
             </div>
             
-            <div className="grid grid-cols-1 gap-2 max-h-[60vh] overflow-auto">
+            <div className="grid grid-cols-1 gap-1 max-h-[60vh] overflow-auto">
               <button
                 onClick={() => handleCountryChange('all')}
-                className={`flex items-center gap-2 p-2 rounded-md text-start
+                className={`flex items-center gap-2 p-2 rounded-md text-start text-sm
                           ${!selectedCountry ? 'bg-primary/15' : 'hover:bg-primary/5'}`}
               >
-                <Globe className="h-5 w-5" />
+                <Globe className="h-4 w-4 flex-shrink-0" />
                 <span>{t('allCountriesOption') || 'كل الدول'}</span>
               </button>
               
               {/* Favorite countries */}
-              <div className="py-2">
-                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+              <div className="py-1">
+                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                   {t('popularCountries') || 'الدول الشائعة'}
                 </h3>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1">
                   {favoriteCountries.map(country => (
                     <button
                       key={country.code}
                       onClick={() => handleCountryChange(country.code)}
-                      className={`flex flex-col items-center justify-center p-2 rounded-md
+                      className={`flex flex-col items-center justify-center p-1 rounded-md text-sm
                                 ${selectedCountry === country.code ? 'bg-primary/15' : 'hover:bg-primary/5'}`}
                     >
-                      <span className="text-xl mb-1">{country.flagEmoji}</span>
+                      <span className="text-lg mb-0.5">{country.flagEmoji}</span>
                       <span className="text-xs truncate w-full text-center">
                         {language === 'ar' ? country.nameAr : country.name}
                       </span>
@@ -128,23 +120,25 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
               </div>
               
               {/* All countries */}
-              <div className="py-2">
-                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+              <div className="py-1">
+                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                   {t('allCountriesLabel') || 'كل الدول'}
                 </h3>
-                {filteredCountries.map(country => (
-                  <button
-                    key={country.code}
-                    onClick={() => handleCountryChange(country.code)}
-                    className={`flex items-center gap-2 p-2 w-full rounded-md text-start
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                  {filteredCountries.map(country => (
+                    <button
+                      key={country.code}
+                      onClick={() => handleCountryChange(country.code)}
+                      className={`flex items-center gap-2 p-1.5 w-full rounded-md text-start text-sm
                               ${selectedCountry === country.code ? 'bg-primary/15' : 'hover:bg-primary/5'}`}
-                  >
-                    <CountryDisplay country={country} showName={true} />
-                  </button>
-                ))}
+                    >
+                      <CountryDisplay country={country} showName={true} />
+                    </button>
+                  ))}
+                </div>
                 
                 {filteredCountries.length === 0 && (
-                  <div className="py-4 text-center text-gray-500 dark:text-gray-400">
+                  <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
                     {t('noCountriesFound') || 'لا توجد دول مطابقة'}
                   </div>
                 )}
@@ -153,7 +147,7 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
           </div>
         </DrawerContent>
       </Drawer>
-    </div>
+    </>
   );
 };
 

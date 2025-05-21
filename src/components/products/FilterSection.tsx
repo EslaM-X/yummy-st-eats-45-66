@@ -28,16 +28,16 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   const { t } = useLanguage();
   
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-800 p-4 rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] animate-slide-up">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-safe">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-800 p-3 rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] animate-slide-up overflow-hidden">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pb-safe max-h-[80vh] overflow-y-auto">
+        <div className="space-y-1">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
             {t('categoryFilterLabel')}
           </label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+            className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
           >
             <option value="">{t('allCategoriesOption')}</option>
             {categories.map((category, index) => (
@@ -46,14 +46,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           </select>
         </div>
         
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div className="space-y-1">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
             {t('sortByFilterLabel')}
           </label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+            className="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
           >
             <option value="">{t('sortByOptionDefault')}</option>
             <option value="price-asc">{t('sortByOptionPriceAsc')}</option>
@@ -62,16 +62,19 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           </select>
         </div>
         
-        <CountryFilter 
-          selectedCountry={selectedCountry}
-          onCountryChange={setSelectedCountry}
-        />
+        <div className="space-y-1">
+          <CountryFilter 
+            selectedCountry={selectedCountry}
+            onCountryChange={setSelectedCountry}
+          />
+        </div>
         
         <div className="flex items-end">
           <Button 
             onClick={handleClearFilters}
             variant="outline"
-            className="w-full"
+            size="sm"
+            className="w-full text-sm h-10"
           >
             {t('resetFiltersButton')}
           </Button>
