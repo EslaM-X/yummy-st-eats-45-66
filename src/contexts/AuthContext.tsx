@@ -133,21 +133,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (error) throw error;
       
-      // Create profile record
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            email: email,
-            created_at: new Date().toISOString(), // تحويل Date إلى نص ISO
-          });
-          
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-        }
-      }
-      
+      // The profile will be created automatically by the trigger
       return { error: null, data };
     } catch (error: any) {
       toast({

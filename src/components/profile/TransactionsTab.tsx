@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from '@/contexts/LanguageContext';
 import TransactionListDisplay from './TransactionListDisplay';
-import { Transaction } from '@/components/wallet/TransactionList';
-import { VirtualCardService } from '@/services/VirtualCardService';
+import { Transaction, VirtualCardService } from '@/services/VirtualCardService';
 
 const TransactionsTab: React.FC = () => {
   const { language } = useLanguage();
