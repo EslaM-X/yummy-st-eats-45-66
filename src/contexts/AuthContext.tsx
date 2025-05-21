@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
+import { cleanupAuthState, isValidToken } from '@/components/auth/AuthUtils';
 
 interface AuthContextType {
   session: Session | null;
@@ -46,6 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (event === "SIGNED_OUT") {
           setIsAdmin(false);
           setProfile(null);
+          cleanupAuthState();
         }
         
         setLoading(false);
@@ -149,6 +150,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       console.log("Sign up successful:", data);
       
+      try {
+        // استدعاء دالة البريد الإلكتروني المخصص
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/custom-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+          },
+          body: JSON.stringify({
+            email: email,
+            type: 'signup',
+            redirectUrl: window.location.origin + '/login'
+          })
+        });
+
+        if (!response.ok) {
+          console.warn('تم إنشاء الحساب ولكن قد يكون هناك مشكلة في إرسال البريد الإلكتروني المخصص');
+        }
+      } catch (emailError) {
+        console.error('خطأ في إرسال البريد المخصص:', emailError);
+      }
+      
       // نجاح التسجيل
       toast({
         title: "تم إنشاء الحساب بنجاح",
@@ -180,6 +203,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    cleanupAuthState();
   };
 
   return (
