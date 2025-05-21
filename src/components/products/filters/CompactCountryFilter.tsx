@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { countries } from '@/components/ui/country-data';
 import { CountryDisplay } from '@/components/ui/country-display';
-import { Globe, ChevronDown } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { 
   Select,
   SelectContent,
@@ -39,7 +39,7 @@ const CompactCountryFilter: React.FC<CompactCountryFilterProps> = ({
         );
       });
   
-  // Favorite countries (first 4 instead of 6 to make it more compact)
+  // تحديد عدد أقل من الدول المفضلة (4 بدلاً من 6) لجعلها أكثر ملاءمة للمساحات الصغيرة
   const favoriteCountries = countries.slice(0, 4);
   
   return (
@@ -51,7 +51,7 @@ const CompactCountryFilter: React.FC<CompactCountryFilterProps> = ({
         value={selectedCountry}
         onValueChange={(value) => setSelectedCountry(value === 'all' ? undefined : value)}
       >
-        <SelectTrigger className="w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-sm h-9 py-1.5">
+        <SelectTrigger className="w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-sm h-8 py-1">
           <SelectValue placeholder={t('allCountriesOption')}>
             {selectedCountry ? (
               <CountryDisplay
@@ -84,7 +84,7 @@ const CompactCountryFilter: React.FC<CompactCountryFilterProps> = ({
             <span>{t('allCountriesOption')}</span>
           </SelectItem>
           
-          {/* Favorite countries in a more compact grid */}
+          {/* عرض الدول المفضلة بنمط شبكي أكثر اختصاراً */}
           {searchCountryQuery.trim() === '' && (
             <div className="pt-1 pb-2">
               <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 px-1">

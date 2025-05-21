@@ -41,7 +41,7 @@ const FilterContent: React.FC<FilterContentProps> = ({
         setSortBy={setSortBy}
       />
       
-      {/* Compact Country Filter */}
+      {/* Compact Country Filter - استخدام المكون المصغر الجديد */}
       <CompactCountryFilter 
         selectedCountry={selectedCountry}
         setSelectedCountry={setSelectedCountry}
