@@ -11,6 +11,7 @@
   "searchProductsPlaceholder": "Search for product or restaurant...",
   "categoryFilterLabel": "Product Categories",
   "allCategoriesOption": "All Categories",
+  "sortByFilterLabel": "Sort By",
   "sortByOptionDefault": "Default",
   "sortByOptionPriceAsc": "Price: Low to High",
   "sortByOptionPriceDesc": "Price: High to Low",
@@ -28,5 +29,10 @@
   "countryChanged": "Country Changed",
   "countryLabel": "Country",
   "searchCountries": "Search countries...",
-  "filter": "Filter"
+  "filter": "Filter",
+  "filterOptions": "Filter Options",
+  "popularCountries": "Popular Countries",
+  "noCountriesFound": "No countries found",
+  "allCountriesLabel": "All Countries",
+  "resetFiltersButton": "Reset Filters"
 }

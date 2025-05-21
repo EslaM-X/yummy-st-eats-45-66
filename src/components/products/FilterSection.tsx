@@ -2,10 +2,21 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import CountryFilter from './CountryFilter';
 import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from '@/components/ui/input';
+import { Search, Globe } from 'lucide-react';
+import { countries } from '@/components/ui/country-data';
+import { CountryDisplay } from '@/components/ui/country-display';
 
 interface FilterSectionProps {
   selectedCategory: string;
@@ -32,8 +43,24 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   isFiltersOpen,
   setIsFiltersOpen
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const isMobile = useIsMobile();
+  const [searchCountryQuery, setSearchCountryQuery] = React.useState('');
+  
+  // Filter countries based on search query
+  const filteredCountries = searchCountryQuery.trim() === ''
+    ? countries
+    : countries.filter(country => {
+        const query = searchCountryQuery.toLowerCase();
+        return (
+          country.name.toLowerCase().includes(query) ||
+          country.nameAr.toLowerCase().includes(query) ||
+          country.code.toLowerCase().includes(query)
+        );
+      });
+      
+  // Favorite countries (first 6)
+  const favoriteCountries = countries.slice(0, 6);
   
   return (
     <div className="w-full bg-white dark:bg-gray-800 rounded-md shadow-sm mb-4">
@@ -109,10 +136,89 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             
             {/* Country Filter */}
             <div className="space-y-1">
-              <CountryFilter 
-                selectedCountry={selectedCountry}
-                onCountryChange={setSelectedCountry}
-              />
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                {t('countryFilterLabel')}
+              </label>
+              <Select
+                value={selectedCountry}
+                onValueChange={(value) => setSelectedCountry(value === 'all' ? undefined : value)}
+              >
+                <SelectTrigger className="w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-sm h-9 py-2">
+                  <SelectValue placeholder={t('allCountriesOption')}>
+                    {selectedCountry ? (
+                      <CountryDisplay
+                        country={countries.find(c => c.code === selectedCountry)}
+                        showName={true}
+                      />
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Globe className="h-4 w-4" />
+                        <span>{t('allCountriesOption')}</span>
+                      </span>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 p-2">
+                    <div className="relative">
+                      <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                      <Input
+                        placeholder={t('searchCountries')}
+                        value={searchCountryQuery}
+                        onChange={(e) => setSearchCountryQuery(e.target.value)}
+                        className="pl-8 pr-3 py-1 text-sm border-gray-200 dark:border-gray-700"
+                      />
+                    </div>
+                  </div>
+                  
+                  <SelectItem value="all" className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 flex-shrink-0" />
+                    <span>{t('allCountriesOption')}</span>
+                  </SelectItem>
+                  
+                  {/* Favorite countries */}
+                  {searchCountryQuery.trim() === '' && (
+                    <div className="py-1 px-2">
+                      <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                        {t('popularCountries') || 'الدول الشائعة'}
+                      </h3>
+                      <div className="grid grid-cols-3 gap-1">
+                        {favoriteCountries.map(country => (
+                          <SelectItem
+                            key={country.code}
+                            value={country.code}
+                            className="flex flex-col items-center justify-center p-1 h-auto"
+                          >
+                            <span className="text-lg mb-0.5">{country.flagEmoji}</span>
+                            <span className="text-xs truncate w-full text-center">
+                              {language === 'ar' ? country.nameAr : country.name}
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </div>
+                      <div className="my-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+                    </div>
+                  )}
+                  
+                  <ScrollArea className="h-[200px]">
+                    {filteredCountries.map(country => (
+                      <SelectItem
+                        key={country.code}
+                        value={country.code}
+                        className="flex items-center gap-2 p-1.5"
+                      >
+                        <CountryDisplay country={country} showName={true} />
+                      </SelectItem>
+                    ))}
+                    
+                    {filteredCountries.length === 0 && (
+                      <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
+                        {t('noCountriesFound') || 'لا توجد دول مطابقة'}
+                      </div>
+                    )}
+                  </ScrollArea>
+                </SelectContent>
+              </Select>
             </div>
             
             {/* Reset Button */}

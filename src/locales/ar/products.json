@@ -11,6 +11,7 @@
   "searchProductsPlaceholder": "ابحث عن منتج أو مطعم...",
   "categoryFilterLabel": "تصنيفات المنتجات",
   "allCategoriesOption": "جميع التصنيفات",
+  "sortByFilterLabel": "ترتيب حسب",
   "sortByOptionDefault": "افتراضي",
   "sortByOptionPriceAsc": "السعر: من الأقل إلى الأعلى",
   "sortByOptionPriceDesc": "السعر: من الأعلى إلى الأقل",
@@ -27,6 +28,11 @@
   "selectCountry": "اختر الدولة",
   "countryChanged": "تم تغيير الدولة",
   "countryLabel": "الدولة",
-  "searchCountries": "بحث الدول...",
-  "filter": "تصفية"
+  "searchCountries": "بحث عن دولة...",
+  "filter": "تصفية",
+  "filterOptions": "خيارات التصفية",
+  "popularCountries": "الدول الشائعة",
+  "noCountriesFound": "لا توجد دول مطابقة",
+  "allCountriesLabel": "كل الدول",
+  "resetFiltersButton": "إعادة ضبط الفلاتر"
 }
