@@ -30,11 +30,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     
     setIsLoadingCart(true);
     
-    // Handle price conversion properly regardless of type
+    // Handle price conversion properly
     let numericPrice: number;
     if (typeof product.price === 'string') {
-      // Extract numeric value from string (removing any non-numeric characters except decimal point)
-      numericPrice = parseFloat(product.price.replace(/[^\d.]/g, ''));
+      // استخراج القيمة الرقمية من النص (إزالة أي أحرف غير رقمية باستثناء النقطة العشرية)
+      const priceString = product.price.toString();
+      numericPrice = parseFloat(priceString.replace(/[^\d.]/g, ''));
     } else {
       numericPrice = product.price;
     }
