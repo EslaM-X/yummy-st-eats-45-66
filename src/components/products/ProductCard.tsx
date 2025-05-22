@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Star, Heart, Award, Tag, Check, Flag } from 'lucide-react';
+import { ShoppingCart, Star, Heart, Award, Tag, Check } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { Product } from '@/types';
@@ -30,8 +30,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     
     setIsLoadingCart(true);
     
-    // Extract the numeric price from the string (e.g., "50 ST" -> 50)
-    const numericPrice = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+    // Handle price as number or string
+    let numericPrice = product.price;
+    if (typeof product.price === 'string') {
+      numericPrice = parseFloat(product.price.toString().replace(/[^0-9.]/g, ''));
+    }
     
     // Create cart item from product
     const cartItem = {
@@ -88,9 +91,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
         
         {/* Discount Badge */}
-        {product.discountPercent && (
+        {product.discountPercentage && (
           <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold py-1 px-2 rounded-full shadow-md flex items-center">
-            <Tag className="h-3 w-3 mr-1 rtl:ml-1 rtl:mr-0" /> {t('discount')} {product.discountPercent}%
+            <Tag className="h-3 w-3 mr-1 rtl:ml-1 rtl:mr-0" /> {t('discount')} {product.discountPercentage}%
           </span>
         )}
         
