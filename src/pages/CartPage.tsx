@@ -33,7 +33,7 @@ const CartPage: React.FC = () => {
             {t('cart')}
           </h1>
 
-          {cartItems.length > 0 ? (
+          {cartItems && cartItems.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
@@ -43,7 +43,7 @@ const CartPage: React.FC = () => {
                         <div className="flex flex-col sm:flex-row items-center mb-4 sm:mb-0">
                           <div className="w-24 h-24 rounded-lg overflow-hidden mb-4 sm:mb-0 sm:mr-6">
                             <img 
-                              src={item.imageUrl} 
+                              src={item.image} 
                               alt={item.name} 
                               className="w-full h-full object-cover"
                               onError={(e) => {
@@ -54,7 +54,7 @@ const CartPage: React.FC = () => {
                           </div>
                           <div>
                             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{item.name}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{item.restaurant}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{item.restaurant_id}</p>
                             <p className="font-bold text-yellow-800 dark:text-yellow-500">{item.price} ST</p>
                           </div>
                         </div>

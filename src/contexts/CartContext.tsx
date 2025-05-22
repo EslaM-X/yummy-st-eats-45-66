@@ -5,14 +5,18 @@ import { Product } from '@/types/product';
 // تعريف نوع عنصر سلة التسوق
 export interface CartItem extends Product {
   quantity: number;
+  variant?: string;
 }
 
 // تعريف نوع سياق سلة التسوق
 export interface CartContextType {
   items: CartItem[];
+  cartItems: CartItem[];
+  totalAmount: number;
+  total: number;
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  updateQuantity: (productId: string, quantity: number | 'increase' | 'decrease') => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -22,6 +26,9 @@ export interface CartContextType {
 // إنشاء سياق سلة التسوق
 const CartContext = createContext<CartContextType>({
   items: [],
+  cartItems: [],
+  totalAmount: 0,
+  total: 0,
   addToCart: () => {},
   removeFromCart: () => {},
   updateQuantity: () => {},
@@ -77,38 +84,33 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // إزالة منتج من سلة التسوق
   const removeFromCart = (productId: string) => {
-    setItems(currentItems => {
-      const existingItem = currentItems.find(item => item.id === productId);
-      
-      if (existingItem && existingItem.quantity > 1) {
-        // تقليل الكمية إذا كان هناك أكثر من واحد
-        return currentItems.map(item => 
-          item.id === productId 
-            ? { ...item, quantity: item.quantity - 1 } 
-            : item
-        );
-      } else {
-        // إزالة المنتج بالكامل إذا كانت الكمية واحدة
-        return currentItems.filter(item => item.id !== productId);
-      }
-    });
+    setItems(currentItems => currentItems.filter(item => item.id !== productId));
   };
 
   // تحديث كمية منتج في سلة التسوق
-  const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      // إزالة المنتج إذا كانت الكمية صفر أو أقل
-      setItems(currentItems => currentItems.filter(item => item.id !== productId));
-    } else {
-      // تحديث الكمية
-      setItems(currentItems => 
-        currentItems.map(item => 
-          item.id === productId 
-            ? { ...item, quantity } 
-            : item
-        )
-      );
-    }
+  const updateQuantity = (productId: string, quantity: number | 'increase' | 'decrease') => {
+    setItems(currentItems => {
+      return currentItems.map(item => {
+        if (item.id === productId) {
+          if (typeof quantity === 'number') {
+            // إذا كانت الكمية صفر أو أقل، قم بإزالة العنصر
+            if (quantity <= 0) {
+              return null; // سيتم تصفيته لاحقًا
+            }
+            return { ...item, quantity };
+          } else if (quantity === 'increase') {
+            return { ...item, quantity: item.quantity + 1 };
+          } else if (quantity === 'decrease') {
+            // إذا كانت الكمية الحالية واحد، قم بإزالة العنصر
+            if (item.quantity <= 1) {
+              return null; // سيتم تصفيته لاحقًا
+            }
+            return { ...item, quantity: item.quantity - 1 };
+          }
+        }
+        return item;
+      }).filter(Boolean) as CartItem[]; // تصفية العناصر المحذوفة (null)
+    });
   };
 
   // الحصول على كمية منتج معين في السلة
@@ -123,21 +125,27 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // حساب إجمالي عدد العناصر في السلة
-  const getTotalItems = () => {
-    return items.reduce((total, item) => total + item.quantity, 0);
+  const getTotalItems = (): number => {
+    return items ? items.reduce((total, item) => total + item.quantity, 0) : 0;
   };
 
   // حساب إجمالي السعر في السلة
-  const getTotalPrice = () => {
-    return items.reduce((total, item) => {
+  const getTotalPrice = (): number => {
+    return items ? items.reduce((total, item) => {
       const itemPrice = item.discount_price || item.price;
       return total + itemPrice * item.quantity;
-    }, 0);
+    }, 0) : 0;
   };
+
+  // حساب المبلغ الإجمالي (لاستخدامه مباشرة)
+  const totalAmount = getTotalPrice();
 
   // القيم التي سيتم توفيرها للمكونات
   const value = {
     items,
+    cartItems: items, // تعيين مباشر لدعم الاستخدام المباشر
+    totalAmount, // تعيين المبلغ الإجمالي للوصول المباشر
+    total: totalAmount, // نسخة إضافية للتوافق مع الاستخدامات المختلفة
     addToCart,
     removeFromCart,
     updateQuantity,
