@@ -1,10 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Star, Heart, Award, Tag, Check } from 'lucide-react';
-import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { Product } from '@/types';
-import { cn } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
 import ProductImage from './product-components/ProductImage';
@@ -36,7 +33,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     // Handle price as number or string
     let numericPrice = product.price;
     if (typeof product.price === 'string') {
-      // Fix the type error by ensuring we're calling replace on a string
+      // Fix error by properly handling string type
       numericPrice = parseFloat(product.price.replace(/[^0-9.]/g, ''));
     }
     
