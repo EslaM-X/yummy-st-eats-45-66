@@ -13,6 +13,7 @@ import PasswordResetForm from '@/components/auth/PasswordResetForm';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle } from "lucide-react";
+import { setupEmailConfirmation } from '@/services/authService';
 
 const AuthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("login");
@@ -28,6 +29,19 @@ const AuthPage: React.FC = () => {
   const emailConfirmed = searchParams.get('email_confirmed');
   const error = searchParams.get('error');
   const error_description = searchParams.get('error_description');
+
+  // معالجة تأكيد البريد الإلكتروني
+  useEffect(() => {
+    const checkConfirmation = async () => {
+      try {
+        await setupEmailConfirmation();
+      } catch (error) {
+        console.error("Error in email confirmation setup:", error);
+      }
+    };
+    
+    checkConfirmation();
+  }, []);
 
   // التحقق من وجود جلسة تسجيل دخول نشطة
   useEffect(() => {

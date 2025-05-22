@@ -177,6 +177,72 @@ export const signOutUser = async () => {
   }
 };
 
+// تحديث الربط بين Supabase وتأكيد البريد الإلكتروني
+export const setupEmailConfirmation = async () => {
+  try {
+    // التحقق من حالة عنوان URL الحالي لمعرفة ما إذا كان يحتوي على رمز التأكيد
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get('confirmation_token');
+    
+    if (token) {
+      // إذا كان هناك رمز تأكيد، فقم بتأكيد البريد الإلكتروني
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: token,
+        type: 'email_confirmation',
+      });
+      
+      if (error) throw error;
+      
+      // إعادة توجيه المستخدم إلى صفحة تسجيل الدخول بإشارة إلى نجاح التأكيد
+      window.location.href = '/auth?email_confirmed=true';
+      return { success: true };
+    }
+    
+    return { success: false };
+  } catch (error: any) {
+    console.error("Error confirming email:", error);
+    window.location.href = `/auth?error=confirmation_failed&error_description=${encodeURIComponent(error.message)}`;
+    return { success: false, error };
+  }
+};
+
+/**
+ * إعادة إرسال رسالة تأكيد البريد الإلكتروني
+ */
+export const resendConfirmationEmail = async (
+  email: string,
+  toast: typeof ToastFunctionType
+) => {
+  try {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth`,
+      },
+    });
+    
+    if (error) throw error;
+    
+    toast({
+      title: "تم إعادة إرسال رسالة التأكيد",
+      description: "تم إرسال رابط تأكيد جديد إلى بريدك الإلكتروني.",
+    });
+    
+    return { error: null };
+  } catch (error: any) {
+    console.error("Error resending confirmation email:", error);
+    
+    toast({
+      title: "فشل إعادة إرسال رسالة التأكيد",
+      description: error.message || "حدث خطأ أثناء محاولة إعادة إرسال رسالة التأكيد",
+      variant: "destructive",
+    });
+    
+    return { error };
+  }
+};
+
 /**
  * تحديث بيانات المستخدم
  */

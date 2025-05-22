@@ -37,8 +37,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const priceValue = product.price;
     if (typeof priceValue === 'string') {
       numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
+    } else if (typeof priceValue === 'number') {
+      numericPrice = priceValue;
     } else {
-      numericPrice = Number(priceValue);
+      // Fallback for unexpected types
+      numericPrice = 0;
+      console.error('Unexpected price type:', typeof priceValue);
     }
     
     // Create cart item from product

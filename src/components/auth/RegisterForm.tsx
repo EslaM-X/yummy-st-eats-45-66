@@ -12,7 +12,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { sanitizeMetadata } from './AuthUtils';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Check, RefreshCw } from "lucide-react";
+import { resendConfirmationEmail } from '@/services/authService';
 
 // Register form schema
 const registerSchema = z.object({
@@ -33,6 +34,8 @@ interface RegisterFormProps {
 const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false);
+  const [registeredEmail, setRegisteredEmail] = useState<string>("");
+  const [resendingEmail, setResendingEmail] = useState<boolean>(false);
   const { toast } = useToast();
   const { language } = useLanguage();
   const { signUp } = useAuth();
@@ -76,6 +79,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       
       console.log("Registration response:", data);
 
+      // حفظ البريد الإلكتروني للمستخدم المسجل للاستخدام في إعادة الإرسال
+      setRegisteredEmail(values.email);
+
       // تحديد نجاح التسجيل
       setRegistrationSuccess(true);
       
@@ -97,11 +103,25 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     }
   };
 
+  // معالجة إعادة إرسال رسالة التأكيد
+  const handleResendConfirmation = async () => {
+    if (!registeredEmail) return;
+    
+    setResendingEmail(true);
+    try {
+      await resendConfirmationEmail(registeredEmail, toast);
+    } catch (error) {
+      console.error("Error resending confirmation:", error);
+    } finally {
+      setResendingEmail(false);
+    }
+  };
+
   return (
     <Form {...form}>
       {registrationSuccess && (
         <Alert className="mb-6 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
-          <AlertCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+          <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
           <AlertTitle className="text-green-600 dark:text-green-400">
             {language === 'ar' ? 'تم إنشاء الحساب بنجاح' : 'Account created successfully'}
           </AlertTitle>
@@ -110,6 +130,27 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
               ? 'تم إرسال رسالة تأكيد إلى بريدك الإلكتروني. يرجى التحقق من صندوق البريد الوارد والضغط على رابط التأكيد لتفعيل حسابك.' 
               : 'A confirmation email has been sent to your email address. Please check your inbox and click on the confirmation link to activate your account.'}
           </AlertDescription>
+          <div className="mt-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleResendConfirmation}
+              disabled={resendingEmail}
+              className="text-green-600 border-green-300 hover:bg-green-100 dark:text-green-400 dark:border-green-700 dark:hover:bg-green-900"
+            >
+              {resendingEmail ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  {language === 'ar' ? 'جارٍ إعادة الإرسال...' : 'Resending...'}
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  {language === 'ar' ? 'إعادة إرسال رابط التأكيد' : 'Resend confirmation link'}
+                </>
+              )}
+            </Button>
+          </div>
         </Alert>
       )}
       
@@ -250,7 +291,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
         <Button 
           type="submit" 
           className="w-full" 
-          disabled={loading}
+          disabled={loading || registrationSuccess}
         >
           {loading 
             ? (language === 'ar' ? 'جارٍ إنشاء الحساب...' : 'Creating account...') 
