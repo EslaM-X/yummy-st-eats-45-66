@@ -185,7 +185,7 @@ const CheckoutPage: React.FC = () => {
                     <CardTitle>ملخص الطلب</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <OrderSummary items={items} />
+                    <OrderSummary items={items} amount={totalPrice} />
                     
                     <div className="mt-6">
                       <Button 

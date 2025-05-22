@@ -103,7 +103,18 @@ export const ProductService = {
   /**
    * إنشاء منتج جديد
    */
-  async createProduct(productData: Partial<Product>) {
+  async createProduct(productData: { 
+    name: string; 
+    description?: string;
+    price: number;
+    restaurant_id: string;
+    category_id?: string;
+    image_url?: string;
+    ingredients?: string[];
+    is_available?: boolean;
+    featured?: boolean;
+    discount_percent?: number;
+  }) {
     try {
       const { data, error } = await supabase
         .from('products')
@@ -123,7 +134,18 @@ export const ProductService = {
   /**
    * تحديث منتج موجود
    */
-  async updateProduct(id: string, productData: Partial<Product>) {
+  async updateProduct(id: string, productData: { 
+    name?: string; 
+    description?: string;
+    price?: number;
+    restaurant_id?: string;
+    category_id?: string;
+    image_url?: string;
+    ingredients?: string[];
+    is_available?: boolean;
+    featured?: boolean;
+    discount_percent?: number;
+  }) {
     try {
       const { data, error } = await supabase
         .from('products')

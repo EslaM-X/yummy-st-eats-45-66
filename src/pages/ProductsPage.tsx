@@ -20,13 +20,25 @@ const ProductsPage: React.FC = () => {
   const [sortBy, setSortBy] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [categories, setCategories] = useState<string[]>([]);
   const { t } = useLanguage();
   
   // Use the global country selector from the header
   const { selectedCountry: globalSelectedCountry } = useSelectedCountry();
 
-  // Extract unique categories
-  const categories = getCategories();
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const categoriesData = await getCategories();
+      if (categoriesData && categoriesData.length > 0) {
+        // استخراج أسماء الفئات فقط لعرضها في الفلتر
+        const categoryNames = categoriesData.map(cat => cat.name);
+        setCategories(categoryNames);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
 
   // Filter and sort products with visual feedback
   useEffect(() => {
@@ -38,7 +50,21 @@ const ProductsPage: React.FC = () => {
     // Get filtered products
     getFilteredProducts(searchTerm, selectedCategory, sortBy, countryToUse)
       .then(filteredProducts => {
-        setProducts(filteredProducts);
+        // تحويل البيانات لتتوافق مع نوع Product
+        const mappedProducts: Product[] = filteredProducts.map((product: any) => ({
+          id: product.id,
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.image_url,
+          restaurant: product.restaurants ? product.restaurants.name : 'غير معروف',
+          category: product.categories ? product.categories.name : 'أخرى',
+          isAvailable: product.is_available,
+          isFeatured: product.featured,
+          discountPercentage: product.discount_percent,
+          ingredients: product.ingredients || []
+        }));
+        setProducts(mappedProducts);
         setIsLoading(false);
         setIsUpdating(false);
       });

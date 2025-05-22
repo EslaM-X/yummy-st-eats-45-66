@@ -10,6 +10,7 @@ export interface CartItem {
   quantity: number;
   imageUrl: string;
   restaurant: string;
+  variant?: string;
 }
 
 interface CartContextType {
@@ -20,6 +21,8 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   totalAmount: number;
+  items: CartItem[]; // أضف هذا الحقل ليتوافق مع الاستخدام في CheckoutPage
+  total: number; // أضف هذا الحقل ليتوافق مع الاستخدام في CheckoutPage
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -128,7 +131,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateQuantity,
     clearCart,
     totalItems,
-    totalAmount
+    totalAmount,
+    items: cartItems, // إضافة هذا الحقل ليتوافق مع الاستخدام في CheckoutPage
+    total: totalAmount // إضافة هذا الحقل ليتوافق مع الاستخدام في CheckoutPage
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

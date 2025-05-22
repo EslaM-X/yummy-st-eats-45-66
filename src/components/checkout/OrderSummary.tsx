@@ -7,15 +7,15 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { CartItem } from '@/contexts/CartContext';
 
 interface OrderSummaryProps {
-  cartItems: CartItem[];
-  amount: number;
+  items: CartItem[];
+  amount?: number;
   orderId?: number;
   onRefundClick?: () => void;
   paymentComplete?: boolean;
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({ 
-  cartItems = [], 
+  items = [], 
   amount = 0, 
   orderId,
   onRefundClick,
@@ -35,8 +35,8 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="max-h-[240px] overflow-auto pr-2 space-y-2">
-            {cartItems && cartItems.length > 0 ? (
-              cartItems.map((item) => (
+            {items && items.length > 0 ? (
+              items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between border-b pb-2 group">
                   <div className="flex-1">
                     <p className="font-medium group-hover:text-primary transition-colors">{item.name}</p>

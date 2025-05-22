@@ -107,7 +107,4 @@ export function BarChart({
   );
 }
 
-// Export other chart types as needed
-export {
-  BarChart as BarChart,
-};
+// إزالة التصدير المكرر
