@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import { Transaction } from '@/services/VirtualCardService';
 import { Badge } from "@/components/ui/badge";
 import { arSA } from 'date-fns/locale';
 

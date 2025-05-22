@@ -15,8 +15,12 @@ const TransactionsTab: React.FC = () => {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const data = await VirtualCardService.getUserTransactions();
-      setTransactions(data);
+      const response = await VirtualCardService.getUserTransactions();
+      if (response.data) {
+        setTransactions(response.data);
+      } else {
+        setTransactions([]);
+      }
     } catch (error: any) {
       console.error('Error fetching transactions:', error);
       toast({
@@ -24,6 +28,7 @@ const TransactionsTab: React.FC = () => {
         description: error.message || "حدث خطأ أثناء محاولة جلب سجل معاملاتك",
         variant: "destructive",
       });
+      setTransactions([]);
     } finally {
       setLoading(false);
     }

@@ -1,56 +1,58 @@
 
 import React from 'react';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormControl, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { LockKeyhole } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 // CVV validation schema and type definition
 const cardSchema = z.object({
   cardNumber: z.string()
-    .min(16, { message: 'Card number must be at least 16 digits' })
-    .max(19, { message: 'Card number must not exceed 19 digits' }),
+    .min(13, { message: 'رقم البطاقة يجب أن يكون على الأقل 13 رقمًا' })
+    .max(19, { message: 'رقم البطاقة يجب ألا يتجاوز 19 رقمًا' }),
+  cardholderName: z.string().min(3, 'يرجى إدخال اسم حامل البطاقة الكامل'),
+  expiryMonth: z.string().min(1, 'الشهر مطلوب'),
+  expiryYear: z.string().min(1, 'السنة مطلوبة'),
   cvv: z.string()
-    .min(3, { message: 'CVV must be at least 3 digits' })
-    .max(4, { message: 'CVV must not exceed 4 digits' }),
+    .min(3, { message: 'رمز CVV يجب أن يتكون من 3-4 أرقام' })
+    .max(4, { message: 'رمز CVV يجب ألا يتجاوز 4 أرقام' }),
 });
 
 type CardFormValues = z.infer<typeof cardSchema>;
 
 interface CvvInputProps {
-  form: UseFormReturn<CardFormValues>;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: () => void;
+  name?: string;
+  disabled?: boolean;
 }
 
-const CvvInput: React.FC<CvvInputProps> = ({ form }) => {
-  const { t } = useLanguage();
-
+const CvvInput: React.FC<CvvInputProps> = ({ 
+  value,
+  onChange,
+  onBlur,
+  name,
+  disabled
+}) => {
   return (
-    <FormField
-      control={form.control}
-      name="cvv"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className="font-medium text-primary">{t('cvvCode')}</FormLabel>
-          <div className="relative">
-            <FormControl>
-              <Input 
-                placeholder="123" 
-                {...field}
-                maxLength={4}
-                type="password"
-                inputMode="numeric"
-                autoComplete="cc-csc"
-                className="pl-10 bg-white dark:bg-gray-950 border-2 h-12 transition-all duration-200 focus-visible:ring-primary/30"
-              />
-            </FormControl>
-            <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          </div>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <div className="relative">
+      <Input 
+        placeholder="123" 
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+        name={name}
+        disabled={disabled}
+        maxLength={4}
+        type="password"
+        inputMode="numeric"
+        autoComplete="cc-csc"
+        className="pl-10 h-10"
+      />
+      <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+    </div>
   );
 };
 

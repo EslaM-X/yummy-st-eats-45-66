@@ -1,62 +1,68 @@
 
 import React from 'react';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { CreditCard } from 'lucide-react';
-import { UseFormReturn } from 'react-hook-form';
-import { z } from 'zod';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { formatCardNumber } from '@/services/card/cardValidation';
 
-// Card number validation schema and type definition
-const cardSchema = z.object({
-  cardNumber: z.string()
-    .min(16, { message: 'Card number must be at least 16 digits' })
-    .max(19, { message: 'Card number must not exceed 19 digits' }),
-  cvv: z.string()
-    .min(3, { message: 'CVV must be at least 3 digits' })
-    .max(4, { message: 'CVV must not exceed 4 digits' }),
-});
-
-type CardFormValues = z.infer<typeof cardSchema>;
+// Utility function for card number formatting
+const formatCardNumber = (value: string): string => {
+  // Remove all non-digit characters
+  const digitsOnly = value.replace(/\D/g, '');
+  
+  // Format into chunks of 4
+  const chunks = [];
+  for (let i = 0; i < digitsOnly.length; i += 4) {
+    chunks.push(digitsOnly.slice(i, i + 4));
+  }
+  
+  return chunks.join(' ');
+};
 
 interface CardNumberInputProps {
-  form: UseFormReturn<CardFormValues>;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: () => void;
+  name?: string;
+  disabled?: boolean;
 }
 
-const CardNumberInput: React.FC<CardNumberInputProps> = ({ form }) => {
-  const { t } = useLanguage();
-
+const CardNumberInput: React.FC<CardNumberInputProps> = ({ 
+  value,
+  onChange,
+  onBlur,
+  name,
+  disabled
+}) => {
   const handleCardNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCardNumber(event.target.value);
-    form.setValue('cardNumber', formattedValue);
+    
+    // Create a new synthetic event with the formatted value
+    const newEvent = {
+      ...event,
+      target: {
+        ...event.target,
+        value: formattedValue
+      }
+    } as React.ChangeEvent<HTMLInputElement>;
+    
+    onChange(newEvent);
   };
 
   return (
-    <FormField
-      control={form.control}
-      name="cardNumber"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className="font-medium text-primary">{t('cardNumber')}</FormLabel>
-          <div className="relative">
-            <FormControl>
-              <Input 
-                placeholder="1234 5678 9012 3456" 
-                {...field}
-                onChange={handleCardNumberChange}
-                maxLength={19}
-                className="pl-10 bg-white dark:bg-gray-950 border-2 h-12 transition-all duration-200 focus-visible:ring-primary/30"
-                inputMode="numeric"
-                autoComplete="cc-number"
-              />
-            </FormControl>
-            <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          </div>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <div className="relative">
+      <Input 
+        placeholder="1234 5678 9012 3456" 
+        value={value}
+        onChange={handleCardNumberChange}
+        onBlur={onBlur}
+        name={name}
+        disabled={disabled}
+        maxLength={19}
+        className="pl-10 h-10"
+        inputMode="numeric"
+        autoComplete="cc-number"
+      />
+      <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+    </div>
   );
 };
 

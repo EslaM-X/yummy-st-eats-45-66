@@ -10,6 +10,11 @@ export const FavoriteService = {
    */
   async getFavoriteProducts() {
     try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('يجب تسجيل الدخول للوصول إلى المفضلة');
+      }
+
       const { data, error } = await supabase
         .from('favorites')
         .select(`
@@ -17,6 +22,7 @@ export const FavoriteService = {
           product_id,
           products(*)
         `)
+        .eq('user_id', session.session.user.id)
         .not('product_id', 'is', null);
 
       if (error) throw error;
@@ -33,6 +39,11 @@ export const FavoriteService = {
    */
   async getFavoriteRestaurants() {
     try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('يجب تسجيل الدخول للوصول إلى المفضلة');
+      }
+
       const { data, error } = await supabase
         .from('favorites')
         .select(`
@@ -40,6 +51,7 @@ export const FavoriteService = {
           restaurant_id,
           restaurants(*)
         `)
+        .eq('user_id', session.session.user.id)
         .not('restaurant_id', 'is', null);
 
       if (error) throw error;
@@ -56,9 +68,17 @@ export const FavoriteService = {
    */
   async addProductToFavorites(product_id: string) {
     try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('يجب تسجيل الدخول لإضافة عنصر إلى المفضلة');
+      }
+
       const { data, error } = await supabase
         .from('favorites')
-        .insert({ product_id })
+        .insert({ 
+          product_id,
+          user_id: session.session.user.id 
+        })
         .select()
         .single();
 
@@ -76,9 +96,17 @@ export const FavoriteService = {
    */
   async addRestaurantToFavorites(restaurant_id: string) {
     try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('يجب تسجيل الدخول لإضافة عنصر إلى المفضلة');
+      }
+
       const { data, error } = await supabase
         .from('favorites')
-        .insert({ restaurant_id })
+        .insert({ 
+          restaurant_id,
+          user_id: session.session.user.id 
+        })
         .select()
         .single();
 
@@ -115,10 +143,16 @@ export const FavoriteService = {
    */
   async isProductFavorite(product_id: string) {
     try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        return { isFavorite: false, favoriteId: null, error: null };
+      }
+      
       const { data, error } = await supabase
         .from('favorites')
         .select('id')
         .eq('product_id', product_id)
+        .eq('user_id', session.session.user.id)
         .maybeSingle();
 
       if (error) throw error;
@@ -135,10 +169,16 @@ export const FavoriteService = {
    */
   async isRestaurantFavorite(restaurant_id: string) {
     try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        return { isFavorite: false, favoriteId: null, error: null };
+      }
+      
       const { data, error } = await supabase
         .from('favorites')
         .select('id')
         .eq('restaurant_id', restaurant_id)
+        .eq('user_id', session.session.user.id)
         .maybeSingle();
 
       if (error) throw error;

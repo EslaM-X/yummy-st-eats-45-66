@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
-import { OrderSummary } from "@/components/checkout/OrderSummary";
+import OrderSummary from "@/components/checkout/OrderSummary";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { v4 as uuidv4 } from 'uuid';
@@ -19,7 +19,7 @@ const CheckoutPage: React.FC = () => {
   const [orderId, setOrderId] = useState<string>("");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   
-  const { cart, totalPrice, clearCart } = useCart();
+  const { items, total: totalPrice, clearCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const CheckoutPage: React.FC = () => {
   
   // إعادة توجيه المستخدم إذا كانت السلة فارغة ولم نكن في خطوة الدفع
   useEffect(() => {
-    if (cart.length === 0 && step === "summary" && !orderId) {
+    if (items.length === 0 && step === "summary" && !orderId) {
       toast({
         title: "السلة فارغة",
         description: "لا يمكنك الاستمرار إلى صفحة الدفع بسلة فارغة.",
@@ -44,7 +44,7 @@ const CheckoutPage: React.FC = () => {
       });
       navigate('/cart');
     }
-  }, [cart, step, orderId, toast, navigate]);
+  }, [items, step, orderId, toast, navigate]);
 
   const createOrder = async () => {
     try {
@@ -109,7 +109,7 @@ const CheckoutPage: React.FC = () => {
       toast({
         title: "تم الدفع لكن حدث خطأ في تحديث الطلب",
         description: "تم معالجة الدفع بنجاح، لكن حدث خطأ في تحديث حالة الطلب. سيتم التواصل معك قريباً.",
-        variant: "warning",
+        variant: "default",
       });
     }
   };
@@ -185,7 +185,7 @@ const CheckoutPage: React.FC = () => {
                     <CardTitle>ملخص الطلب</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <OrderSummary items={cart} />
+                    <OrderSummary items={items} />
                     
                     <div className="mt-6">
                       <Button 
@@ -227,8 +227,8 @@ const CheckoutPage: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    {cart.map((item) => (
-                      <div key={`${item.id}-${item.variant}`} className="flex justify-between">
+                    {items.map((item) => (
+                      <div key={`${item.id}-${item.variant || ''}`} className="flex justify-between">
                         <span>{item.quantity} × {item.name}</span>
                         <span>{(item.price * item.quantity).toFixed(2)} ر.س</span>
                       </div>

@@ -28,7 +28,8 @@ const TransactionStats = () => {
     const fetchTransactionStats = async () => {
       try {
         setLoading(true);
-        const { data: transactions } = await VirtualCardService.getUserTransactions();
+        const response = await VirtualCardService.getUserTransactions();
+        const transactions = response.data || [];
         
         // حساب إحصائيات المعاملات
         let totalPayments = 0;
