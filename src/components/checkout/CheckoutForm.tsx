@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
-import { CardNumberInput } from './CardNumberInput';
-import { CvvInput } from './CvvInput';
+import CardNumberInput from './CardNumberInput';
+import CvvInput from './CvvInput';
 import { VirtualCardService } from '@/services/VirtualCardService';
 
 const checkoutFormSchema = z.object({
