@@ -7,14 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuthState } from '@/hooks/useAuthState';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserRole } from '@/hooks/useUserRole';
-import { 
-  signInUser, 
-  signUpUser, 
-  signOutUser,
-  updateUserProfile,
-  resetPassword,
-  changePassword
-} from '@/services/authService';
+import { authService } from '@/services/authService';
 
 interface AuthContextType {
   session: Session | null;
@@ -46,19 +39,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { toast } = useToast();
 
   const handleSignIn = async (email: string, password: string) => {
-    return signInUser(email, password, toast);
+    return authService.signIn(email, password, toast);
   };
 
   const handleSignUp = async (email: string, password: string, metadata?: any) => {
-    return signUpUser(email, password, metadata, toast);
+    return authService.signUp(email, password, metadata, toast);
   };
 
   const handleResetPassword = async (email: string) => {
-    return resetPassword(email, toast);
+    return authService.resetPassword(email, toast);
   };
 
   const handleChangePassword = async (newPassword: string) => {
-    return changePassword(newPassword, toast);
+    return authService.changePassword(newPassword, toast);
   };
 
   const handleUpdateProfile = async (data: Record<string, any>) => {
@@ -76,7 +69,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         user,
         signIn: handleSignIn,
         signUp: handleSignUp,
-        signOut: signOutUser,
+        signOut: authService.signOut,
         resetPassword: handleResetPassword,
         changePassword: handleChangePassword,
         loading, 

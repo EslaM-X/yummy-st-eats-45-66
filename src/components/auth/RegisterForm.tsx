@@ -56,14 +56,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
     setLoading(true);
     try {
-      console.log("Attempting to register with data:", { 
-        email: values.email, 
-        fullName: values.fullName,
-        username: values.username,
-        phone: values.phone,
-        userType: values.userType 
-      });
-      
       // تجهيز البيانات الوصفية مع معالجة الأحرف غير المتوافقة
       const metadata = sanitizeMetadata({
         full_name: values.fullName,
@@ -77,8 +69,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       
       if (error) throw error;
       
-      console.log("Registration response:", data);
-
       // حفظ البريد الإلكتروني للمستخدم المسجل للاستخدام في إعادة الإرسال
       setRegisteredEmail(values.email);
 
