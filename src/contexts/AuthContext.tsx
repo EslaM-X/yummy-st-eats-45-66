@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { useToast } from '@/components/ui/use-toast'; 
+import { useToast } from '@/hooks/use-toast'; 
 
 // Hooks and service
 import { useAuthState } from '@/hooks/useAuthState';
@@ -12,7 +12,7 @@ import { signInUser, signUpUser, signOutUser } from '@/services/authService';
 interface AuthContextType {
   session: Session | null;
   user: User | null;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any, data?: any }>;
   signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any, data: any }>;
   signOut: () => Promise<void>;
   loading: boolean; 

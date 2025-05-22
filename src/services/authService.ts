@@ -1,5 +1,5 @@
 
-import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { cleanupAuthState } from '@/components/auth/AuthUtils';
 import type { toast as ToastFunctionType } from '@/hooks/use-toast'; // Import type for toast function
 
@@ -21,16 +21,19 @@ export const signInUser = async (
       console.log("Preliminary signout attempt:", err);
     }
     
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    return { error: null };
+    
+    console.log("Sign in successful:", data);
+    return { error: null, data };
   } catch (error: any) {
+    console.error("Login error details:", error);
     toast({
       title: "فشل تسجيل الدخول",
       description: error.message || "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.",
       variant: "destructive",
     });
-    return { error };
+    return { error, data: null };
   }
 };
 
@@ -46,12 +49,13 @@ export const signUpUser = async (
     // Clean up existing auth state first
     cleanupAuthState();
     
+    // استخدام Supabase مباشرة للتسجيل
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: metadata,
-        emailRedirectTo: window.location.origin + '/login' 
+        emailRedirectTo: window.location.origin + '/login'
       },
     });
     

@@ -9,12 +9,11 @@ import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
-// Login form schema
+// تعريف نموذج تسجيل الدخول
 const loginSchema = z.object({
   email: z.string().email("يجب إدخال بريد إلكتروني صالح"),
-  password: z.string().min(6, "كلمة المرور يجب أن تكون 6 أحرف على الأقل")
+  password: z.string().min(1, "يجب إدخال كلمة المرور")
 });
 
 interface LoginFormProps {
@@ -26,7 +25,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const { toast } = useToast();
   const { language } = useLanguage();
   const { signIn } = useAuth();
-  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -40,26 +38,25 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setLoading(true);
     try {
-      const { error } = await signIn(values.email, values.password);
+      console.log("Attempting to login with:", values.email);
       
-      if (error) {
-        console.error("Login error:", error);
-        return;
-      }
+      const { error, data } = await signIn(values.email, values.password);
       
-      // التوجيه إلى الصفحة الرئيسية
-      navigate('/');
+      if (error) throw error;
+      
+      console.log("Login response:", data);
+      
+      toast({
+        title: "تم تسجيل الدخول بنجاح",
+        description: "مرحبًا بعودتك!",
+      });
       
       if (onSuccess) {
         onSuccess();
       }
     } catch (error: any) {
-      console.error("Login error:", error);
-      toast({
-        title: "فشل تسجيل الدخول",
-        description: error.message || "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
-        variant: "destructive",
-      });
+      // سيتم التعامل مع الخطأ في خدمة المصادقة
+      console.error("Login error in component:", error);
     } finally {
       setLoading(false);
     }
@@ -119,6 +116,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             ? (language === 'ar' ? 'جارٍ تسجيل الدخول...' : 'Signing in...') 
             : (language === 'ar' ? 'تسجيل الدخول' : 'Sign In')}
         </Button>
+        
+        <div className="text-center mt-2">
+          <button
+            type="button"
+            className="text-sm text-muted-foreground hover:underline"
+            onClick={() => alert("لم يتم تنفيذ هذه الميزة بعد")}
+          >
+            {language === 'ar' ? 'نسيت كلمة المرور؟' : 'Forgot password?'}
+          </button>
+        </div>
       </form>
     </Form>
   );
