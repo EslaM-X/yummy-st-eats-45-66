@@ -23,6 +23,8 @@ import AddFoodPage from './pages/AddFoodPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsConditionsPage from './pages/TermsConditionsPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
+import MyOrdersPage from './pages/MyOrdersPage';
+import OrderDetailsPage from './pages/OrderDetailsPage';
 
 // Components
 import MobileNavBar from './components/MobileNavBar';
@@ -80,6 +82,14 @@ function App() {
         <Route 
           path="/profile" 
           element={user ? <ProfilePage /> : <Navigate to="/auth" />} 
+        />
+        <Route 
+          path="/my-orders" 
+          element={user ? <MyOrdersPage /> : <Navigate to="/auth" />} 
+        />
+        <Route 
+          path="/my-orders/:orderId" 
+          element={user ? <OrderDetailsPage /> : <Navigate to="/auth" />} 
         />
         <Route path="/team" element={<CoreTeamPage />} />
         <Route path="/rewards" element={<RewardsPage />} />
