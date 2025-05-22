@@ -34,7 +34,7 @@ function App() {
 
   // إخفاء شريط التنقل في الجوال للصفحات المحددة
   useEffect(() => {
-    const hideNavOnPages = ['/admin', '/admin-login'];
+    const hideNavOnPages = ['/admin', '/admin-login', '/reset-password'];
     const checkPath = () => {
       const currentPath = window.location.pathname;
       const shouldHide = hideNavOnPages.some(page => currentPath.startsWith(page));
@@ -71,23 +71,23 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route 
           path="/checkout" 
-          element={user ? <CheckoutPage /> : <Navigate to="/login" />} 
+          element={user ? <CheckoutPage /> : <Navigate to="/auth" />} 
         />
         <Route 
           path="/register-restaurant" 
-          element={user ? <RegisterRestaurantPage /> : <Navigate to="/login" />} 
+          element={user ? <RegisterRestaurantPage /> : <Navigate to="/auth" />} 
         />
         <Route 
           path="/profile" 
-          element={user ? <ProfilePage /> : <Navigate to="/login" />} 
+          element={user ? <ProfilePage /> : <Navigate to="/auth" />} 
         />
         <Route path="/team" element={<CoreTeamPage />} />
         <Route path="/rewards" element={<RewardsPage />} />
         <Route 
           path="/add-food" 
-          element={user ? <AddFoodPage /> : <Navigate to="/login" />} 
+          element={user ? <AddFoodPage /> : <Navigate to="/auth" />} 
         />
-        <Route path="/login" element={<AuthPage />} />
+        <Route path="/auth" element={<AuthPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/admin-login" element={<AdminLoginPage />} />
         <Route path="/admin/*" element={<AdminPage />} />

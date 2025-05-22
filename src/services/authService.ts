@@ -4,28 +4,28 @@ import { cleanupAuthState, sanitizeMetadata } from '@/components/auth/AuthUtils'
 import type { toast as ToastFunctionType } from '@/hooks/use-toast';
 import { AuthError } from '@supabase/supabase-js';
 
-// Constants
+// الثوابت
 const APP_URL = window.location.origin;
 const AUTH_REDIRECT_URL = `${APP_URL}/auth`;
 const RESET_PASSWORD_REDIRECT_URL = `${APP_URL}/reset-password`;
 
 /**
- * Authentication services
+ * خدمات المصادقة
  */
 export const authService = {
   /**
-   * Sign in with email and password
+   * تسجيل الدخول بالبريد الإلكتروني وكلمة المرور
    */
   signIn: async (email: string, password: string, toast: typeof ToastFunctionType) => {
     try {
-      // Clean up existing auth state
+      // تنظيف حالة المصادقة الحالية
       cleanupAuthState();
       
-      // Try global sign out before signing in to prevent conflicts
+      // محاولة تسجيل الخروج العالمي قبل تسجيل الدخول لمنع التعارض
       try {
         await supabase.auth.signOut({ scope: 'global' });
       } catch (err) {
-        // Continue even if this fails
+        // الاستمرار حتى لو فشلت هذه العملية
         console.log("Preliminary signout attempt:", err);
       }
       
@@ -64,12 +64,12 @@ export const authService = {
   },
 
   /**
-   * Register a new user
+   * تسجيل مستخدم جديد
    */
   signUp: async (email: string, password: string, metadata: Record<string, any> | undefined, toast: typeof ToastFunctionType) => {
     console.log("Signing up with data:", { email, metadata });
     try {
-      // Clean up existing auth state
+      // تنظيف حالة المصادقة الحالية
       cleanupAuthState();
       
       // معالجة البيانات الوصفية لضمان توافقها مع معايير الإرسال
@@ -151,27 +151,27 @@ export const authService = {
   },
 
   /**
-   * Sign out the current user
+   * تسجيل خروج المستخدم الحالي
    */
   signOut: async () => {
     try {
-      // Clean up auth state
+      // تنظيف حالة المصادقة
       cleanupAuthState();
       
-      // Try global sign out
+      // محاولة تسجيل الخروج العالمي
       await supabase.auth.signOut({ scope: 'global' });
       
-      // Force page reload for a clean state
+      // إجبار إعادة تحميل الصفحة للحصول على حالة نظيفة
       window.location.href = '/auth';
     } catch (err) {
       console.error("Error during sign out:", err);
-      // Force reload to ensure clean state even if there's an error
+      // إجبار إعادة التحميل للحصول على حالة نظيفة حتى في حالة وجود خطأ
       window.location.href = '/auth';
     }
   },
 
   /**
-   * Setup email confirmation handling
+   * إعداد معالجة تأكيد البريد الإلكتروني
    */
   setupEmailConfirmation: async () => {
     try {
@@ -202,7 +202,7 @@ export const authService = {
   },
 
   /**
-   * Resend confirmation email
+   * إعادة إرسال رسالة تأكيد البريد الإلكتروني
    */
   resendConfirmationEmail: async (email: string, toast: typeof ToastFunctionType) => {
     try {
@@ -236,7 +236,7 @@ export const authService = {
   },
 
   /**
-   * Update user profile
+   * تحديث ملف المستخدم الشخصي
    */
   updateUserProfile: async (userId: string, profileData: Partial<any>, toast: typeof ToastFunctionType) => {
     try {
@@ -272,7 +272,7 @@ export const authService = {
   },
 
   /**
-   * Reset password - send reset email
+   * إعادة تعيين كلمة المرور - إرسال بريد إعادة التعيين
    */
   resetPassword: async (email: string, toast: typeof ToastFunctionType) => {
     try {
@@ -302,7 +302,7 @@ export const authService = {
   },
 
   /**
-   * Change password
+   * تغيير كلمة المرور
    */
   changePassword: async (newPassword: string, toast: typeof ToastFunctionType) => {
     try {
@@ -332,7 +332,7 @@ export const authService = {
   }
 };
 
-// Export individual functions for backward compatibility
+// تصدير الوظائف الفردية للتوافق الخلفي
 export const signInUser = authService.signIn;
 export const signUpUser = authService.signUp;
 export const signOutUser = authService.signOut;
