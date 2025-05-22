@@ -20,5 +20,48 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     detectSessionInUrl: true,
     flowType: 'pkce',
     debug: process.env.NODE_ENV === 'development'
+  },
+  global: {
+    headers: {
+      'x-application-name': 'ST🍕 Eat'
+    }
+  },
+  db: {
+    schema: 'public'
+  },
+  realtime: {
+    timeout: 60000 // 60 seconds timeout for realtime connections
   }
 });
+
+// Authentication helper functions
+export const getCurrentUser = async () => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    
+    return session?.user || null;
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    return null;
+  }
+};
+
+export const getCurrentSession = async () => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    
+    return session;
+  } catch (error) {
+    console.error('Error getting current session:', error);
+    return null;
+  }
+};
+
+// Add this listener to handle session changes at the application level
+if (typeof window !== 'undefined') {
+  supabase.auth.onAuthStateChange((event, session) => {
+    console.log(`Supabase auth event: ${event}`);
+  });
+}
