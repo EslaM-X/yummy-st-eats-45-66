@@ -11,6 +11,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { sanitizeMetadata } from './AuthUtils';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 // Register form schema
 const registerSchema = z.object({
@@ -30,6 +32,7 @@ interface RegisterFormProps {
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false);
   const { toast } = useToast();
   const { language } = useLanguage();
   const { signUp } = useAuth();
@@ -72,6 +75,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       if (error) throw error;
       
       console.log("Registration response:", data);
+
+      // تحديد نجاح التسجيل
+      setRegistrationSuccess(true);
+      
+      // إعادة تعيين النموذج بعد نجاح التسجيل
+      form.reset();
       
       if (onSuccess) {
         onSuccess();
@@ -90,6 +99,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
 
   return (
     <Form {...form}>
+      {registrationSuccess && (
+        <Alert className="mb-6 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
+          <AlertCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+          <AlertTitle className="text-green-600 dark:text-green-400">
+            {language === 'ar' ? 'تم إنشاء الحساب بنجاح' : 'Account created successfully'}
+          </AlertTitle>
+          <AlertDescription className="text-green-600 dark:text-green-400">
+            {language === 'ar' 
+              ? 'تم إرسال رسالة تأكيد إلى بريدك الإلكتروني. يرجى التحقق من صندوق البريد الوارد والضغط على رابط التأكيد لتفعيل حسابك.' 
+              : 'A confirmation email has been sent to your email address. Please check your inbox and click on the confirmation link to activate your account.'}
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-4">
         <FormField
           control={form.control}

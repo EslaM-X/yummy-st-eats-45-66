@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -11,6 +11,8 @@ import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import PasswordResetForm from '@/components/auth/PasswordResetForm';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, CheckCircle } from "lucide-react";
 
 const AuthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("login");
@@ -20,6 +22,12 @@ const AuthPage: React.FC = () => {
   const [session, setSession] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  // التحقق من وجود رسالة تأكيد في عنوان URL
+  const emailConfirmed = searchParams.get('email_confirmed');
+  const error = searchParams.get('error');
+  const error_description = searchParams.get('error_description');
 
   // التحقق من وجود جلسة تسجيل دخول نشطة
   useEffect(() => {
@@ -68,6 +76,22 @@ const AuthPage: React.FC = () => {
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
+
+  // إظهار إشعار تأكيد البريد الإلكتروني
+  useEffect(() => {
+    if (emailConfirmed === 'true') {
+      toast({
+        title: "تم تأكيد البريد الإلكتروني",
+        description: "تم التحقق من بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول.",
+      });
+    } else if (error) {
+      toast({
+        title: "خطأ في العملية",
+        description: error_description || "حدث خطأ أثناء معالجة طلبك.",
+        variant: "destructive",
+      });
+    }
+  }, [emailConfirmed, error, error_description, toast]);
 
   const handleLoginSuccess = () => {
     toast({
@@ -136,6 +160,32 @@ const AuthPage: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {emailConfirmed === 'true' && (
+              <Alert className="mb-6 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
+                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <AlertTitle className="text-green-600 dark:text-green-400">
+                  {language === 'ar' ? 'تم تأكيد البريد الإلكتروني' : 'Email Confirmed'}
+                </AlertTitle>
+                <AlertDescription className="text-green-600 dark:text-green-400">
+                  {language === 'ar' 
+                    ? 'تم التحقق من بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول إلى حسابك.' 
+                    : 'Your email has been verified successfully. You can now log in to your account.'}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {error && (
+              <Alert className="mb-6 bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800">
+                <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                <AlertTitle className="text-red-600 dark:text-red-400">
+                  {language === 'ar' ? 'حدث خطأ' : 'Error'}
+                </AlertTitle>
+                <AlertDescription className="text-red-600 dark:text-red-400">
+                  {error_description || (language === 'ar' ? 'حدث خطأ أثناء العملية.' : 'An error occurred during the process.')}
+                </AlertDescription>
+              </Alert>
+            )}
+
             {showPasswordReset ? (
               <PasswordResetForm
                 onSuccess={handleResetSuccess}

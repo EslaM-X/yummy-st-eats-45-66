@@ -77,13 +77,18 @@ export const signUpUser = async (
     // معالجة البيانات الوصفية لضمان توافقها مع معايير الإرسال
     const sanitizedMetadata = metadata ? sanitizeMetadata(metadata) : undefined;
     
+    // الحصول على عنوان URL الحالي للتطبيق
+    const origin = window.location.origin;
+    const redirectTo = `${origin}/auth`;
+    console.log("Redirect URL:", redirectTo);
+    
     // استخدام Supabase مباشرة للتسجيل
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: sanitizedMetadata,
-        emailRedirectTo: window.location.origin + '/login'
+        emailRedirectTo: redirectTo
       },
     });
     
@@ -92,6 +97,7 @@ export const signUpUser = async (
     
     // هناك احتمال أن يكون المستخدم قد تم إنشاء حسابه بنجاح، لنتحقق من ذلك
     const userCreated = !!data?.user?.id;
+    const emailConfirm = data?.user?.identities?.length === 0;
     
     // إذا تم إنشاء المستخدم بنجاح، قم بإنشاء سجل ملفه الشخصي
     if (userCreated && data.user) {
@@ -111,11 +117,19 @@ export const signUpUser = async (
       }
     }
     
+    let message = "";
+    // التحقق مما إذا كان البريد الإلكتروني بحاجة إلى تأكيد
+    if (emailConfirm) {
+      message = "هذا البريد الإلكتروني مسجل بالفعل. يرجى التحقق من صندوق البريد الوارد لتأكيد حسابك.";
+    } else if (!data.session) {
+      message = "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب قبل تسجيل الدخول.";
+    } else {
+      message = "تم إنشاء حسابك وتسجيل دخولك بنجاح.";
+    }
+    
     toast({
       title: "تم إنشاء الحساب بنجاح",
-      description: userCreated 
-        ? "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب."
-        : "تم إرسال رابط التأكيد إلى بريدك الإلكتروني. يرجى التحقق منه لإكمال عملية التسجيل.",
+      description: message,
     });
     
     return { error: null, data };
@@ -125,7 +139,7 @@ export const signUpUser = async (
     
     if (error instanceof AuthError) {
       if (error.message?.includes("User already registered")) {
-        errorMessage = "هذا البريد الإلكتروني مسجل بالفعل.";
+        errorMessage = "هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول أو استخدام استعادة كلمة المرور.";
       } else if (error.message?.includes("unique constraint") || error.message?.includes("already exists")) {
         errorMessage = "البريد الإلكتروني أو اسم المستخدم مستخدم بالفعل";
       } else {
