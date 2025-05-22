@@ -1,43 +1,74 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useLanguage } from '@/contexts/LanguageContext';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { VirtualCardService } from '@/services/VirtualCardService';
 import TransactionListDisplay from './TransactionListDisplay';
-import { Transaction, VirtualCardService } from '@/services/VirtualCardService';
 
 const TransactionsTab: React.FC = () => {
-  const { language } = useLanguage();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("all");
   const [loading, setLoading] = useState<boolean>(true);
+  const { toast } = useToast();
+
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      const data = await VirtualCardService.getUserTransactions();
+      setTransactions(data);
+    } catch (error: any) {
+      console.error('Error fetching transactions:', error);
+      toast({
+        title: "خطأ في جلب المعاملات",
+        description: error.message || "حدث خطأ أثناء محاولة جلب سجل معاملاتك",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadTransactions = async () => {
-      try {
-        setLoading(true);
-        const userTransactions = await VirtualCardService.getUserTransactions();
-        setTransactions(userTransactions);
-      } catch (error) {
-        console.error('Failed to load transactions:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchTransactions();
+  }, [toast]);
 
-    loadTransactions();
-  }, []);
+  const filteredTransactions = transactions.filter(tx => {
+    switch (activeTab) {
+      case 'payments':
+        return tx.status === 'paid';
+      case 'refunds':
+        return tx.status === 'refunded' || tx.status === 'refund_requested';
+      default:
+        return true;
+    }
+  });
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          {language === 'ar' ? 'سجل المعاملات' : 'Transaction History'}
-        </CardTitle>
+        <CardTitle>سجل المعاملات</CardTitle>
       </CardHeader>
       <CardContent>
-        <TransactionListDisplay 
-          transactions={transactions}
-          loading={loading}
-        />
+        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="all">الكل</TabsTrigger>
+            <TabsTrigger value="payments">المدفوعات</TabsTrigger>
+            <TabsTrigger value="refunds">طلبات الاسترداد</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="all">
+            <TransactionListDisplay transactions={filteredTransactions} loading={loading} />
+          </TabsContent>
+          
+          <TabsContent value="payments">
+            <TransactionListDisplay transactions={filteredTransactions} loading={loading} />
+          </TabsContent>
+          
+          <TabsContent value="refunds">
+            <TransactionListDisplay transactions={filteredTransactions} loading={loading} />
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );

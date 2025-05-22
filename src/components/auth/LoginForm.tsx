@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { Eye, EyeOff } from 'lucide-react';
 
 // تعريف نموذج تسجيل الدخول
 const loginSchema = z.object({
@@ -18,10 +19,12 @@ const loginSchema = z.object({
 
 interface LoginFormProps {
   onSuccess?: () => void;
+  onForgotPassword?: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword }) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const { toast } = useToast();
   const { language } = useLanguage();
   const { signIn } = useAuth();
@@ -62,6 +65,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     }
   };
 
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4">
@@ -95,12 +100,26 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 {language === 'ar' ? 'كلمة المرور' : 'Password'}
               </FormLabel>
               <FormControl>
-                <Input 
-                  placeholder={language === 'ar' ? 'أدخل كلمة المرور' : 'Enter your password'} 
-                  type="password" 
-                  className="text-black dark:text-white"
-                  {...field} 
-                />
+                <div className="relative">
+                  <Input 
+                    placeholder={language === 'ar' ? 'أدخل كلمة المرور' : 'Enter your password'} 
+                    type={showPassword ? "text" : "password"} 
+                    className="text-black dark:text-white pr-10"
+                    {...field} 
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-0 right-0 h-full px-3 py-2 text-gray-500"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? 
+                      <EyeOff className="h-4 w-4" /> : 
+                      <Eye className="h-4 w-4" />
+                    }
+                  </Button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -121,7 +140,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           <button
             type="button"
             className="text-sm text-muted-foreground hover:underline"
-            onClick={() => alert("لم يتم تنفيذ هذه الميزة بعد")}
+            onClick={onForgotPassword}
           >
             {language === 'ar' ? 'نسيت كلمة المرور؟' : 'Forgot password?'}
           </button>

@@ -1,56 +1,61 @@
 
 import React from 'react';
-import { Transaction } from '@/services/VirtualCardService';
+import { Card, CardContent } from "@/components/ui/card";
 import TransactionRow from './TransactionRow';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Table, TableBody, TableHeader, TableRow, TableHead } from "@/components/ui/table";
 
+// تعديل التوقعات لاستخدام بيانات الطلبات بدلاً من المعاملات المالية
 interface TransactionListDisplayProps {
-  transactions: Transaction[];
-  loading: boolean;
+  transactions: any[]; // سنستخدم any لأن بيانات الطلب ستكون متنوعة
+  loading?: boolean;
 }
 
 const TransactionListDisplay: React.FC<TransactionListDisplayProps> = ({ transactions, loading }) => {
-  const { language } = useLanguage();
-
   if (loading) {
     return (
-      <div className="py-10 text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-        <p className="mt-4 text-gray-500 dark:text-gray-400">
-          {language === 'ar' ? 'جارٍ تحميل المعاملات...' : 'Loading transactions...'}
-        </p>
-      </div>
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">جاري تحميل البيانات...</div>
+        </CardContent>
+      </Card>
     );
   }
 
-  if (transactions.length === 0) {
+  if (!transactions || transactions.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-        {language === 'ar' ? 'لا توجد معاملات لعرضها حالياً.' : 'No transactions to display at the moment.'}
-      </div>
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">لا توجد معاملات حتى الآن</p>
+            <p className="mt-2 text-sm text-muted-foreground">ستظهر هنا سجل معاملاتك وطلباتك عند إجراء أي عملية</p>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{language === 'ar' ? 'التاريخ' : 'Date'}</TableHead>
-            <TableHead>{language === 'ar' ? 'الوصف' : 'Description'}</TableHead>
-            <TableHead>{language === 'ar' ? 'النوع' : 'Type'}</TableHead>
-            <TableHead className="text-right">{language === 'ar' ? 'المبلغ' : 'Amount'}</TableHead>
-            <TableHead>{language === 'ar' ? 'الحالة' : 'Status'}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {transactions.map((transaction) => (
-            <TransactionRow key={transaction.id} transaction={transaction} />
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <Card>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b dark:border-gray-700">
+                <th className="p-3 text-left text-sm font-medium">المعرف</th>
+                <th className="p-3 text-left text-sm font-medium">التاريخ</th>
+                <th className="p-3 text-left text-sm font-medium">الحالة</th>
+                <th className="p-3 text-left text-sm font-medium">المبلغ</th>
+                <th className="p-3 text-left text-sm font-medium">طريقة الدفع</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((transaction) => (
+                <TransactionRow key={transaction.id} transaction={transaction} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

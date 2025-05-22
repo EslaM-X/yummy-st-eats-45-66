@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,53 +8,47 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from "@/hooks/use-toast";
 import { VirtualCardService } from '@/services/VirtualCardService';
-import { useTranslation } from 'react-i18next';
-import { Loader2 } from "lucide-react";
 
 interface RefundDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
-  orderDetails: {
-    orderId: string | number;
-    amount: number;
-    cardNumber?: string;
-  };
-  onSuccess?: () => void;
+  orderId: string;
+  orderAmount: number;
 }
 
-const RefundDialog: React.FC<RefundDialogProps> = ({
-  isOpen,
+export function RefundDialog({
+  open,
   onClose,
-  orderDetails,
-  onSuccess
-}) => {
-  const [refundAmount, setRefundAmount] = useState<number>(orderDetails.amount);
+  orderId,
+  orderAmount
+}: RefundDialogProps) {
+  const [amount, setAmount] = useState<number>(orderAmount || 0);
   const [reason, setReason] = useState<string>("");
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const { t } = useTranslation();
-  
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
-    if (!isNaN(value) && value > 0 && value <= orderDetails.amount) {
-      setRefundAmount(value);
+    if (isNaN(value)) {
+      setAmount(0);
+    } else {
+      setAmount(value > orderAmount ? orderAmount : value);
     }
   };
-  
-  const handleReasonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReason(e.target.value);
-  };
-  
-  const handleSubmit = async () => {
-    if (refundAmount <= 0 || refundAmount > orderDetails.amount) {
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (amount <= 0) {
       toast({
-        title: t("refund.invalidAmount"),
-        description: t("refund.amountError"),
+        title: "مبلغ غير صالح",
+        description: "يرجى إدخال مبلغ أكبر من 0",
         variant: "destructive",
       });
       return;
@@ -63,134 +56,81 @@ const RefundDialog: React.FC<RefundDialogProps> = ({
     
     if (!reason.trim()) {
       toast({
-        title: t("refund.missingReason"),
-        description: t("refund.reasonRequired"),
+        title: "سبب مطلوب",
+        description: "يرجى إدخال سبب الاسترداد",
         variant: "destructive",
       });
       return;
     }
     
-    setIsProcessing(true);
     try {
-      const response = await VirtualCardService.processRefund({
-        orderId: orderDetails.orderId,
-        amount: refundAmount,
-        reason: reason,
-      });
+      setLoading(true);
+      await VirtualCardService.requestRefund(orderId, amount, reason);
       
       toast({
-        title: t("refund.success"),
-        description: t("refund.processed"),
-        variant: "default",
+        title: "تم تقديم طلب الاسترداد",
+        description: "سيتم مراجعة طلبك والرد عليه قريبًا",
       });
       
-      if (onSuccess) {
-        onSuccess();
-      }
       onClose();
-    } catch (error) {
-      console.error("Refund processing error:", error);
+    } catch (error: any) {
       toast({
-        title: t("refund.failed"),
-        description: error instanceof Error ? error.message : t("refund.errorMessage"),
+        title: "فشل في طلب الاسترداد",
+        description: error.message || "حدث خطأ أثناء محاولة تقديم طلب الاسترداد",
         variant: "destructive",
       });
     } finally {
-      setIsProcessing(false);
+      setLoading(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{t("refund.title")}</DialogTitle>
-          <DialogDescription>
-            {t("refund.description")}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="order-id" className="text-right">
-              {t("refund.orderId")}
-            </Label>
-            <Input
-              id="order-id"
-              value={orderDetails.orderId}
-              className="col-span-3"
-              disabled
-            />
-          </div>
-          {orderDetails.cardNumber && (
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>طلب استرداد</DialogTitle>
+            <DialogDescription>
+              يرجى تقديم المعلومات المطلوبة لطلب استرداد الأموال.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="card-number" className="text-right">
-                {t("refund.cardNumber")}
+              <Label htmlFor="refund-amount" className="text-right col-span-1">
+                المبلغ
               </Label>
               <Input
-                id="card-number"
-                value={orderDetails.cardNumber}
+                id="refund-amount"
+                type="number"
+                value={amount}
+                onChange={handleAmountChange}
+                max={orderAmount}
+                min={0}
+                step={0.01}
                 className="col-span-3"
-                disabled
+              />
+              <Label htmlFor="refund-reason" className="text-right col-span-1">
+                السبب
+              </Label>
+              <Textarea
+                id="refund-reason"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="يرجى توضيح سبب طلب الاسترداد"
+                className="col-span-3"
               />
             </div>
-          )}
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="total-amount" className="text-right">
-              {t("refund.totalAmount")}
-            </Label>
-            <Input
-              id="total-amount"
-              value={orderDetails.amount}
-              className="col-span-3"
-              disabled
-            />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="refund-amount" className="text-right">
-              {t("refund.refundAmount")}
-            </Label>
-            <Input
-              id="refund-amount"
-              type="number"
-              value={refundAmount}
-              onChange={handleAmountChange}
-              className="col-span-3"
-              placeholder={t("refund.amountPlaceholder")}
-              min={0.01}
-              max={orderDetails.amount}
-              step={0.01}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="reason" className="text-right">
-              {t("refund.reason")}
-            </Label>
-            <Textarea
-              id="reason"
-              value={reason}
-              onChange={handleReasonChange}
-              className="col-span-3 min-h-[80px]"
-              placeholder={t("refund.reasonPlaceholder")}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose} disabled={isProcessing}>
-            {t("refund.cancel")}
-          </Button>
-          <Button 
-            type="button" 
-            onClick={handleSubmit} 
-            disabled={isProcessing}
-            className="gap-2"
-          >
-            {isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isProcessing ? t("refund.processing") : t("refund.confirm")}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+              إلغاء
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "جاري المعالجة..." : "تقديم الطلب"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
-};
-
-export default RefundDialog;
+}

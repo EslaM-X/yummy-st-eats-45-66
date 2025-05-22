@@ -9,10 +9,12 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
+import PasswordResetForm from '@/components/auth/PasswordResetForm';
 import { useToast } from '@/hooks/use-toast';
 
 const AuthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("login");
+  const [showPasswordReset, setShowPasswordReset] = useState<boolean>(false);
   const navigate = useNavigate();
   const { language } = useLanguage();
   const [session, setSession] = useState<any>(null);
@@ -82,6 +84,22 @@ const AuthPage: React.FC = () => {
     setActiveTab("login");
   };
 
+  const handleForgotPassword = () => {
+    setShowPasswordReset(true);
+  };
+
+  const handleBackToLogin = () => {
+    setShowPasswordReset(false);
+  };
+
+  const handleResetSuccess = () => {
+    toast({
+      title: "تم إرسال رابط إعادة التعيين",
+      description: "يرجى التحقق من بريدك الإلكتروني للحصول على تعليمات إعادة تعيين كلمة المرور.",
+    });
+    setShowPasswordReset(false);
+  };
+
   if (isLoading) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -101,33 +119,51 @@ const AuthPage: React.FC = () => {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl text-center font-bold">
-              {language === 'ar' ? 'الدخول إلى ST🍕 Eat' : 'Sign in to ST🍕 Eat'}
+              {showPasswordReset
+                ? (language === 'ar' ? 'استعادة كلمة المرور' : 'Reset Password')
+                : (language === 'ar' ? 'الدخول إلى ST🍕 Eat' : 'Sign in to ST🍕 Eat')
+              }
             </CardTitle>
             <CardDescription className="text-center">
-              {language === 'ar' 
-                ? 'سجّل دخولك أو أنشئ حسابًا جديدًا للاستمتاع بخدماتنا'
-                : 'Enter your credentials or create a new account'}
+              {showPasswordReset
+                ? (language === 'ar' 
+                    ? 'أدخل بريدك الإلكتروني وسنرسل لك رابط لإعادة تعيين كلمة المرور'
+                    : 'Enter your email and we will send you a reset link')
+                : (language === 'ar' 
+                    ? 'سجّل دخولك أو أنشئ حسابًا جديدًا للاستمتاع بخدماتنا'
+                    : 'Enter your credentials or create a new account')
+                }
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">
-                  {language === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
-                </TabsTrigger>
-                <TabsTrigger value="register">
-                  {language === 'ar' ? 'حساب جديد' : 'Register'}
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="login">
-                <LoginForm onSuccess={handleLoginSuccess} />
-              </TabsContent>
-              
-              <TabsContent value="register">
-                <RegisterForm onSuccess={handleRegisterSuccess} />
-              </TabsContent>
-            </Tabs>
+            {showPasswordReset ? (
+              <PasswordResetForm
+                onSuccess={handleResetSuccess}
+                onCancel={handleBackToLogin}
+              />
+            ) : (
+              <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="login">
+                    {language === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
+                  </TabsTrigger>
+                  <TabsTrigger value="register">
+                    {language === 'ar' ? 'حساب جديد' : 'Register'}
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="login">
+                  <LoginForm 
+                    onSuccess={handleLoginSuccess} 
+                    onForgotPassword={handleForgotPassword}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="register">
+                  <RegisterForm onSuccess={handleRegisterSuccess} />
+                </TabsContent>
+              </Tabs>
+            )}
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-gray-500 dark:text-gray-400">

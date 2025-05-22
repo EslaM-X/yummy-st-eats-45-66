@@ -1,73 +1,109 @@
 
-import React, { Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { CartProvider } from '@/contexts/CartContext';
-import { Toaster } from '@/components/ui/toaster';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from "@/components/ui/toaster";
+import ScrollToTop from '@/components/ScrollToTop';
 
+// Pages
 import Index from './pages/Index';
-import AuthPage from './pages/AuthPage';
-import RegisterRestaurantPage from './pages/RegisterRestaurantPage';
+import NotFound from './pages/NotFound';
 import RestaurantsPage from './pages/RestaurantsPage';
-import AddFoodPage from './pages/AddFoodPage';
 import ProductsPage from './pages/ProductsPage';
-import CheckoutPage from './pages/CheckoutPage';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import RegisterRestaurantPage from './pages/RegisterRestaurantPage';
 import CoreTeamPage from './pages/CoreTeamPage';
-import ProfilePage from './pages/ProfilePage';
 import RewardsPage from './pages/RewardsPage';
-import AdminPage from './pages/AdminPage';
+import ProfilePage from './pages/ProfilePage';
+import AuthPage from './pages/AuthPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import AdminLoginPage from './pages/AdminLoginPage';
+import AdminPage from './pages/AdminPage';
+import AddFoodPage from './pages/AddFoodPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsConditionsPage from './pages/TermsConditionsPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
-import NotFound from './pages/NotFound';
 
-import ScrollToTop from './components/ScrollToTop';
+// Components
+import MobileNavBar from './components/MobileNavBar';
+import { useAuth } from './contexts/AuthContext';
 
 function App() {
-  return (
-    <CartProvider>
-      <Router>
-        <ScrollToTop />
-        <AppContent />
-        <Toaster />
-      </Router>
-    </CartProvider>
-  );
-}
+  const [showMobileNav, setShowMobileNav] = useState(true);
+  const { user, isLoading } = useAuth();
 
-function AppContent() {
-  const { isRTL } = useLanguage();
-
+  // إخفاء شريط التنقل في الجوال للصفحات المحددة
   useEffect(() => {
-    document.body.dir = isRTL ? 'rtl' : 'ltr';
-  }, [isRTL]);
+    const hideNavOnPages = ['/admin', '/admin-login'];
+    const checkPath = () => {
+      const currentPath = window.location.pathname;
+      const shouldHide = hideNavOnPages.some(page => currentPath.startsWith(page));
+      setShowMobileNav(!shouldHide);
+    };
+
+    checkPath(); // التحقق عند التحميل
+    window.addEventListener('popstate', checkPath); // التحقق عند تغيير المسار
+
+    return () => {
+      window.removeEventListener('popstate', checkPath);
+    };
+  }, []);
+
+  // عارض التحميل الأولي
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="spinner h-8 w-8 border-4 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/login" element={<AuthPage />} />
-        <Route path="/auth" element={<Navigate to="/login" replace />} />
-        <Route path="/register-restaurant" element={<RegisterRestaurantPage />} />
         <Route path="/restaurants" element={<RestaurantsPage />} />
-        <Route path="/add-food" element={<AddFoodPage />} />
         <Route path="/products" element={<ProductsPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route 
+          path="/checkout" 
+          element={user ? <CheckoutPage /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/register-restaurant" 
+          element={user ? <RegisterRestaurantPage /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/profile" 
+          element={user ? <ProfilePage /> : <Navigate to="/login" />} 
+        />
         <Route path="/team" element={<CoreTeamPage />} />
-        <Route path="/core-team" element={<Navigate to="/team" replace />} />
-        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/rewards" element={<RewardsPage />} />
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route 
+          path="/add-food" 
+          element={user ? <AddFoodPage /> : <Navigate to="/login" />} 
+        />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/admin-login" element={<AdminLoginPage />} />
+        <Route path="/admin/*" element={<AdminPage />} />
+        
+        {/* صفحات السياسات */}
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-conditions" element={<TermsConditionsPage />} />
         <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+        
+        {/* صفحة غير موجودة */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Suspense>
+      
+      {showMobileNav && <MobileNavBar />}
+      <Toaster />
+    </Router>
   );
 }
 

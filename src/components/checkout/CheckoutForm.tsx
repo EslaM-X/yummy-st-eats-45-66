@@ -1,168 +1,220 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, ShieldCheck, LockKeyhole } from 'lucide-react';
-import { VirtualCardService } from '@/services/VirtualCardService';
-import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useCart } from '@/contexts/CartContext';
-import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import CardNumberInput from './CardNumberInput';
-import CvvInput from './CvvInput';
-import SubmitPaymentButton from './SubmitPaymentButton';
-import { supabase } from '@/integrations/supabase/client';
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from 'react-router-dom';
+import { CardNumberInput } from './CardNumberInput';
+import { CvvInput } from './CvvInput';
+import { VirtualCardService } from '@/services/VirtualCardService';
 
-// Payment form validation schema
-const paymentSchema = z.object({
-  cardNumber: z.string()
-    .min(16, { message: 'Card number must be at least 16 digits' })
-    .max(19, { message: 'Card number must not exceed 19 digits' })
-    .refine(val => VirtualCardService.isCardNumberValid(val), {
-      message: 'Invalid card number format or checksum',
-    }),
-  cvv: z.string()
-    .min(3, { message: 'CVV must be at least 3 digits' })
-    .max(4, { message: 'CVV must not exceed 4 digits' })
-    .refine(val => VirtualCardService.isCvvValid(val), {
-      message: 'Invalid CVV format',
-    }),
+const checkoutFormSchema = z.object({
+  cardNumber: z.string().min(13, "يجب أن يتكون رقم البطاقة من 13-19 رقم").max(19),
+  cardholderName: z.string().min(3, "يرجى إدخال اسم حامل البطاقة الكامل"),
+  expiryMonth: z.string().min(1, "الشهر مطلوب"),
+  expiryYear: z.string().min(1, "السنة مطلوبة"),
+  cvv: z.string().min(3, "يجب أن يتكون رمز CVV من 3-4 أرقام").max(4),
 });
 
-type PaymentFormValues = z.infer<typeof paymentSchema>;
-
 interface CheckoutFormProps {
-  amount: number;
-  orderId: number;
-  cartItems: any[];
+  orderId: string;
+  totalAmount: number;
   onSuccess?: () => void;
 }
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({ 
-  amount, 
-  orderId, 
-  cartItems,
-  onSuccess 
-}) => {
+export function CheckoutForm({ orderId, totalAmount, onSuccess }: CheckoutFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { t } = useLanguage();
-  const { clearCart } = useCart();
   
-  const form = useForm<PaymentFormValues>({
-    resolver: zodResolver(paymentSchema),
+  const form = useForm<z.infer<typeof checkoutFormSchema>>({
+    resolver: zodResolver(checkoutFormSchema),
     defaultValues: {
-      cardNumber: '',
-      cvv: '',
+      cardNumber: "",
+      cardholderName: "",
+      expiryMonth: "",
+      expiryYear: "",
+      cvv: "",
     },
   });
 
-  // Handle form submission
-  const handleSubmit = async (values: PaymentFormValues) => {
-    setLoading(true);
-    
+  const validateCardNumber = (cardNumber: string): boolean => {
+    // التحقق أساسي من رقم البطاقة - على الأقل 13 رقم وليس أكثر من 19
+    const digitsOnly = cardNumber.replace(/\D/g, '');
+    return digitsOnly.length >= 13 && digitsOnly.length <= 19;
+  };
+  
+  const validateCVV = (cvv: string): boolean => {
+    // CVV عادة ما يكون 3 أو 4 أرقام
+    const digitsOnly = cvv.replace(/\D/g, '');
+    return /^\d{3,4}$/.test(digitsOnly);
+  };
+
+  const onSubmit = async (values: z.infer<typeof checkoutFormSchema>) => {
     try {
-      // Check if user is authenticated
-      const { data } = await supabase.auth.getSession();
-      const session = data.session;
+      setIsSubmitting(true);
       
-      // Prepare payment data
-      const paymentData = {
-        card_number: values.cardNumber.replace(/\s+/g, ''),
-        cvv: values.cvv,
-        amount: Number(amount.toFixed(5)),
-        order_id: orderId
-      };
+      // التحقق من صحة بيانات البطاقة
+      if (!validateCardNumber(values.cardNumber)) {
+        toast({
+          title: "رقم بطاقة غير صالح",
+          description: "يرجى التحقق من رقم البطاقة وإعادة المحاولة",
+          variant: "destructive",
+        });
+        return;
+      }
       
-      // Process payment
-      const response = await VirtualCardService.createPaymentTransaction(paymentData);
+      if (!validateCVV(values.cvv)) {
+        toast({
+          title: "رمز CVV غير صالح",
+          description: "يرجى التحقق من رمز CVV وإعادة المحاولة",
+          variant: "destructive",
+        });
+        return;
+      }
       
-      // Show success message
       toast({
-        title: t('paymentSuccessful'),
-        description: `${t('transactionId')}: ${response.transaction_id}`,
+        title: "جاري معالجة الطلب",
+        description: "يرجى الانتظار بينما نعالج معاملتك...",
       });
       
-      // Clear the cart
-      clearCart();
+      // إنشاء معاملة دفع جديدة
+      const clearedCardNumber = values.cardNumber.replace(/\s+/g, '');
+      await VirtualCardService.createPaymentTransaction(orderId, totalAmount, "credit_card");
       
-      // Store the order information in localStorage for persistence
-      localStorage.setItem('lastCompletedOrder', JSON.stringify({
-        orderId,
-        amount,
-        date: new Date().toISOString(),
-        items: cartItems,
-        transactionId: response.transaction_id
-      }));
+      toast({
+        title: "تم الدفع بنجاح!",
+        description: `تم خصم ${totalAmount.toFixed(2)} ر.س من بطاقتك بنجاح`,
+      });
       
-      // Handle success flow
       if (onSuccess) {
         onSuccess();
       } else {
-        // Redirect after successful payment with slight delay for UX
-        setTimeout(() => {
-          navigate('/', { replace: true });
-        }, 2000);
+        // التوجيه إلى صفحة تأكيد الطلب أو الصفحة الرئيسية
+        navigate('/');
       }
-    } catch (error) {
-      // Improved error handling with more descriptive messages
+    } catch (error: any) {
+      console.error("خطأ في معالجة الدفع:", error);
       toast({
-        title: t('paymentFailed'),
-        description: error instanceof Error ? error.message : t('paymentProcessError'),
+        title: "فشل عملية الدفع",
+        description: error.message || "حدث خطأ أثناء معالجة المعاملة. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <Card className="shadow-lg border-2 border-primary/10 overflow-hidden bg-gradient-to-br from-white to-primary/5 dark:from-gray-900 dark:to-gray-800">
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-400 via-cyan-500 to-purple-500"></div>
-      <CardHeader className="space-y-1 pb-6">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-2xl font-bold flex items-center gap-2 text-primary">
-            <div className="p-1.5 rounded-full bg-primary/10">
-              <CreditCard className="h-5 w-5 text-primary" />
-            </div>
-            {t('paymentDetails')}
-          </CardTitle>
-          <div className="flex items-center gap-1.5">
-            <div className="p-1 rounded-full bg-amber-500/10">
-              <ShieldCheck className="h-4 w-4 text-amber-500" />
-            </div>
-            <div className="p-1 rounded-full bg-emerald-500/10">
-              <LockKeyhole className="h-4 w-4 text-emerald-500" />
-            </div>
-          </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="cardNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>رقم البطاقة</FormLabel>
+              <FormControl>
+                <CardNumberInput {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="cardholderName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>اسم حامل البطاقة</FormLabel>
+              <FormControl>
+                <input
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="الاسم كما يظهر على البطاقة"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="expiryMonth"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormLabel>شهر الانتهاء</FormLabel>
+                <FormControl>
+                  <select
+                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    {...field}
+                  >
+                    <option value="">MM</option>
+                    {Array.from({ length: 12 }, (_, i) => {
+                      const month = (i + 1).toString().padStart(2, '0');
+                      return <option key={month} value={month}>{month}</option>;
+                    })}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="expiryYear"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormLabel>سنة الانتهاء</FormLabel>
+                <FormControl>
+                  <select
+                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    {...field}
+                  >
+                    <option value="">YY</option>
+                    {Array.from({ length: 10 }, (_, i) => {
+                      const year = (new Date().getFullYear() + i).toString().slice(2);
+                      return <option key={year} value={year}>{year}</option>;
+                    })}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="cvv"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormLabel>رمز الأمان (CVV)</FormLabel>
+                <FormControl>
+                  <CvvInput {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
-        <CardDescription className="text-muted-foreground">
-          {t('enterVirtualCardDetails')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <div className="bg-primary/5 rounded-lg p-4 mb-4">
-              <div className="text-sm font-medium text-primary mb-2">{t('securePaymentInfo')}</div>
-              <div className="text-xs text-muted-foreground">{t('securePaymentDescription')}</div>
-            </div>
-            
-            <CardNumberInput form={form} />
-            <CvvInput form={form} />
-            
-            <div className="pt-4">
-              <SubmitPaymentButton loading={loading} amount={amount} />
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        
+        <Button 
+          type="submit" 
+          className="w-full text-lg py-6" 
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "جاري المعالجة..." : `إتمام الدفع - ${totalAmount.toFixed(2)} ر.س`}
+        </Button>
+      </form>
+    </Form>
   );
-};
+}
 
 export default CheckoutForm;
