@@ -88,6 +88,7 @@ function App() {
           element={user ? <AddFoodPage /> : <Navigate to="/auth" />} 
         />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/login" element={<AuthPage />} /> {/* إضافة مسار جديد للتوجيه إلى صفحة تسجيل الدخول */}
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/admin-login" element={<AdminLoginPage />} />
         <Route path="/admin/*" element={<AdminPage />} />

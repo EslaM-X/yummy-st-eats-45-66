@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     setIsLoading(true);
     
     // Redirect to the full authentication page instead
-    navigate('/login');
+    navigate('/auth');
     onClose();
   };
 
@@ -82,7 +81,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               type="button" 
               className="w-full bg-yellow-700 hover:bg-yellow-800 text-white"
               disabled={isLoading}
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/auth')}
             >
               {isSignUp ? 'إنشاء حساب' : 'تسجيل الدخول'}
             </Button>
