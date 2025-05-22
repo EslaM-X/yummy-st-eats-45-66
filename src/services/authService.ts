@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { cleanupAuthState, sanitizeMetadata } from '@/components/auth/AuthUtils';
 import type { toast as ToastFunctionType } from '@/hooks/use-toast'; // Import type for toast function
@@ -28,20 +29,6 @@ export const signInUser = async (
     if (error) throw error;
     
     console.log("Sign in successful:", data);
-    
-    // بعد تسجيل الدخول بنجاح، تحديث جلسة المستخدم في قاعدة البيانات
-    try {
-      await supabase
-        .from('user_sessions')
-        .insert({
-          user_id: data.user.id,
-          last_sign_in: new Date().toISOString(),
-          status: 'active'
-        });
-    } catch (sessionError) {
-      // لا نريد أن تفشل عملية تسجيل الدخول إذا فشل تسجيل الجلسة
-      console.error("Failed to record session:", sessionError);
-    }
     
     return { error: null, data };
   } catch (error: any) {
@@ -161,20 +148,6 @@ export const signUpUser = async (
  */
 export const signOutUser = async () => {
   try {
-    // تسجيل خروج المستخدم من قاعدة البيانات إذا كان متاحا
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user?.id) {
-      try {
-        await supabase
-          .from('user_sessions')
-          .update({ status: 'ended', ended_at: new Date().toISOString() })
-          .eq('user_id', user.id)
-          .eq('status', 'active');
-      } catch (sessionError) {
-        console.error("Error updating session on logout:", sessionError);
-      }
-    }
-    
     // Clean up auth state
     cleanupAuthState();
     

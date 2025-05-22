@@ -74,4 +74,3 @@ export const sanitizeMetadata = (metadata: Record<string, any> = {}): Record<str
   
   return sanitized;
 };
-
