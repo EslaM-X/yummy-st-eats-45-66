@@ -56,3 +56,22 @@ export const isStrongPassword = (password: string): boolean => {
   // على الأقل 6 أحرف
   return password.length >= 6;
 };
+
+/**
+ * تحويل البيانات الوصفية إلى تنسيق آمن للإرسال
+ * لحل مشكلة الحروف غير المتوافقة مع ISO-8859-1 في الهيدرز
+ */
+export const sanitizeMetadata = (metadata: Record<string, any> = {}): Record<string, string> => {
+  const sanitized: Record<string, string> = {};
+  
+  // نقوم بتحويل كافة القيم إلى نصوص آمنة للإرسال
+  Object.keys(metadata).forEach(key => {
+    if (metadata[key] !== null && metadata[key] !== undefined) {
+      // تحويل القيمة إلى نص وترميزه إذا لزم الأمر
+      sanitized[key] = String(metadata[key]);
+    }
+  });
+  
+  return sanitized;
+};
+

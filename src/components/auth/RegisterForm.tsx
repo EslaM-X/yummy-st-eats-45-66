@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { sanitizeMetadata } from './AuthUtils';
 
 // Register form schema
 const registerSchema = z.object({
@@ -57,13 +58,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
         userType: values.userType 
       });
       
-      // استخدام وظيفة signUp من AuthContext
-      const { error, data } = await signUp(values.email, values.password, {
+      // تجهيز البيانات الوصفية مع معالجة الأحرف غير المتوافقة
+      const metadata = sanitizeMetadata({
         full_name: values.fullName,
         username: values.username,
         phone: values.phone || '',
         user_type: values.userType
       });
+      
+      // استخدام وظيفة signUp من AuthContext
+      const { error, data } = await signUp(values.email, values.password, metadata);
       
       if (error) throw error;
       

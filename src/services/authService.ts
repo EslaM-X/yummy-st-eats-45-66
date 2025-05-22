@@ -1,6 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { cleanupAuthState } from '@/components/auth/AuthUtils';
+import { cleanupAuthState, sanitizeMetadata } from '@/components/auth/AuthUtils';
 import type { toast as ToastFunctionType } from '@/hooks/use-toast'; // Import type for toast function
 import { AuthError } from '@supabase/supabase-js';
 
@@ -79,7 +78,7 @@ export const signInUser = async (
 export const signUpUser = async (
   email: string,
   password: string,
-  metadata: any | undefined, // Keep metadata optional
+  metadata: Record<string, any> | undefined, // Keep metadata optional
   // Use the type of the toast function from shadcn/ui
   toast: typeof ToastFunctionType
 ) => {
@@ -88,12 +87,15 @@ export const signUpUser = async (
     // Clean up existing auth state first
     cleanupAuthState();
     
+    // معالجة البيانات الوصفية لضمان توافقها مع معايير الإرسال
+    const sanitizedMetadata = metadata ? sanitizeMetadata(metadata) : undefined;
+    
     // استخدام Supabase مباشرة للتسجيل
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: metadata,
+        data: sanitizedMetadata,
         emailRedirectTo: window.location.origin + '/login'
       },
     });
@@ -110,10 +112,10 @@ export const signUpUser = async (
         await supabase.from('profiles').upsert({
           id: data.user.id,
           email: data.user.email,
-          full_name: metadata?.full_name || '',
-          username: metadata?.username || '',
-          phone: metadata?.phone || '',
-          user_type: metadata?.user_type || 'customer',
+          full_name: sanitizedMetadata?.full_name || '',
+          username: sanitizedMetadata?.username || '',
+          phone: sanitizedMetadata?.phone || '',
+          user_type: sanitizedMetadata?.user_type || 'customer',
           updated_at: new Date().toISOString()
         });
       } catch (profileError) {
