@@ -6,6 +6,7 @@ import './index.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { CartProvider } from '@/contexts/CartContext';
 import './locales/i18n';
 
 const rootElement = document.getElementById('root');
@@ -16,7 +17,9 @@ createRoot(rootElement).render(
     <ThemeProvider defaultTheme="system" storageKey="st-eats-theme">
       <LanguageProvider>
         <AuthProvider>
-          <App />
+          <CartProvider>
+            <App />
+          </CartProvider>
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
