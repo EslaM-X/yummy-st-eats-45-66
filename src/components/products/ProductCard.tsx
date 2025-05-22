@@ -32,12 +32,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     
     // Handle price conversion properly
     let numericPrice: number;
-    if (typeof product.price === 'string') {
-      // استخراج القيمة الرقمية من النص (إزالة أي أحرف غير رقمية باستثناء النقطة العشرية)
-      const priceString = product.price.toString();
-      numericPrice = parseFloat(priceString.replace(/[^\d.]/g, ''));
+    
+    // تعامل مع السعر بغض النظر عن نوعه (نص أو رقم)
+    const priceValue = product.price;
+    if (typeof priceValue === 'string') {
+      numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
     } else {
-      numericPrice = product.price;
+      numericPrice = Number(priceValue);
     }
     
     // Create cart item from product
