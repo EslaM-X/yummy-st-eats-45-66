@@ -33,7 +33,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     // Handle price as number or string
     let numericPrice = product.price;
     if (typeof product.price === 'string') {
-      numericPrice = parseFloat(product.price.toString().replace(/[^0-9.]/g, ''));
+      numericPrice = parseFloat(product.price.replace(/[^0-9.]/g, ''));
     }
     
     // Create cart item from product
