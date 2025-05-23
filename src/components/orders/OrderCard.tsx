@@ -25,6 +25,8 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onViewOrder }) => {
   };
   
   const paymentMethodText = order.payment_method === 'card' ? labels.card : labels.cash;
+  const itemsLength = Array.isArray(order.items) ? order.items.length : 0;
+  const orderItems = Array.isArray(order.order_items) ? order.order_items : [];
   
   return (
     <Card className="overflow-hidden">
@@ -33,7 +35,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onViewOrder }) => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div className="mb-4 sm:mb-0">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                {order.restaurants?.name || 'Restaurant'}
+                {order.restaurants?.name || (language === 'en' ? 'Restaurant' : 'مطعم')}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {formatDate(order.created_at, language)}
@@ -43,13 +45,13 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onViewOrder }) => {
           </div>
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="text-sm">
-              <span className="font-medium text-gray-600 dark:text-gray-300">{labels.orderNumber}</span> {order.id}
+              <span className="font-medium text-gray-600 dark:text-gray-300">{labels.orderNumber}</span> {order.id.substring(0, 8)}...
             </div>
             <div className="text-sm">
               <span className="font-medium text-gray-600 dark:text-gray-300">{labels.totalAmount}</span> {order.total_amount} ST
             </div>
             <div className="text-sm">
-              <span className="font-medium text-gray-600 dark:text-gray-300">{labels.numProducts}</span> {order.items.length}
+              <span className="font-medium text-gray-600 dark:text-gray-300">{labels.numProducts}</span> {itemsLength || orderItems.length || 0}
             </div>
             <div className="text-sm">
               <span className="font-medium text-gray-600 dark:text-gray-300">{labels.paymentMethod}</span> {paymentMethodText}

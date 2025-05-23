@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import OrderTabs from '@/components/orders/OrderTabs';
 import OrderList from '@/components/orders/OrderList';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { OrderService } from '@/services/OrderService';
 
 const MyOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -31,25 +31,12 @@ const MyOrdersPage: React.FC = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      let query = supabase
-        .from('orders')
-        .select(`
-          *,
-          restaurants(id, name, logo_url),
-          order_tracking(status, created_at)
-        `)
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
-
-      if (activeTab !== 'all') {
-        query = query.eq('status', activeTab);
-      }
-
-      const { data, error } = await query;
+      const status = activeTab !== 'all' ? activeTab : undefined;
+      const { data, error } = await OrderService.getUserOrders(status);
       
       if (error) throw error;
       
-      console.log('Orders fetched from Supabase:', data);
+      console.log('Orders fetched:', data);
       
       setOrders(data || []);
     } catch (error: any) {

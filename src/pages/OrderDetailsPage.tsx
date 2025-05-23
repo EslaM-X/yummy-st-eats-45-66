@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import OrderStatusBadge from '@/components/orders/OrderStatusBadge';
 import OrderNotFound from '@/components/orders/OrderNotFound';
@@ -13,6 +11,7 @@ import OrderDetailsContent from '@/components/orders/OrderDetailsContent';
 import OrderDetailActions from '@/components/orders/OrderDetailActions';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { OrderService } from '@/services/OrderService';
 
 const OrderDetailsPage: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
@@ -37,17 +36,7 @@ const OrderDetailsPage: React.FC = () => {
   const fetchOrderDetails = async (id: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select(`
-          *,
-          restaurants(id, name, logo_url, phone),
-          order_tracking(id, status, notes, created_at, created_by),
-          order_items(id, product_id, product_name, product_price, quantity, notes)
-        `)
-        .eq('id', id)
-        .eq('user_id', user?.id)
-        .single();
+      const { data, error } = await OrderService.getOrderById(id);
       
       if (error) throw error;
       if (!data) {
@@ -81,31 +70,9 @@ const OrderDetailsPage: React.FC = () => {
     
     if (window.confirm(confirmMessage)) {
       try {
-        // Update order status in the orders table
-        const { error: updateError } = await supabase
-          .from('orders')
-          .update({ 
-            status: 'cancelled',
-            updated_at: new Date().toISOString() 
-          })
-          .eq('id', orderId)
-          .eq('user_id', user?.id);
+        const { success, error } = await OrderService.cancelOrder(orderId);
         
-        if (updateError) throw updateError;
-        
-        // Add an order tracking entry
-        const { error: trackingError } = await supabase
-          .from('order_tracking')
-          .insert({
-            order_id: orderId,
-            status: 'cancelled',
-            notes: language === 'en' 
-              ? 'Order cancelled by customer' 
-              : 'تم إلغاء الطلب من قبل العميل',
-            created_by: user?.id
-          });
-        
-        if (trackingError) throw trackingError;
+        if (error) throw error;
         
         toast({
           title: language === 'en' ? "Order Cancelled Successfully" : "تم إلغاء الطلب بنجاح",
