@@ -1,99 +1,136 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
-import { Session, User } from '@supabase/supabase-js';
-import { useToast } from '@/hooks/use-toast'; 
-
-// Hooks and service
-import { useAuthState } from '@/hooks/useAuthState';
-import { useProfile } from '@/hooks/useProfile';
-import { useUserRole } from '@/hooks/useUserRole';
-import { authService } from '@/services/authService';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+import { cleanupAuthState } from '@/components/auth/AuthUtils';
 
 interface AuthContextType {
-  session: Session | null;
   user: User | null;
-  signIn: (email: string, password: string) => Promise<{ error: any, data?: any }>;
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any, data: any }>;
-  signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
-  changePassword: (newPassword: string) => Promise<{ error: any }>;
-  loading: boolean; 
-  isAdmin: boolean;
-  isRestaurantOwner: boolean;
-  isCustomer: boolean;
-  profile: any; 
-  refreshProfile: () => Promise<void>;
-  updateProfile: (data: Record<string, any>) => Promise<{ success: boolean, error?: string }>;
-  isLoading: boolean; 
-  profileLoading?: boolean;
-  roleLoading?: boolean;
-  error?: string | null;
+  session: Session | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  error: string | null;
+  clearAuthState: () => void;
+  refreshSession: () => Promise<boolean>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  session: null,
+  isLoading: true,
+  isAuthenticated: false,
+  error: null,
+  clearAuthState: () => {},
+  refreshSession: async () => false,
+});
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { session, user, loading, isLoading: authStateIsLoading, error: authError } = useAuthState();
-  const { profile, refreshProfile, updateProfile, loading: profileLoading, error: profileError } = useProfile(user); 
-  const { isAdmin, isRestaurantOwner, isCustomer, loading: roleLoading, error: roleError } = useUserRole(user); 
-  const { toast } = useToast();
-
-  const handleSignIn = async (email: string, password: string) => {
-    return authService.signIn(email, password, toast);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  const clearAuthState = () => {
+    setUser(null);
+    setSession(null);
+    setError(null);
+    cleanupAuthState();
   };
 
-  const handleSignUp = async (email: string, password: string, metadata?: any) => {
-    return authService.signUp(email, password, metadata, toast);
+  const refreshSession = async () => {
+    try {
+      setIsLoading(true);
+      const { data: { session: refreshedSession }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("Session refresh error:", error);
+        setError(error.message);
+        return false;
+      }
+      
+      setSession(refreshedSession);
+      setUser(refreshedSession?.user ?? null);
+      return true;
+    } catch (err: any) {
+      console.error("Session refresh exception:", err);
+      setError(err.message);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleResetPassword = async (email: string) => {
-    return authService.resetPassword(email, toast);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // First, set up the auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, currentSession) => {
+        console.log("Auth state changed:", event);
+        
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        
+        switch (event) {
+          case "SIGNED_OUT":
+            clearAuthState();
+            break;
+          case "TOKEN_REFRESHED":
+            console.log("Token refreshed successfully");
+            break;
+          case "USER_UPDATED":
+            console.log("User data updated");
+            break;
+        }
+        
+        setIsLoading(false);
+      }
+    );
+
+    // Then check for an existing session
+    const checkExistingSession = async () => {
+      try {
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Session check error:", error);
+          setError(error.message);
+          clearAuthState();
+        } else {
+          console.log("Current session:", currentSession ? "Active" : "None");
+          setSession(currentSession);
+          setUser(currentSession?.user ?? null);
+        }
+        
+        setIsLoading(false);
+      } catch (err: any) {
+        console.error("Session check exception:", err);
+        setError(err.message);
+        clearAuthState();
+        setIsLoading(false);
+      }
+    };
+    
+    checkExistingSession();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const value = {
+    user,
+    session,
+    isLoading,
+    error,
+    isAuthenticated: !!user,
+    clearAuthState,
+    refreshSession
   };
 
-  const handleChangePassword = async (newPassword: string) => {
-    return authService.changePassword(newPassword, toast);
-  };
-
-  const handleUpdateProfile = async (data: Record<string, any>) => {
-    if (!user) return { success: false, error: "المستخدم غير مسجل الدخول" };
-    return updateProfile(data);
-  };
-
-  // الجمع بين أخطاء الـ hooks المختلفة
-  const error = authError || profileError || roleError;
-
-  return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user,
-        signIn: handleSignIn,
-        signUp: handleSignUp,
-        signOut: authService.signOut,
-        resetPassword: handleResetPassword,
-        changePassword: handleChangePassword,
-        loading, 
-        isAdmin,
-        isRestaurantOwner,
-        isCustomer,
-        profile, 
-        refreshProfile,
-        updateProfile: handleUpdateProfile,
-        isLoading: authStateIsLoading,
-        profileLoading,
-        roleLoading,
-        error
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('يجب استخدام useAuth داخل AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
+
+export default AuthContext;

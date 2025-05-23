@@ -1,307 +1,160 @@
 
-import { supabase } from '@/integrations/supabase/client';
-import { Product } from '@/types';
+import { supabase } from "@/integrations/supabase/client";
 
-/**
- * خدمة التعامل مع المنتجات في التطبيق
- */
-export const ProductService = {
-  /**
-   * جلب جميع المنتجات
-   */
-  async getAllProducts() {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
-          *,
-          restaurants(*),
-          categories(*)
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error fetching products:', error);
-      return { data: [], error };
-    }
-  },
-  
-  /**
-   * جلب منتج بواسطة المعرف
-   */
-  async getProductById(id: string) {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
-          *,
-          restaurants(*),
-          categories(*)
-        `)
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error(`Error fetching product with ID ${id}:`, error);
-      return { data: null, error };
-    }
-  },
-  
-  /**
-   * جلب المنتجات حسب فئة معينة
-   */
-  async getProductsByCategory(categoryId: string) {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
-          *,
-          restaurants(*),
-          categories(*)
-        `)
-        .eq('category_id', categoryId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error(`Error fetching products for category ${categoryId}:`, error);
-      return { data: [], error };
-    }
-  },
-  
-  /**
-   * جلب المنتجات حسب مطعم معين
-   */
-  async getProductsByRestaurant(restaurantId: string) {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
-          *,
-          categories(*)
-        `)
-        .eq('restaurant_id', restaurantId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error(`Error fetching products for restaurant ${restaurantId}:`, error);
-      return { data: [], error };
-    }
-  },
-  
-  /**
-   * إنشاء منتج جديد
-   */
-  async createProduct(productData: { 
-    name: string; 
-    description?: string;
-    price: number;
-    restaurant_id: string;
-    category_id?: string;
-    image_url?: string;
-    ingredients?: string[];
-    is_available?: boolean;
-    featured?: boolean;
-    discount_percent?: number;
-  }) {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .insert(productData)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error creating product:', error);
-      return { data: null, error };
-    }
-  },
-  
-  /**
-   * تحديث منتج موجود
-   */
-  async updateProduct(id: string, productData: { 
-    name?: string; 
-    description?: string;
-    price?: number;
-    restaurant_id?: string;
-    category_id?: string;
-    image_url?: string;
-    ingredients?: string[];
-    is_available?: boolean;
-    featured?: boolean;
-    discount_percent?: number;
-  }) {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .update(productData)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error(`Error updating product with ID ${id}:`, error);
-      return { data: null, error };
-    }
-  },
-  
-  /**
-   * حذف منتج
-   */
-  async deleteProduct(id: string) {
-    try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      return { success: true, error: null };
-    } catch (error: any) {
-      console.error(`Error deleting product with ID ${id}:`, error);
-      return { success: false, error };
-    }
-  },
-  
-  /**
-   * جلب المنتجات المميزة
-   */
-  async getFeaturedProducts() {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
-          *,
-          restaurants(*),
-          categories(*)
-        `)
-        .eq('featured', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error fetching featured products:', error);
-      return { data: [], error };
-    }
-  },
-  
-  /**
-   * البحث عن منتجات
-   */
-  async searchProducts(query: string) {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
-          *,
-          restaurants(*),
-          categories(*)
-        `)
-        .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error(`Error searching for products with query "${query}":`, error);
-      return { data: [], error };
-    }
-  }
-};
-
-/**
- * الحصول على الفئات المتاحة
- */
+// Get all categories
 export const getCategories = async () => {
   try {
     const { data, error } = await supabase
       .from('categories')
       .select('*')
-      .order('name', { ascending: true });
-
-    if (error) throw error;
-
+      .order('name');
+    
+    if (error) {
+      console.error('Error fetching categories:', error);
+      return [];
+    }
+    
     return data || [];
-  } catch (error: any) {
-    console.error('Error fetching categories:', error);
+  } catch (error) {
+    console.error('Exception fetching categories:', error);
     return [];
   }
 };
 
-/**
- * الحصول على المنتجات المفلترة
- */
+// Get filtered products
 export const getFilteredProducts = async (
-  searchTerm: string = '',
-  categoryId: string = '',
-  sortBy: string = '',
-  countryCode: string = ''
+  searchTerm?: string,
+  categoryName?: string,
+  sortBy?: string,
+  countryCode?: string
 ) => {
   try {
     let query = supabase
       .from('products')
       .select(`
         *,
-        restaurants(*),
-        categories(*)
+        categories (
+          name
+        ),
+        restaurants (
+          name,
+          address
+        )
       `);
-
-    // تطبيق فلتر البحث
-    if (searchTerm) {
-      query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+    
+    // Add search filter
+    if (searchTerm && searchTerm.trim() !== '') {
+      query = query.ilike('name', `%${searchTerm.trim()}%`);
     }
     
-    // تطبيق فلتر الفئة
-    if (categoryId) {
-      query = query.eq('category_id', categoryId);
+    // Add category filter
+    if (categoryName && categoryName !== '') {
+      query = query.eq('categories.name', categoryName);
     }
     
-    // تطبيق فلتر المنتجات المتاحة فقط
-    query = query.eq('is_available', true);
+    // Add country filter through restaurants and locations (if applicable)
+    // This is a simplified approach - actual implementation depends on your data structure
+    if (countryCode && countryCode !== '') {
+      // For this example, assuming restaurants have a country field in their address
+      query = query.ilike('restaurants.address', `%${countryCode}%`);
+    }
     
-    // الحصول على النتائج
+    // Add sorting
+    if (sortBy) {
+      switch (sortBy) {
+        case 'price_asc':
+          query = query.order('price', { ascending: true });
+          break;
+        case 'price_desc':
+          query = query.order('price', { ascending: false });
+          break;
+        case 'name_asc':
+          query = query.order('name', { ascending: true });
+          break;
+        case 'name_desc':
+          query = query.order('name', { ascending: false });
+          break;
+        default:
+          query = query.order('created_at', { ascending: false });
+      }
+    } else {
+      // Default sorting
+      query = query.order('created_at', { ascending: false });
+    }
+    
     const { data, error } = await query;
-
-    if (error) throw error;
-
-    // تطبيق الترتيب
-    let sortedData = [...(data || [])];
     
-    if (sortBy === 'price_asc') {
-      sortedData.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price_desc') {
-      sortedData.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'newest') {
-      sortedData.sort((a, b) => 
-        new Date(b.created_at || '').getTime() - 
-        new Date(a.created_at || '').getTime()
-      );
+    if (error) {
+      console.error('Error fetching filtered products:', error);
+      return [];
     }
+    
+    // Process and return the data
+    return data || [];
+  } catch (error) {
+    console.error('Exception fetching filtered products:', error);
+    return [];
+  }
+};
 
-    return sortedData;
-  } catch (error: any) {
-    console.error('Error getting filtered products:', error);
+// Get a specific product by ID
+export const getProductById = async (productId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        categories (
+          name
+        ),
+        restaurants (
+          id,
+          name,
+          logo_url,
+          address,
+          phone
+        )
+      `)
+      .eq('id', productId)
+      .single();
+    
+    if (error) {
+      console.error('Error fetching product details:', error);
+      return null;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Exception fetching product details:', error);
+    return null;
+  }
+};
+
+// Get bestsellers (featured products)
+export const getBestsellerProducts = async (limit = 4) => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        categories (
+          name
+        ),
+        restaurants (
+          name
+        )
+      `)
+      .eq('featured', true)
+      .limit(limit);
+    
+    if (error) {
+      console.error('Error fetching bestseller products:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error('Exception fetching bestseller products:', error);
     return [];
   }
 };

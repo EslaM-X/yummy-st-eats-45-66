@@ -1,117 +1,107 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { Location } from '@/types';
 
-/**
- * خدمة التعامل مع المواقع والمدن في التطبيق
- */
-export const LocationService = {
-  /**
-   * جلب جميع المدن
-   */
-  async getCities() {
+export class LocationService {
+  static async getCountries() {
+    try {
+      const { data, error } = await supabase
+        .from('locations')
+        .select('*')
+        .eq('type', 'country')
+        .order('name');
+      
+      if (error) {
+        console.error('Error fetching countries:', error);
+        return [];
+      }
+      
+      return data as Location[];
+    } catch (error) {
+      console.error('Exception fetching countries:', error);
+      return [];
+    }
+  }
+  
+  static async getCities(countryId: string) {
     try {
       const { data, error } = await supabase
         .from('locations')
         .select('*')
         .eq('type', 'city')
+        .eq('parent_id', countryId)
         .order('name');
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error fetching cities:', error);
-      return { data: [], error };
-    }
-  },
-
-  /**
-   * جلب الأحياء التابعة لمدينة معينة
-   */
-  async getDistrictsByCity(cityId: string) {
-    try {
-      const { data, error } = await supabase
-        .from('locations')
-        .select('*')
-        .eq('type', 'district')
-        .eq('parent_id', cityId)
-        .order('name');
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error(`Error fetching districts for city ${cityId}:`, error);
-      return { data: [], error };
-    }
-  },
-
-  /**
-   * جلب المناطق التابعة لحي معين
-   */
-  async getNeighborhoodsByDistrict(districtId: string) {
-    try {
-      const { data, error } = await supabase
-        .from('locations')
-        .select('*')
-        .eq('type', 'neighborhood')
-        .eq('parent_id', districtId)
-        .order('name');
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error(`Error fetching neighborhoods for district ${districtId}:`, error);
-      return { data: [], error };
-    }
-  },
-
-  /**
-   * جلب موقع معين بالمعرف
-   */
-  async getLocationById(id: string) {
-    try {
-      const { data, error } = await supabase
-        .from('locations')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error(`Error fetching location with ID ${id}:`, error);
-      return { data: null, error };
-    }
-  },
-
-  /**
-   * حساب رسوم التوصيل بناءً على الموقع
-   */
-  async getDeliveryFee(locationId: string) {
-    try {
-      const { data, error } = await supabase
-        .from('locations')
-        .select('delivery_fee, delivery_available')
-        .eq('id', locationId)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (!data) {
-        throw new Error('لم يتم العثور على الموقع المحدد');
+      
+      if (error) {
+        console.error('Error fetching cities:', error);
+        return [];
       }
-
-      if (!data.delivery_available) {
-        throw new Error('التوصيل غير متاح في هذه المنطقة');
-      }
-
-      return { deliveryFee: data.delivery_fee, error: null };
-    } catch (error: any) {
-      console.error(`Error getting delivery fee for location ${locationId}:`, error);
-      return { deliveryFee: null, error };
+      
+      return data as Location[];
+    } catch (error) {
+      console.error('Exception fetching cities:', error);
+      return [];
     }
   }
-};
+  
+  static async getAreas(cityId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('locations')
+        .select('*')
+        .eq('type', 'area')
+        .eq('parent_id', cityId)
+        .order('name');
+      
+      if (error) {
+        console.error('Error fetching areas:', error);
+        return [];
+      }
+      
+      return data as Location[];
+    } catch (error) {
+      console.error('Exception fetching areas:', error);
+      return [];
+    }
+  }
+  
+  static async getLocationById(locationId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('locations')
+        .select('*')
+        .eq('id', locationId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching location details:', error);
+        return null;
+      }
+      
+      return data as Location;
+    } catch (error) {
+      console.error('Exception fetching location details:', error);
+      return null;
+    }
+  }
+  
+  static async getLocationHierarchy(areaId: string) {
+    try {
+      // Get the area
+      const area = await this.getLocationById(areaId);
+      if (!area || !area.parent_id) return { area, city: null, country: null };
+      
+      // Get the city
+      const city = await this.getLocationById(area.parent_id);
+      if (!city || !city.parent_id) return { area, city, country: null };
+      
+      // Get the country
+      const country = await this.getLocationById(city.parent_id);
+      
+      return { area, city, country };
+    } catch (error) {
+      console.error('Exception fetching location hierarchy:', error);
+      return { area: null, city: null, country: null };
+    }
+  }
+}

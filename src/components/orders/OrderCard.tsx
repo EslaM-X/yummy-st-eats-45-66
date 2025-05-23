@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import OrderStatusBadge from './OrderStatusBadge';
 import { formatDate } from '@/utils/formatUtils';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { OrderItem } from '@/types';
 
 interface OrderCardProps {
   order: any;
@@ -25,8 +26,16 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onViewOrder }) => {
   };
   
   const paymentMethodText = order.payment_method === 'card' ? labels.card : labels.cash;
+  
+  // Calculate number of items, checking both items JSON field and order_items relationship
   const itemsLength = Array.isArray(order.items) ? order.items.length : 0;
   const orderItems = Array.isArray(order.order_items) ? order.order_items : [];
+  const itemCount = itemsLength || orderItems.length || 0;
+  
+  // Format order ID for display
+  const shortOrderId = order.id && order.id.length > 8 
+    ? `${order.id.substring(0, 8)}...`
+    : order.id;
   
   return (
     <Card className="overflow-hidden">
@@ -45,13 +54,13 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onViewOrder }) => {
           </div>
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="text-sm">
-              <span className="font-medium text-gray-600 dark:text-gray-300">{labels.orderNumber}</span> {order.id.substring(0, 8)}...
+              <span className="font-medium text-gray-600 dark:text-gray-300">{labels.orderNumber}</span> {shortOrderId}
             </div>
             <div className="text-sm">
               <span className="font-medium text-gray-600 dark:text-gray-300">{labels.totalAmount}</span> {order.total_amount} ST
             </div>
             <div className="text-sm">
-              <span className="font-medium text-gray-600 dark:text-gray-300">{labels.numProducts}</span> {itemsLength || orderItems.length || 0}
+              <span className="font-medium text-gray-600 dark:text-gray-300">{labels.numProducts}</span> {itemCount}
             </div>
             <div className="text-sm">
               <span className="font-medium text-gray-600 dark:text-gray-300">{labels.paymentMethod}</span> {paymentMethodText}

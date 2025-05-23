@@ -1,192 +1,127 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-/**
- * خدمة التعامل مع المفضلة في التطبيق
- */
-export const FavoriteService = {
-  /**
-   * جلب المنتجات المفضلة للمستخدم
-   */
-  async getFavoriteProducts() {
+export class FavoriteService {
+  static async addFavorite(userId: string, productId?: string, restaurantId?: string) {
     try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        throw new Error('يجب تسجيل الدخول للوصول إلى المفضلة');
-      }
-
       const { data, error } = await supabase
         .from('favorites')
-        .select(`
-          id,
-          product_id,
-          products(*)
-        `)
-        .eq('user_id', session.session.user.id)
-        .not('product_id', 'is', null);
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error fetching favorite products:', error);
-      return { data: [], error };
-    }
-  },
-
-  /**
-   * جلب المطاعم المفضلة للمستخدم
-   */
-  async getFavoriteRestaurants() {
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        throw new Error('يجب تسجيل الدخول للوصول إلى المفضلة');
-      }
-
-      const { data, error } = await supabase
-        .from('favorites')
-        .select(`
-          id,
-          restaurant_id,
-          restaurants(*)
-        `)
-        .eq('user_id', session.session.user.id)
-        .not('restaurant_id', 'is', null);
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error fetching favorite restaurants:', error);
-      return { data: [], error };
-    }
-  },
-
-  /**
-   * إضافة منتج إلى المفضلة
-   */
-  async addProductToFavorites(product_id: string) {
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        throw new Error('يجب تسجيل الدخول لإضافة عنصر إلى المفضلة');
-      }
-
-      const { data, error } = await supabase
-        .from('favorites')
-        .insert({ 
-          product_id,
-          user_id: session.session.user.id 
+        .insert({
+          user_id: userId,
+          product_id: productId,
+          restaurant_id: restaurantId
         })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error adding product to favorites:', error);
-      return { data: null, error };
-    }
-  },
-
-  /**
-   * إضافة مطعم إلى المفضلة
-   */
-  async addRestaurantToFavorites(restaurant_id: string) {
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        throw new Error('يجب تسجيل الدخول لإضافة عنصر إلى المفضلة');
+        .select();
+      
+      if (error) {
+        console.error('Error adding favorite:', error);
+        return { success: false, error };
       }
-
-      const { data, error } = await supabase
-        .from('favorites')
-        .insert({ 
-          restaurant_id,
-          user_id: session.session.user.id 
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error adding restaurant to favorites:', error);
-      return { data: null, error };
-    }
-  },
-
-  /**
-   * إزالة عنصر من المفضلة
-   */
-  async removeFavorite(id: string) {
-    try {
-      const { error } = await supabase
-        .from('favorites')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      return { success: true, error: null };
-    } catch (error: any) {
-      console.error(`Error removing favorite with ID ${id}:`, error);
+      
+      return { success: true, data };
+    } catch (error) {
+      console.error('Exception adding favorite:', error);
       return { success: false, error };
     }
-  },
-
-  /**
-   * التحقق مما إذا كان المنتج مفضلاً
-   */
-  async isProductFavorite(product_id: string) {
+  }
+  
+  static async removeFavorite(userId: string, productId?: string, restaurantId?: string) {
     try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        return { isFavorite: false, favoriteId: null, error: null };
+      let query = supabase
+        .from('favorites')
+        .delete()
+        .eq('user_id', userId);
+      
+      if (productId) {
+        query = query.eq('product_id', productId);
       }
       
-      const { data, error } = await supabase
-        .from('favorites')
-        .select('id')
-        .eq('product_id', product_id)
-        .eq('user_id', session.session.user.id)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      return { isFavorite: !!data, favoriteId: data?.id, error: null };
-    } catch (error: any) {
-      console.error(`Error checking if product ${product_id} is favorite:`, error);
-      return { isFavorite: false, favoriteId: null, error };
-    }
-  },
-
-  /**
-   * التحقق مما إذا كان المطعم مفضلاً
-   */
-  async isRestaurantFavorite(restaurant_id: string) {
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) {
-        return { isFavorite: false, favoriteId: null, error: null };
+      if (restaurantId) {
+        query = query.eq('restaurant_id', restaurantId);
       }
       
-      const { data, error } = await supabase
-        .from('favorites')
-        .select('id')
-        .eq('restaurant_id', restaurant_id)
-        .eq('user_id', session.session.user.id)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      return { isFavorite: !!data, favoriteId: data?.id, error: null };
-    } catch (error: any) {
-      console.error(`Error checking if restaurant ${restaurant_id} is favorite:`, error);
-      return { isFavorite: false, favoriteId: null, error };
+      const { error } = await query;
+      
+      if (error) {
+        console.error('Error removing favorite:', error);
+        return { success: false, error };
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Exception removing favorite:', error);
+      return { success: false, error };
     }
   }
-};
+  
+  static async getUserFavorites(userId: string) {
+    try {
+      const { data: restaurantFavorites, error: restaurantError } = await supabase
+        .from('favorites')
+        .select(`
+          id,
+          restaurant_id,
+          restaurants (*)
+        `)
+        .eq('user_id', userId)
+        .not('restaurant_id', 'is', null);
+      
+      const { data: productFavorites, error: productError } = await supabase
+        .from('favorites')
+        .select(`
+          id,
+          product_id,
+          products (*)
+        `)
+        .eq('user_id', userId)
+        .not('product_id', 'is', null);
+      
+      if (restaurantError || productError) {
+        console.error('Error fetching favorites:', restaurantError || productError);
+        return { 
+          restaurants: [],
+          products: [],
+          error: restaurantError || productError
+        };
+      }
+      
+      return {
+        restaurants: restaurantFavorites || [],
+        products: productFavorites || [],
+        error: null
+      };
+    } catch (error) {
+      console.error('Exception fetching favorites:', error);
+      return { restaurants: [], products: [], error };
+    }
+  }
+  
+  static async isFavorite(userId: string, productId?: string, restaurantId?: string) {
+    try {
+      let query = supabase
+        .from('favorites')
+        .select('id')
+        .eq('user_id', userId);
+      
+      if (productId) {
+        query = query.eq('product_id', productId);
+      }
+      
+      if (restaurantId) {
+        query = query.eq('restaurant_id', restaurantId);
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error('Error checking favorite status:', error);
+        return false;
+      }
+      
+      return (data && data.length > 0);
+    } catch (error) {
+      console.error('Exception checking favorite status:', error);
+      return false;
+    }
+  }
+}

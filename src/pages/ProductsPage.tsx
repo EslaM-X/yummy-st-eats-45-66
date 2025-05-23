@@ -6,10 +6,11 @@ import SearchBar from '@/components/products/SearchBar';
 import FilterSection from '@/components/products/FilterSection';
 import ProductsGrid from '@/components/products/ProductsGrid';
 import { getCategories, getFilteredProducts } from '@/services/ProductService';
-import { Product } from '@/types';
+import { Product, Category } from '@/types';
 import AdPlaceholder from '@/components/AdPlaceholder';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSelectedCountry } from '@/components/header/HeaderActionButtons';
+import { useToast } from "@/hooks/use-toast";
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -22,6 +23,7 @@ const ProductsPage: React.FC = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
   const { t } = useLanguage();
+  const { toast } = useToast();
   
   // Use the global country selector from the header
   const { selectedCountry: globalSelectedCountry } = useSelectedCountry();
@@ -29,50 +31,79 @@ const ProductsPage: React.FC = () => {
   // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
-      const categoriesData = await getCategories();
-      if (categoriesData && categoriesData.length > 0) {
-        // استخراج أسماء الفئات فقط لعرضها في الفلتر
-        const categoryNames = categoriesData.map(cat => cat.name);
-        setCategories(categoryNames);
+      try {
+        setIsLoading(true);
+        const categoriesData = await getCategories();
+        if (categoriesData && categoriesData.length > 0) {
+          // Extract category names for the filter
+          const categoryNames = categoriesData.map(cat => cat.name);
+          setCategories(categoryNames);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        toast({
+          title: t('error'),
+          description: t('errorFetchingCategories'),
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
     
     fetchCategories();
-  }, []);
+  }, [t, toast]);
 
   // Filter and sort products with visual feedback
   useEffect(() => {
-    setIsLoading(true);
-    
-    // Use the local selectedCountry if set, otherwise use the global one
-    const countryToUse = selectedCountry || globalSelectedCountry;
-    
-    // Get filtered products
-    getFilteredProducts(searchTerm, selectedCategory, sortBy, countryToUse)
-      .then(filteredProducts => {
-        // تحويل البيانات لتتوافق مع نوع Product
+    const fetchProducts = async () => {
+      try {
+        setIsUpdating(true);
+        
+        // Use the local selectedCountry if set, otherwise use the global one
+        const countryToUse = selectedCountry || globalSelectedCountry;
+        
+        // Get filtered products
+        const filteredProducts = await getFilteredProducts(searchTerm, selectedCategory, sortBy, countryToUse);
+        
+        // Map products to match Product type
         const mappedProducts: Product[] = filteredProducts.map((product: any) => ({
           id: product.id,
           name: product.name,
           description: product.description,
           price: product.price,
           imageUrl: product.image_url,
-          restaurant: product.restaurants ? product.restaurants.name : 'غير معروف',
-          category: product.categories ? product.categories.name : 'أخرى',
+          restaurant: product.restaurants ? product.restaurants.name : t('unknown'),
+          category: product.categories ? product.categories.name : t('other'),
           isAvailable: product.is_available,
           isFeatured: product.featured,
-          discountPercentage: product.discount_percent,
-          ingredients: product.ingredients || []
+          available: product.is_available,
+          bestseller: product.featured,
+          discount_percent: product.discount_percent,
+          ingredients: product.ingredients || [],
+          discount_price: product.price * (1 - (product.discount_percent || 0) / 100)
         }));
+        
         setProducts(mappedProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        toast({
+          title: t('error'),
+          description: t('errorFetchingProducts'),
+          variant: "destructive",
+        });
+      } finally {
         setIsLoading(false);
         setIsUpdating(false);
-      });
-  }, [searchTerm, selectedCategory, sortBy, selectedCountry, globalSelectedCountry]);
+      }
+    };
+    
+    fetchProducts();
+  }, [searchTerm, selectedCategory, sortBy, selectedCountry, globalSelectedCountry, t, toast]);
   
   // Listen for country change events from header with improved visual feedback
   useEffect(() => {
-    const handleCountryChanged = (event: Event) => {
+    const handleCountryChanged = () => {
       // Show loading state
       setIsUpdating(true);
       

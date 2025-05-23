@@ -16,17 +16,21 @@ const MyOrdersPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('all');
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const { language, t } = useLanguage();
 
   useEffect(() => {
-    if (!user) {
+    // Check if authentication is still loading
+    if (isLoading) return;
+    
+    // Redirect to auth page if not authenticated
+    if (!isAuthenticated) {
       navigate('/auth');
       return;
     }
 
     fetchOrders();
-  }, [user, navigate, activeTab]);
+  }, [isAuthenticated, isLoading, navigate, activeTab]);
 
   const fetchOrders = async () => {
     setLoading(true);
