@@ -1,10 +1,10 @@
 
 /**
- * Format date string to Arabic localized date
+ * Format date string to localized date based on selected language
  */
-export const formatDate = (dateString: string) => {
+export const formatDate = (dateString: string, language: string = 'ar') => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('ar-SA', {
+  return date.toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

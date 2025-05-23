@@ -1,6 +1,7 @@
 
 import React from 'react';
 import OrderCard from './OrderCard';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OrderListProps {
   orders: any[];
@@ -8,8 +9,10 @@ interface OrderListProps {
 }
 
 const OrderList: React.FC<OrderListProps> = ({ orders, onViewOrder }) => {
+  const { language } = useLanguage();
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-language={language}>
       {orders.map((order) => (
         <OrderCard 
           key={order.id} 

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type OrderStatus = 'new' | 'preparing' | 'delivering' | 'completed' | 'cancelled';
 
@@ -42,10 +43,32 @@ export const getStatusInArabic = (status: string) => {
   }
 };
 
+export const getStatusInEnglish = (status: string) => {
+  switch (status) {
+    case 'new':
+      return 'New';
+    case 'preparing':
+      return 'Preparing';
+    case 'delivering':
+      return 'Delivering';
+    case 'completed':
+      return 'Completed';
+    case 'cancelled':
+      return 'Cancelled';
+    default:
+      return status;
+  }
+};
+
 const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({ status, className = '' }) => {
+  const { language } = useLanguage();
+  const displayText = language === 'en' 
+    ? getStatusInEnglish(status) 
+    : getStatusInArabic(status);
+    
   return (
     <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadge(status)} ${className}`}>
-      {getStatusInArabic(status)}
+      {displayText}
     </span>
   );
 };

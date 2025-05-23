@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OrderDetailActionsProps {
   orderStatus: string;
@@ -13,13 +14,18 @@ const OrderDetailActions: React.FC<OrderDetailActionsProps> = ({
   onBack,
   onCancel
 }) => {
+  const { language } = useLanguage();
+  
+  const backButtonText = language === 'en' ? 'Back to My Orders' : 'العودة إلى طلباتي';
+  const cancelButtonText = language === 'en' ? 'Cancel Order' : 'إلغاء الطلب';
+  
   return (
     <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
       <Button 
         variant="outline" 
         onClick={onBack}
       >
-        العودة إلى طلباتي
+        {backButtonText}
       </Button>
       
       {orderStatus === 'new' && (
@@ -27,7 +33,7 @@ const OrderDetailActions: React.FC<OrderDetailActionsProps> = ({
           variant="destructive" 
           onClick={onCancel}
         >
-          إلغاء الطلب
+          {cancelButtonText}
         </Button>
       )}
     </div>

@@ -10,6 +10,7 @@ import OrderTabs from '@/components/orders/OrderTabs';
 import OrderSkeleton from '@/components/orders/OrderSkeleton';
 import EmptyOrderState from '@/components/orders/EmptyOrderState';
 import OrderList from '@/components/orders/OrderList';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const MyOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -18,6 +19,7 @@ const MyOrdersPage: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (!user) {
@@ -35,12 +37,18 @@ const MyOrdersPage: React.FC = () => {
       const { data, error } = await OrderService.getUserOrders(status);
       
       if (error) throw error;
+      
+      // Log data to help debug
+      console.log('Orders fetched from Supabase:', data);
+      
       setOrders(data || []);
     } catch (error: any) {
       console.error('Error fetching orders:', error);
       toast({
-        title: "خطأ في جلب الطلبات",
-        description: "حدث خطأ أثناء محاولة جلب طلباتك. يرجى المحاولة مرة أخرى.",
+        title: language === 'en' ? "Error fetching orders" : "خطأ في جلب الطلبات",
+        description: language === 'en' 
+          ? "An error occurred while trying to fetch your orders. Please try again." 
+          : "حدث خطأ أثناء محاولة جلب طلباتك. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
     } finally {
@@ -52,13 +60,15 @@ const MyOrdersPage: React.FC = () => {
     navigate(`/my-orders/${orderId}`);
   };
 
+  const pageTitle = language === 'en' ? 'My Orders' : 'طلباتي';
+
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       <Header />
       <main className="flex-grow py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-8 text-center">
-            طلباتي
+            {pageTitle}
           </h1>
 
           <OrderTabs activeTab={activeTab} onTabChange={setActiveTab} />

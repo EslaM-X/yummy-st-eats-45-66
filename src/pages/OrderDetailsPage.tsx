@@ -12,6 +12,7 @@ import OrderNotFound from '@/components/orders/OrderNotFound';
 import RestaurantInfo from '@/components/orders/RestaurantInfo';
 import OrderDetailsContent from '@/components/orders/OrderDetailsContent';
 import OrderDetailActions from '@/components/orders/OrderDetailActions';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const OrderDetailsPage: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
@@ -20,6 +21,7 @@ const OrderDetailsPage: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { language } = useLanguage();
   
   useEffect(() => {
     if (!user) {
@@ -39,15 +41,20 @@ const OrderDetailsPage: React.FC = () => {
       
       if (error) throw error;
       if (!data) {
-        throw new Error('لم يتم العثور على الطلب');
+        throw new Error(language === 'en' ? 'Order not found' : 'لم يتم العثور على الطلب');
       }
+      
+      // Log to help debug
+      console.log('Order details fetched:', data);
       
       setOrder(data);
     } catch (error: any) {
       console.error('Error fetching order details:', error);
       toast({
-        title: "خطأ في جلب تفاصيل الطلب",
-        description: error.message || "حدث خطأ أثناء محاولة جلب تفاصيل الطلب",
+        title: language === 'en' ? "Error fetching order details" : "خطأ في جلب تفاصيل الطلب",
+        description: error.message || (language === 'en' 
+          ? "An error occurred while trying to fetch order details" 
+          : "حدث خطأ أثناء محاولة جلب تفاصيل الطلب"),
         variant: "destructive",
       });
       navigate('/my-orders');
@@ -59,17 +66,21 @@ const OrderDetailsPage: React.FC = () => {
   const handleCancelOrder = async () => {
     if (!order || !orderId) return;
     
-    if (window.confirm('هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟')) {
+    const confirmMessage = language === 'en' 
+      ? 'Are you sure you want to cancel this order?' 
+      : 'هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟';
+    
+    if (window.confirm(confirmMessage)) {
       try {
         const { success, error } = await OrderService.cancelOrder(orderId);
         
         if (!success || error) {
-          throw error || new Error('فشل إلغاء الطلب');
+          throw error || new Error(language === 'en' ? 'Failed to cancel order' : 'فشل إلغاء الطلب');
         }
         
         toast({
-          title: "تم إلغاء الطلب بنجاح",
-          description: "تم إلغاء طلبك بنجاح",
+          title: language === 'en' ? "Order Cancelled Successfully" : "تم إلغاء الطلب بنجاح",
+          description: language === 'en' ? "Your order has been cancelled successfully" : "تم إلغاء طلبك بنجاح",
         });
         
         // Fetch updated order details
@@ -77,8 +88,10 @@ const OrderDetailsPage: React.FC = () => {
       } catch (error: any) {
         console.error('Error cancelling order:', error);
         toast({
-          title: "فشل إلغاء الطلب",
-          description: error.message || "حدث خطأ أثناء محاولة إلغاء الطلب",
+          title: language === 'en' ? "Failed to Cancel Order" : "فشل إلغاء الطلب",
+          description: error.message || (language === 'en' 
+            ? "An error occurred while trying to cancel the order" 
+            : "حدث خطأ أثناء محاولة إلغاء الطلب"),
           variant: "destructive",
         });
       }
@@ -88,6 +101,9 @@ const OrderDetailsPage: React.FC = () => {
   const handleBackToOrders = () => {
     navigate('/my-orders');
   };
+
+  const pageTitle = language === 'en' ? "Order Details" : "تفاصيل الطلب";
+  const orderNumberLabel = language === 'en' ? "Order Number: " : "رقم الطلب: ";
 
   if (loading) {
     return (
@@ -126,10 +142,10 @@ const OrderDetailsPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-                  تفاصيل الطلب
+                  {pageTitle}
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400">
-                  رقم الطلب: <span className="font-medium">{order.id}</span>
+                  {orderNumberLabel}<span className="font-medium">{order.id}</span>
                 </p>
               </div>
               <div className="mt-4 sm:mt-0">
