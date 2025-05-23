@@ -25,6 +25,7 @@ import TermsConditionsPage from './pages/TermsConditionsPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import OrderDetailsPage from './pages/OrderDetailsPage';
+import OrdersPage from './pages/OrdersPage';
 
 // Components
 import MobileNavBar from './components/MobileNavBar';
@@ -86,6 +87,10 @@ function App() {
         <Route 
           path="/my-orders" 
           element={user ? <MyOrdersPage /> : <Navigate to="/auth" />} 
+        />
+        <Route 
+          path="/orders" 
+          element={user ? <OrdersPage /> : <Navigate to="/auth" />} 
         />
         <Route 
           path="/my-orders/:orderId" 
