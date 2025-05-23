@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -108,7 +107,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, metadata?: any) => {
-    return await authService.signUp(email, password, metadata);
+    const { data: authData, error: authError } = await authService.signUp(email, password, metadata);
+
+    if (authError) {
+      return { data: null, error: authError };
+    }
+
+    // If sign up is successful and a user object is returned, create a profile
+    if (authData?.user) {
+      try {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: authData.user.id, // Ensure this matches the primary key of profiles table
+              email: authData.user.email,
+              full_name: metadata?.full_name,
+              username: metadata?.username,
+              user_type: metadata?.user_type,
+              phone: metadata?.phone,
+              // avatar_url: metadata?.avatar_url, // Uncomment if you want to add a default avatar_url
+            },
+          ]);
+
+        if (profileError) {
+          console.error('Error creating profile after sign up:', profileError);
+          // Optionally, handle profile creation error, e.g., by deleting the auth user
+          // This requires admin privileges: await supabase.auth.admin.deleteUser(authData.user.id);
+          return { data: authData, error: { message: `User created, but failed to save profile: ${profileError.message}` } };
+        }
+        // Profile created successfully, refresh the profile data in context
+        await refreshProfile();
+      } catch (profileCreationError) {
+        console.error('Exception creating profile after sign up:', profileCreationError);
+        return { data: authData, error: { message: 'User created, but an exception occurred while saving profile.' } };
+      }
+    }
+
+    return { data: authData, error: null };
   };
 
   const signIn = async (email: string, password: string) => {
