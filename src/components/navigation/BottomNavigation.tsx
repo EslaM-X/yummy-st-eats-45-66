@@ -23,11 +23,11 @@ export const BottomNavigation: React.FC = () => {
   const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const navItems = [
-    { icon: Home, label: t('navigation:home'), path: '/' },
-    { icon: UtensilsCrossed, label: t('navigation:restaurants'), path: '/restaurants' },
-    { icon: ShoppingBag, label: t('navigation:products'), path: '/products' },
-    { icon: Gift, label: t('navigation:rewards'), path: '/rewards' },
-    { icon: User, label: t('navigation:profile'), path: '/profile' },
+    { icon: Home, label: t('home'), path: '/' },
+    { icon: UtensilsCrossed, label: t('restaurants'), path: '/restaurants' },
+    { icon: ShoppingBag, label: t('products'), path: '/products' },
+    { icon: Gift, label: t('rewards'), path: '/rewards' },
+    { icon: User, label: t('profile'), path: '/profile' },
   ];
 
   return (
