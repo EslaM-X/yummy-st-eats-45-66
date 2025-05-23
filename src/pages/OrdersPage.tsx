@@ -2,10 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { OrderService } from '@/services/OrderService';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,6 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import OrderTabs from '@/components/orders/OrderTabs';
+import OrderStatusBadge from '@/components/orders/OrderStatusBadge';
+import EmptyOrderState from '@/components/orders/EmptyOrderState';
+import { formatDate } from '@/utils/formatUtils';
 
 const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -56,54 +58,6 @@ const OrdersPage: React.FC = () => {
     }
   };
 
-  // Helper function to format the date in a readable format
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ar-SA', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  // Function to get the appropriate badge color based on order status
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'new':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'preparing':
-        return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300';
-      case 'delivering':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-      case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-    }
-  };
-
-  // Function to translate order status to Arabic
-  const getStatusInArabic = (status: string) => {
-    switch (status) {
-      case 'new':
-        return 'جديد';
-      case 'preparing':
-        return 'قيد التحضير';
-      case 'delivering':
-        return 'قيد التوصيل';
-      case 'completed':
-        return 'مكتمل';
-      case 'cancelled':
-        return 'ملغي';
-      default:
-        return status;
-    }
-  };
-
   const handleViewOrder = (orderId: string) => {
     navigate(`/my-orders/${orderId}`);
   };
@@ -117,18 +71,7 @@ const OrdersPage: React.FC = () => {
             قائمة الطلبات
           </h1>
 
-          <div className="mb-6">
-            <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="w-full mb-8">
-                <TabsTrigger value="all" className="flex-1">كل الطلبات</TabsTrigger>
-                <TabsTrigger value="new" className="flex-1">قيد المراجعة</TabsTrigger>
-                <TabsTrigger value="preparing" className="flex-1">قيد التحضير</TabsTrigger>
-                <TabsTrigger value="delivering" className="flex-1">قيد التوصيل</TabsTrigger>
-                <TabsTrigger value="completed" className="flex-1">مكتملة</TabsTrigger>
-                <TabsTrigger value="cancelled" className="flex-1">ملغاة</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+          <OrderTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
           {loading ? (
             // Loading skeleton for table
@@ -160,9 +103,7 @@ const OrdersPage: React.FC = () => {
                       <TableCell>{formatDate(order.created_at)}</TableCell>
                       <TableCell>{order.total_amount} ST</TableCell>
                       <TableCell>
-                        <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadge(order.status)}`}>
-                          {getStatusInArabic(order.status)}
-                        </span>
+                        <OrderStatusBadge status={order.status} />
                       </TableCell>
                       <TableCell className="text-center">
                         <Button 
@@ -180,18 +121,7 @@ const OrdersPage: React.FC = () => {
               </Table>
             </div>
           ) : (
-            // Empty state
-            <div className="text-center py-16 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">لا توجد طلبات</h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {activeTab === 'all' 
-                  ? 'لم تقم بإنشاء أي طلبات حتى الآن.'
-                  : 'لا توجد طلبات بهذه الحالة حالياً.'}
-              </p>
-              <Button asChild className="bg-yellow-800 hover:bg-yellow-900 text-white">
-                <a href="/products">تصفح المنتجات</a>
-              </Button>
-            </div>
+            <EmptyOrderState activeTab={activeTab} />
           )}
         </div>
       </main>
