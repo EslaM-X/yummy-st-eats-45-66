@@ -70,7 +70,8 @@ const MyOrdersPage: React.FC = () => {
     navigate(`/my-orders/${orderId}`);
   };
 
-  const pageTitle = language === 'en' ? 'My Orders' : 'طلباتي';
+  // Updated pageTitle to use a more descriptive variable name
+  const ordersPageTitle = language === 'en' ? 'My Orders' : 'طلباتي';
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
@@ -78,7 +79,7 @@ const MyOrdersPage: React.FC = () => {
       <main className="flex-grow py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-8 text-center">
-            {pageTitle}
+            {ordersPageTitle}
           </h1>
 
           <OrderTabs activeTab={activeTab} onTabChange={setActiveTab} />
