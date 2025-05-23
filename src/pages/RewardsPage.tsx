@@ -1,51 +1,82 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Utensils } from "lucide-react";
-import { UserReward } from '@/types';
 import UserPointsCard from '@/components/rewards/UserPointsCard';
 import AvailableRewards from '@/components/rewards/AvailableRewards';
 import PointsHistoryList from '@/components/rewards/PointsHistoryList';
 import TierCard from '@/components/rewards/TierCard';
-import EarnPointsCard from '@/components/rewards/EarnPointsCard';
-import { mockUserPoints, rewardTiers, availableRewards, getNextTierInfo } from '@/mocks/rewardsData';
+import { useToast } from "@/hooks/use-toast";
+import { UserReward } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
+import { 
+  mockUserPoints, 
+  availableRewards, 
+  pointsHistory, 
+  rewardTiers,
+  calculateRewardsProgress
+} from '@/mocks/rewardsData';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const RewardsPage: React.FC = () => {
-  const [selectedTab, setSelectedTab] = useState('available');
-  const navigate = useNavigate();
-  const userPoints = mockUserPoints;
-  const { t, language } = useLanguage();
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const { toast } = useToast();
+  const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState<string>("rewards");
 
-  // Get tier information
-  const { nextTier, progressPercentage, pointsToNextTier } = getNextTierInfo(userPoints, rewardTiers);
+  const userPoints = mockUserPoints;
+  const { nextTier, pointsToNextTier, progressPercentage } = calculateRewardsProgress(userPoints.total);
 
   const handleRedeemReward = (reward: UserReward) => {
-    // هنا ستكون المنطق الفعلي لاستبدال المكافأة
-    alert(`${t('rewardRedeemedAlert')}: ${reward.name}`);
+    toast({
+      title: t('rewardRedeemed'),
+      description: `${reward.name} - ${reward.points} ${t('pointsUnit')}`,
+    });
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <p className="text-xl">Loading...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow flex items-center justify-center p-4">
+          <Alert className="max-w-md mx-auto">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>{t('loginRequired')}</AlertTitle>
+            <AlertDescription>
+              {t('loginToAccessRewards')}
+            </AlertDescription>
+          </Alert>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
+    <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow py-10">
         <div className="container mx-auto px-4">
-          {/* Hero Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4 relative inline-block">
-              <span className="relative z-10">{t('rewardsHeroTitle')}</span>
-              <span className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300/30 dark:bg-yellow-800/30 -z-0 transform -rotate-1"></span>
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              {t('rewardsHeroSubtitle')}
-            </p>
-          </div>
+          <h1 className="text-3xl font-bold mb-6 text-center">
+            {t('rewardsPageTitle')}
+          </h1>
 
-          {/* User Points Summary Card */}
           <div className="mb-10">
             <UserPointsCard 
               userPoints={userPoints}
@@ -55,80 +86,72 @@ const RewardsPage: React.FC = () => {
             />
           </div>
 
-          {/* Rewards Tabs */}
-          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-10">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="available" className="text-lg py-3">{t('rewardsAvailableTab')}</TabsTrigger>
-              <TabsTrigger value="history" className="text-lg py-3">{t('rewardsHistoryTab')}</TabsTrigger>
+          <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="mb-10">
+            <TabsList className="w-full max-w-md mx-auto mb-8">
+              <TabsTrigger value="rewards" className="flex-1">
+                {t('availableRewards')}
+              </TabsTrigger>
+              <TabsTrigger value="tiers" className="flex-1">
+                {t('rewardTiers')}
+              </TabsTrigger>
+              <TabsTrigger value="history" className="flex-1">
+                {t('pointsHistory')}
+              </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="available" className="space-y-4 animate-fade-in">
+            <TabsContent value="rewards" className="p-1">
               <AvailableRewards 
-                rewards={availableRewards}
-                userPoints={userPoints.total}
+                rewards={availableRewards} 
+                userPoints={userPoints.total} 
                 onRedeemReward={handleRedeemReward}
               />
             </TabsContent>
             
-            <TabsContent value="history" className="animate-fade-in">
-              <PointsHistoryList transactions={userPoints.history} />
+            <TabsContent value="tiers">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {rewardTiers.map((tier, index) => (
+                  <TierCard 
+                    key={tier.name}
+                    tier={tier}
+                    isCurrentTier={userPoints.tier.name === tier.name}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="history">
+              <PointsHistoryList transactions={pointsHistory} />
             </TabsContent>
           </Tabs>
 
-          {/* All Tiers Section */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold mb-6 text-center">{t('membershipTiersTitle')}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {rewardTiers.map((tier) => (
-                <TierCard 
-                  key={tier.id} 
-                  tier={tier}
-                  isCurrentTier={tier.id === userPoints.tier.id}
-                />
-              ))}
+          <Separator className="my-10" />
+          
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">{t('howEarnPoints')}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+                <h3 className="text-xl font-semibold mb-3">{t('orderAndEarn')}</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  {t('earnPointsDescription')}
+                </p>
+                <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
+                  <li>{t('earnByOrdering')}</li>
+                  <li>{t('earnByReviews')}</li>
+                  <li>{t('earnByReferrals')}</li>
+                </ul>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+                <h3 className="text-xl font-semibold mb-3">{t('redeemRewards')}</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  {t('redeemPointsDescription')}
+                </p>
+                <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
+                  <li>{t('redeemForDiscounts')}</li>
+                  <li>{t('redeemForFreeItems')}</li>
+                  <li>{t('redeemForExclusives')}</li>
+                </ul>
+              </div>
             </div>
-          </div>
-
-          {/* How to Earn Points */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold mb-6 text-center">{t('howToEarnPointsTitle')}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              <EarnPointsCard 
-                icon="utensils"
-                title={t('earnByOrderingTitle')}
-                description={t('earnByOrderingDesc')}
-              />
-              
-              <EarnPointsCard 
-                icon="star"
-                title={t('earnByRatingTitle')}
-                description={t('earnByRatingDesc')}
-              />
-              
-              <EarnPointsCard 
-                icon="gift"
-                title={t('earnByAddingFoodTitle')}
-                description={t('earnByAddingFoodDesc')}
-              />
-              
-              <EarnPointsCard 
-                icon="award"
-                title={t('earnBySpecialMissionsTitle')}
-                description={t('earnBySpecialMissionsDesc')}
-              />
-            </div>
-          </div>
-
-          {/* CTA Button */}
-          <div className="text-center mb-10">
-            <Button 
-              size="lg"
-              onClick={() => navigate('/add-food')}
-              className="bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 px-8 py-6 text-lg"
-            >
-              <Utensils className="mr-2 h-6 w-6" />
-              {t('addFoodCta')}
-            </Button>
           </div>
         </div>
       </main>
@@ -138,4 +161,3 @@ const RewardsPage: React.FC = () => {
 };
 
 export default RewardsPage;
-

@@ -36,6 +36,13 @@ export interface Restaurant {
   delivery_fee?: number;
   min_order_amount?: number;
   is_active?: boolean;
+  // Additional properties needed for RestaurantCard and other components
+  country?: string;
+  imageUrl?: string;
+  isNew?: boolean;
+  discount?: string;
+  cuisine?: string;
+  deliveryTime?: string;
 }
 
 export interface Order {
@@ -124,4 +131,37 @@ export interface Notification {
   reference_id?: string;
   is_read: boolean;
   created_at: string;
+}
+
+// Added interfaces for the rewards system
+export interface UserReward {
+  id: string;
+  name: string;
+  description: string;
+  points: number;
+  type: string;
+  imageUrl: string;
+  expiryDate: string;
+}
+
+export interface PointTransaction {
+  id: string;
+  type: 'earned' | 'redeemed';
+  points: number;
+  description: string;
+  date: string;
+}
+
+export interface RewardTier {
+  name: string;
+  pointsRequired: number;
+  icon: string;
+  benefits: string[];
+}
+
+export interface UserPoints {
+  id: string;
+  user_id: string;
+  total: number;
+  tier: RewardTier;
 }
