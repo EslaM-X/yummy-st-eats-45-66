@@ -4,11 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useToast } from "@/hooks/use-toast";
-import { OrderService } from '@/services/OrderService';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import OrderTabs from '@/components/orders/OrderTabs';
-import OrderSkeleton from '@/components/orders/OrderSkeleton';
-import EmptyOrderState from '@/components/orders/EmptyOrderState';
 import OrderList from '@/components/orders/OrderList';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -19,7 +17,7 @@ const MyOrdersPage: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   useEffect(() => {
     if (!user) {
@@ -33,12 +31,24 @@ const MyOrdersPage: React.FC = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const status = activeTab !== 'all' ? activeTab : undefined;
-      const { data, error } = await OrderService.getUserOrders(status);
+      let query = supabase
+        .from('orders')
+        .select(`
+          *,
+          restaurants(id, name, logo_url),
+          order_tracking(status, created_at)
+        `)
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (activeTab !== 'all') {
+        query = query.eq('status', activeTab);
+      }
+
+      const { data, error } = await query;
       
       if (error) throw error;
       
-      // Log data to help debug
       console.log('Orders fetched from Supabase:', data);
       
       setOrders(data || []);
@@ -73,13 +83,12 @@ const MyOrdersPage: React.FC = () => {
 
           <OrderTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-          {loading ? (
-            <OrderSkeleton />
-          ) : orders.length > 0 ? (
-            <OrderList orders={orders} onViewOrder={handleViewOrder} />
-          ) : (
-            <EmptyOrderState activeTab={activeTab} />
-          )}
+          <OrderList 
+            orders={orders} 
+            onViewOrder={handleViewOrder} 
+            loading={loading}
+            activeTab={activeTab}
+          />
         </div>
       </main>
       <Footer />

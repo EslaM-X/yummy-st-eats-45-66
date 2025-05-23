@@ -1,5 +1,8 @@
 
 import React from 'react';
+import { Card } from "@/components/ui/card";
+import { useLanguage } from '@/contexts/LanguageContext';
+import { MapPin, User, Phone, FileText } from 'lucide-react';
 
 interface DeliveryInfoProps {
   address: string;
@@ -14,31 +17,70 @@ const DeliveryInfo: React.FC<DeliveryInfoProps> = ({
   customer_phone, 
   notes 
 }) => {
+  const { language } = useLanguage();
+  
+  const labels = {
+    title: language === 'en' ? 'Delivery Information' : 'بيانات التوصيل',
+    address: language === 'en' ? 'Delivery Address' : 'عنوان التوصيل',
+    name: language === 'en' ? 'Recipient Name' : 'اسم المستلم',
+    phone: language === 'en' ? 'Phone Number' : 'رقم الهاتف',
+    notes: language === 'en' ? 'Notes' : 'ملاحظات'
+  };
+  
   return (
     <div>
       <h4 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
-        بيانات التوصيل
+        {labels.title}
       </h4>
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
-        <p className="text-gray-700 dark:text-gray-300">
-          عنوان التوصيل: {address}
-        </p>
-        {customer_name && (
-          <p className="text-gray-700 dark:text-gray-300">
-            اسم المستلم: {customer_name}
-          </p>
-        )}
-        {customer_phone && (
-          <p className="text-gray-700 dark:text-gray-300">
-            رقم الهاتف: {customer_phone}
-          </p>
-        )}
-        {notes && (
-          <p className="text-gray-700 dark:text-gray-300">
-            ملاحظات: {notes}
-          </p>
-        )}
-      </div>
+      <Card className="p-4">
+        <div className="space-y-3">
+          <div className="flex items-start gap-3">
+            <MapPin className="text-gray-500 dark:text-gray-400 mt-0.5" size={18} />
+            <div>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {labels.address}
+              </p>
+              <p className="text-gray-800 dark:text-white">{address || '-'}</p>
+            </div>
+          </div>
+          
+          {customer_name && (
+            <div className="flex items-start gap-3">
+              <User className="text-gray-500 dark:text-gray-400 mt-0.5" size={18} />
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {labels.name}
+                </p>
+                <p className="text-gray-800 dark:text-white">{customer_name}</p>
+              </div>
+            </div>
+          )}
+          
+          {customer_phone && (
+            <div className="flex items-start gap-3">
+              <Phone className="text-gray-500 dark:text-gray-400 mt-0.5" size={18} />
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {labels.phone}
+                </p>
+                <p className="text-gray-800 dark:text-white">{customer_phone}</p>
+              </div>
+            </div>
+          )}
+          
+          {notes && (
+            <div className="flex items-start gap-3">
+              <FileText className="text-gray-500 dark:text-gray-400 mt-0.5" size={18} />
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {labels.notes}
+                </p>
+                <p className="text-gray-800 dark:text-white">{notes}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
     </div>
   );
 };

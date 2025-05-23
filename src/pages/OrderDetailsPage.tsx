@@ -4,15 +4,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useToast } from "@/hooks/use-toast";
-import { OrderService } from '@/services/OrderService';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import OrderStatusBadge from '@/components/orders/OrderStatusBadge';
-import OrderDetailsSkeleton from '@/components/orders/OrderDetailsSkeleton';
 import OrderNotFound from '@/components/orders/OrderNotFound';
 import RestaurantInfo from '@/components/orders/RestaurantInfo';
 import OrderDetailsContent from '@/components/orders/OrderDetailsContent';
 import OrderDetailActions from '@/components/orders/OrderDetailActions';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const OrderDetailsPage: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
@@ -37,14 +37,23 @@ const OrderDetailsPage: React.FC = () => {
   const fetchOrderDetails = async (id: string) => {
     setLoading(true);
     try {
-      const { data, error } = await OrderService.getOrderById(id);
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          restaurants(id, name, logo_url, phone),
+          order_tracking(id, status, notes, created_at, created_by),
+          order_items(id, product_id, product_name, product_price, quantity, notes)
+        `)
+        .eq('id', id)
+        .eq('user_id', user?.id)
+        .single();
       
       if (error) throw error;
       if (!data) {
         throw new Error(language === 'en' ? 'Order not found' : 'لم يتم العثور على الطلب');
       }
       
-      // Log to help debug
       console.log('Order details fetched:', data);
       
       setOrder(data);
@@ -72,11 +81,31 @@ const OrderDetailsPage: React.FC = () => {
     
     if (window.confirm(confirmMessage)) {
       try {
-        const { success, error } = await OrderService.cancelOrder(orderId);
+        // Update order status in the orders table
+        const { error: updateError } = await supabase
+          .from('orders')
+          .update({ 
+            status: 'cancelled',
+            updated_at: new Date().toISOString() 
+          })
+          .eq('id', orderId)
+          .eq('user_id', user?.id);
         
-        if (!success || error) {
-          throw error || new Error(language === 'en' ? 'Failed to cancel order' : 'فشل إلغاء الطلب');
-        }
+        if (updateError) throw updateError;
+        
+        // Add an order tracking entry
+        const { error: trackingError } = await supabase
+          .from('order_tracking')
+          .insert({
+            order_id: orderId,
+            status: 'cancelled',
+            notes: language === 'en' 
+              ? 'Order cancelled by customer' 
+              : 'تم إلغاء الطلب من قبل العميل',
+            created_by: user?.id
+          });
+        
+        if (trackingError) throw trackingError;
         
         toast({
           title: language === 'en' ? "Order Cancelled Successfully" : "تم إلغاء الطلب بنجاح",
@@ -111,7 +140,50 @@ const OrderDetailsPage: React.FC = () => {
         <Header />
         <main className="flex-grow py-10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <OrderDetailsSkeleton />
+            <div className="max-w-4xl mx-auto">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                <div>
+                  <Skeleton className="h-10 w-48 mb-2" />
+                  <Skeleton className="h-5 w-64" />
+                </div>
+                <Skeleton className="h-8 w-28 mt-4 sm:mt-0" />
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-8">
+                <div className="flex items-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                  <div className="ml-4">
+                    <Skeleton className="h-6 w-36 mb-2" />
+                    <Skeleton className="h-4 w-48" />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div className="space-y-6">
+                  <Skeleton className="h-6 w-32 mb-2" />
+                  <div className="space-y-4">
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <Skeleton className="h-6 w-32 mb-2" />
+                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
+                    <Skeleton className="h-5 w-full mb-2" />
+                    <Skeleton className="h-5 w-full mb-2" />
+                    <Skeleton className="h-5 w-full mb-2" />
+                    <Skeleton className="h-6 w-full" />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
+                <Skeleton className="h-10 w-40" />
+                <Skeleton className="h-10 w-40" />
+              </div>
+            </div>
           </div>
         </main>
         <Footer />
