@@ -1,5 +1,7 @@
 # ST-Eat · منصة توصيل الطعام
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![CI](https://github.com/EslaM-X/yummy-st-eats-45-66/actions/workflows/ci.yml/badge.svg)](https://github.com/EslaM-X/yummy-st-eats-45-66/actions)
+
 منصة توصيل طعام عربية متكاملة: تصفح المطاعم، أضف الوجبات إلى السلة، ادفع،
 وتابع طلباتك — مع لوحة تحكم للمطاعم وسجل طلبات كامل.
 
